@@ -39,21 +39,20 @@ def baseline_model():
 
     model.compile(optimizer=opt, loss="categorical_crossentropy", metrics=METRICS)
 
-    keras.utils.plot_model(model, show_shapes=True, rankdir="LR")
-    plt.show()
+    # keras.utils.plot_model(model, to_file='./trainings/model.png', show_shapes=True, rankdir="LR")
     return model
 
 
-def neural_network(x_train, y_train, class_weights):
+def neural_network(x, y, class_weights, nr_features):
     class_weights = dict(zip(range(len(class_weights)), class_weights))
-    model = baseline_model()
+    model = baseline_model(nr_features)
 
     # model = KerasClassifier(build_fn=model)
     params = {"epochs": 60,
               "validation_data": (x_validation, y_validation),
               "class_weight": class_weights,
               "verbose": 1}
-    model.fit(x_train, y_train, **params)
+    model.fit(x, y, **params)
 
     return model
 
@@ -66,13 +65,14 @@ def xgb_classifier(x_train, y_train, weights):
     return model
 
 
-def output_test_data(model, x_test, id_test):
+def output_submission(model, x_test, id_test):
     # make predictions
     predict = model.predict(x_test)
+    predict = one_hot_to_class(predict, 3)
     # output
     output_csv = pd.concat([id_test, pd.Series(predict)], axis=1)
     output_csv.columns = ["id", "y"]
-    pd.DataFrame.to_csv(output_csv, "./data/submit.csv", index=False)
+    pd.DataFrame.to_csv(output_csv, "./trainings/submit.csv", index=False)
 
 
 def plot_confusion_matrix(y_true, y_pred, classes,
@@ -224,7 +224,7 @@ if __name__ == '__main__':
         # to on hot
         y_train = tf.keras.utils.to_categorical(y_train, 3)
         y_validation = tf.keras.utils.to_categorical(y_validation, 3)
-        model = neural_network(x_train, y_train, class_weights)
+        model = neural_network(x_train, y_train, class_weights, nr_features)
 
     # --------------------------------------------------------------------------------------------------------------
     # Evaluation
@@ -235,5 +235,7 @@ if __name__ == '__main__':
     evaluation_metrics(y_train, y_predict_train, "Train")
     evaluation_metrics(y_validation, y_predict_validation, "Validation")
 
-    if False:
-        output_testdata(best_model, x_test, id_test)
+    if True:
+        train_data_y = tf.keras.utils.to_categorical(train_data_y, 3)
+        best_model.fit(train_data_x, train_data_y)
+        output_submission(best_model, x_test, id_test)
