@@ -1,14 +1,14 @@
+from datetime import datetime
+
 import keras
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import sklearn
 import tensorflow as tf
 import xgboost as xgb
 from keras.layers import Dense, Dropout
 from keras.models import Sequential
 from sklearn import model_selection
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.metrics import balanced_accuracy_score, multilabel_confusion_matrix, classification_report
 from sklearn.metrics import confusion_matrix
 from sklearn.preprocessing import StandardScaler
@@ -19,12 +19,20 @@ from tensorflow.python.keras.optimizer_v2.nadam import Nadam
 def baseline_model():
     global nr_features
     model = Sequential()
-    model.add(Dense(32, input_dim=nr_features, activation='relu'))
+    model.add(Dense(128, input_dim=nr_features,
+                    kernel_initializer='normal',
+                    kernel_regularizer=tf.keras.regularizers.L1L2(l1=0.005, l2=0.001),
+                    activation='relu'))
     model.add(Dropout(0.5))
-    model.add(Dense(32, activation='relu'))
+    model.add(Dense(128,
+                    kernel_initializer='normal',
+                    kernel_regularizer=tf.keras.regularizers.L1L2(l1=0.003, l2=0.001),
+                    activation='relu'))
     model.add(Dropout(0.2))
-    model.add(Dense(16, activation='relu'))
-    model.add(Dropout(0.2))
+    model.add(Dense(128,
+                    kernel_initializer='normal',
+                    kernel_regularizer=tf.keras.regularizers.L1L2(l1=0.001, l2=0.001),
+                    activation='relu'))
     model.add(Dense(3, activation='softmax'))
 
     METRICS = [
@@ -48,10 +56,21 @@ def neural_network(x, y, class_weights, nr_features):
     model = baseline_model(nr_features)
 
     # model = KerasClassifier(build_fn=model)
-    params = {"epochs": 60,
+    params = {"epochs": 80,
               "validation_data": (x_validation, y_validation),
               "class_weight": class_weights,
-              "verbose": 1}
+              "batch_size": 32,
+              "verbose": 0
+              }
+
+    log_tensorboard = True
+    if log_tensorboard:
+        logdir = "logs/scalars/" + datetime.now().strftime("%Y%m%d-%H%M%S")
+        tensorboard_callback = keras.callbacks.TensorBoard(log_dir=logdir)
+        params["callbacks"] = [tensorboard_callback]
+        # to look at the data start the tensorboard in the terminal
+        # tensorboard --logdir logs/scalars
+
     model.fit(x, y, **params)
 
     return model
