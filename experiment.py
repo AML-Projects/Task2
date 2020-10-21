@@ -16,8 +16,7 @@ from sklearn.utils import class_weight
 from tensorflow.python.keras.optimizer_v2.nadam import Nadam
 
 
-def baseline_model():
-    global nr_features
+def baseline_model(nr_features):
     model = Sequential()
     model.add(Dense(128, input_dim=nr_features,
                     kernel_initializer='normal',
