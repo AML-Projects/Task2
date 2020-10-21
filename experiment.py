@@ -13,9 +13,60 @@ from sklearn.metrics import balanced_accuracy_score, multilabel_confusion_matrix
 from sklearn.metrics import confusion_matrix
 from sklearn.preprocessing import StandardScaler
 from sklearn.utils import class_weight
+from tensorflow.python.keras.optimizer_v2.nadam import Nadam
 
 
-def output_testdata(model, x_test, id_test):
+def baseline_model():
+    global nr_features
+    model = Sequential()
+    model.add(Dense(32, input_dim=nr_features, activation='relu'))
+    model.add(Dropout(0.5))
+    model.add(Dense(32, activation='relu'))
+    model.add(Dropout(0.2))
+    model.add(Dense(16, activation='relu'))
+    model.add(Dropout(0.2))
+    model.add(Dense(3, activation='softmax'))
+
+    METRICS = [
+        keras.metrics.CategoricalAccuracy(name='accuracy'),
+        keras.metrics.Precision(name='precision'),
+        keras.metrics.Recall(name='recall'),
+        keras.metrics.AUC(name='auc'),
+        keras.metrics.CategoricalCrossentropy('crossentropy')
+    ]
+
+    opt = Nadam(learning_rate=0.0001, beta_1=0.9, beta_2=0.999, epsilon=1e-07)
+
+    model.compile(optimizer=opt, loss="categorical_crossentropy", metrics=METRICS)
+
+    keras.utils.plot_model(model, show_shapes=True, rankdir="LR")
+    plt.show()
+    return model
+
+
+def neural_network(x_train, y_train, class_weights):
+    class_weights = dict(zip(range(len(class_weights)), class_weights))
+    model = baseline_model()
+
+    # model = KerasClassifier(build_fn=model)
+    params = {"epochs": 60,
+              "validation_data": (x_validation, y_validation),
+              "class_weight": class_weights,
+              "verbose": 1}
+    model.fit(x_train, y_train, **params)
+
+    return model
+
+
+def xgb_classifier(x_train, y_train, weights):
+    model = xgb.XGBClassifier(objective='multi:softmax', max_depth=1, num_class=3, random_state=41)
+
+    model.fit(x_train, y_train.values.ravel(), sample_weight=weights)
+
+    return model
+
+
+def output_test_data(model, x_test, id_test):
     # make predictions
     predict = model.predict(x_test)
     # output
@@ -166,9 +217,14 @@ if __name__ == '__main__':
 
     # --------------------------------------------------------------------------------------------------------------
     # Fit model
-    model = xgb.XGBClassifier(objective='multi:softmax', max_depth=1, num_class=3, random_state=41)
-
-    model.fit(x_train, y_train.values.ravel(), sample_weight=weights)
+    xgb_on = False
+    if xgb_on:
+        model = xgb_classifier(x_train, y_train, weights)
+    else:
+        # to on hot
+        y_train = tf.keras.utils.to_categorical(y_train, 3)
+        y_validation = tf.keras.utils.to_categorical(y_validation, 3)
+        model = neural_network(x_train, y_train, class_weights)
 
     # --------------------------------------------------------------------------------------------------------------
     # Evaluation
