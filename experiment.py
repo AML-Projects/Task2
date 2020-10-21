@@ -1,8 +1,16 @@
+import keras
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import sklearn
+import tensorflow as tf
 import xgboost as xgb
+from keras.layers import Dense, Dropout
+from keras.models import Sequential
 from sklearn import model_selection
-from sklearn.metrics import balanced_accuracy_score
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.metrics import balanced_accuracy_score, multilabel_confusion_matrix, classification_report
+from sklearn.metrics import confusion_matrix
 from sklearn.preprocessing import StandardScaler
 from sklearn.utils import class_weight
 
@@ -14,6 +22,91 @@ def output_testdata(model, x_test, id_test):
     output_csv = pd.concat([id_test, pd.Series(predict)], axis=1)
     output_csv.columns = ["id", "y"]
     pd.DataFrame.to_csv(output_csv, "./data/submit.csv", index=False)
+
+
+def plot_confusion_matrix(y_true, y_pred, classes,
+                          normalize=False,
+                          title=None,
+                          cmap=plt.cm.Greens):
+    """
+    This function prints and plots the confusion matrix.
+    Normalization can be applied by setting `normalize=True`.
+    https://scikit-learn.org/0.21/auto_examples/model_selection/plot_confusion_matrix.html
+    """
+    if not title:
+        if normalize:
+            title = 'Normalized confusion matrix'
+        else:
+            title = 'Confusion matrix, without normalization'
+
+    # check if arrays are one hot encoded
+    y_true = one_hot_to_class(y_true, len(np.unique(classes)))
+    y_pred = one_hot_to_class(y_pred, len(np.unique(classes)))
+
+    # Compute confusion matrix
+    cm = confusion_matrix(y_true, y_pred)
+    # Only use the labels that appear in the data
+    # classes = classes[unique_labels(y_true, y_pred)]
+    if normalize:
+        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+        print("Normalized confusion matrix")
+    else:
+        print('Confusion matrix, without normalization')
+
+    print(cm)
+
+    fig, ax = plt.subplots()
+    im = ax.imshow(cm, interpolation='nearest', cmap=cmap)
+    ax.figure.colorbar(im, ax=ax)
+    # We want to show all ticks...
+    ax.set(xticks=np.arange(cm.shape[1]),
+           yticks=np.arange(cm.shape[0]),
+           # ... and label them with the respective list entries
+           xticklabels=classes, yticklabels=classes,
+           title=title,
+           ylabel='True label',
+           xlabel='Predicted label')
+
+    # Rotate the tick labels and set their alignment.
+    plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
+             rotation_mode="anchor")
+
+    # Loop over data dimensions and create text annotations.
+    fmt = '.2f' if normalize else 'd'
+    thresh = cm.max() / 2.
+    for i in range(cm.shape[0]):
+        for j in range(cm.shape[1]):
+            ax.text(j, i, format(cm[i, j], fmt),
+                    ha="center", va="center",
+                    color="white" if cm[i, j] > thresh else "black")
+    fig.tight_layout()
+    return ax
+
+
+def one_hot_to_class(y, num_classes):
+    if len(y.shape) > 1 and y.shape[1] == num_classes:
+        y = np.argmax(y, axis=1)
+    return y
+
+
+def evaluation_metrics(y_true, y_predicted, text):
+    print("\n---------", text, "---------\n")
+    # confusion matrix
+    plot_confusion_matrix(y_true, y_predicted, classes=classes,
+                          title=text + ' - Confusion matrix', normalize=False)
+    plt.show()
+
+    # convert from one hot encoding to class labels if needed
+    y_true = one_hot_to_class(y_true, num_classes=number_classes)
+    y_predicted = one_hot_to_class(y_predicted, num_classes=number_classes)
+
+    # report
+    print(text, 'report')
+    print(classification_report(y_true, y_predicted))
+
+    # balanced accuracy score
+    score = balanced_accuracy_score(y_true, y_predicted)
+    print("bas_score on", text, "split:", score)
 
 
 if __name__ == '__main__':
@@ -55,32 +148,36 @@ if __name__ == '__main__':
     x_train = scaler.fit_transform(x_train)
     x_validation = scaler.transform(x_validation)
     x_test = scaler.transform(x_test)
+    print(x_train.shape)
 
     # --------------------------------------------------------------------------------------------------------------
     # Compute class weights
+    classes = np.unique(y_train['y'])
+    number_classes = len(classes)
     class_weights = list(class_weight.compute_class_weight(class_weight='balanced',
-                                                           classes=np.unique(y_train['y']),
+                                                           classes=classes,
                                                            y=y_train['y']))
 
     weights = y_train.copy()
     for i in range(0, len(class_weights)):
         weights.loc[weights.y == i] = class_weights[i]
 
+    nr_features = x_train.shape[1]
+
     # --------------------------------------------------------------------------------------------------------------
     # Fit model
-    model = xgb.XGBClassifier(random_state=41)
+    model = xgb.XGBClassifier(objective='multi:softmax', max_depth=1, num_class=3, random_state=41)
 
     model.fit(x_train, y_train.values.ravel(), sample_weight=weights)
 
+    # --------------------------------------------------------------------------------------------------------------
+    # Evaluation
     best_model = model
-    predict_train = best_model.predict(x_train)
-    predict_validation = best_model.predict(x_validation)
+    y_predict_train = best_model.predict(x_train)
+    y_predict_validation = best_model.predict(x_validation)
 
-    score = balanced_accuracy_score(y_train, predict_train)
-    print("bas_score on train split: ", score)
-
-    score = balanced_accuracy_score(y_validation, predict_validation)
-    print("bas_score on validation split: ", score)
+    evaluation_metrics(y_train, y_predict_train, "Train")
+    evaluation_metrics(y_validation, y_predict_validation, "Validation")
 
     if False:
         output_testdata(best_model, x_test, id_test)
