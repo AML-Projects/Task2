@@ -5,7 +5,7 @@ from sklearn import model_selection
 from sklearn.metrics import ConfusionMatrixDisplay
 from sklearn.metrics import balanced_accuracy_score, multilabel_confusion_matrix, classification_report
 from sklearn.metrics import confusion_matrix
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, Normalizer
 
 import data_preprocessing
 from classifier import Classifier
@@ -101,7 +101,7 @@ def evaluation_metrics(y_true, y_predicted, text):
     classes = np.unique(y_true)
     # confusion matrix
     plot_confusion_matrix(y_true, y_predicted, classes=classes,
-                          title=text + ' - Confusion matrix', normalize=False)
+                          title=text + ' - Confusion matrix', normalize=True)
     plt.show()
 
     # convert from one hot encoding to class labels if needed
@@ -146,6 +146,9 @@ if __name__ == '__main__':
                                          stratify=train_data_y,
                                          random_state=41)
 
+    print("\nTrain samples per group\n", y_train.groupby("y")["y"].count().values)
+    print("\nValidation samples per group\n", y_validation.groupby("y")["y"].count().values)
+
     # reset all indexes
     x_train.reset_index(drop=True, inplace=True)
     x_validation.reset_index(drop=True, inplace=True)
@@ -159,12 +162,21 @@ if __name__ == '__main__':
     x_train = scaler.fit_transform(x_train)
     x_validation = scaler.transform(x_validation)
     x_test = scaler.transform(x_test)
-    print(x_train.shape)
+    print("\ntrain shape", x_train.shape)
 
     # --------------------------------------------------------------------------------------------------------------
     # Sampling
     ds = data_preprocessing.DataSampling("SMOTETomek")
     x_train, y_train = ds.fit_resample(x_train, y_train)
+
+    # --------------------------------------------------------------------------------------------------------------
+    # Normalize samples?
+    normalize_samples = False
+    if normalize_samples:
+        norm = Normalizer()
+        x_train = norm.fit_transform(x_train)
+        x_validation = norm.transform(x_validation)
+        x_test = norm.transform(x_test)
 
     # --------------------------------------------------------------------------------------------------------------
     # Fit model
