@@ -1,86 +1,24 @@
-from datetime import datetime
-
-import keras
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-import tensorflow as tf
-import xgboost as xgb
-from keras.layers import Dense, Dropout
-from keras.models import Sequential
 from sklearn import model_selection
+from sklearn.metrics import ConfusionMatrixDisplay
 from sklearn.metrics import balanced_accuracy_score, multilabel_confusion_matrix, classification_report
 from sklearn.metrics import confusion_matrix
 from sklearn.preprocessing import StandardScaler
-from sklearn.utils import class_weight
-from tensorflow.python.keras.optimizer_v2.nadam import Nadam
+
+import data_preprocessing
+from classifier import Classifier
 
 
-def baseline_model(nr_features):
-    model = Sequential()
-    model.add(Dense(128, input_dim=nr_features,
-                    kernel_initializer='normal',
-                    kernel_regularizer=tf.keras.regularizers.L1L2(l1=0.005, l2=0.001),
-                    activation='relu'))
-    model.add(Dropout(0.5))
-    model.add(Dense(128,
-                    kernel_initializer='normal',
-                    kernel_regularizer=tf.keras.regularizers.L1L2(l1=0.003, l2=0.001),
-                    activation='relu'))
-    model.add(Dropout(0.2))
-    model.add(Dense(128,
-                    kernel_initializer='normal',
-                    kernel_regularizer=tf.keras.regularizers.L1L2(l1=0.001, l2=0.001),
-                    activation='relu'))
-    model.add(Dense(3, activation='softmax'))
+def plot_individual_cm(y_true, y_predicted):
+    cm = multilabel_confusion_matrix(y_true, y_predicted, labels=[0, 1, 2])
 
-    METRICS = [
-        keras.metrics.CategoricalAccuracy(name='accuracy'),
-        keras.metrics.Precision(name='precision'),
-        keras.metrics.Recall(name='recall'),
-        keras.metrics.AUC(name='auc'),
-        keras.metrics.CategoricalCrossentropy('crossentropy')
-    ]
-
-    opt = Nadam(learning_rate=0.0001, beta_1=0.9, beta_2=0.999, epsilon=1e-07)
-
-    model.compile(optimizer=opt, loss="categorical_crossentropy", metrics=METRICS)
-
-    # keras.utils.plot_model(model, to_file='./trainings/model.png', show_shapes=True, rankdir="LR")
-    return model
-
-
-def neural_network(x, y, class_weights, nr_features):
-    class_weights = dict(zip(range(len(class_weights)), class_weights))
-    model = baseline_model(nr_features)
-
-    # model = KerasClassifier(build_fn=model)
-    params = {"epochs": 80,
-              "validation_data": (x_validation, y_validation),
-              "class_weight": class_weights,
-              "batch_size": 32,
-              "verbose": 0
-              }
-
-    log_tensorboard = True
-    if log_tensorboard:
-        logdir = "logs/scalars/" + datetime.now().strftime("%Y%m%d-%H%M%S")
-        tensorboard_callback = keras.callbacks.TensorBoard(log_dir=logdir)
-        params["callbacks"] = [tensorboard_callback]
-        # to look at the data start the tensorboard in the terminal
-        # tensorboard --logdir logs/scalars
-
-    model.fit(x, y, **params)
-
-    return model
-
-
-def xgb_classifier(x_train, y_train, weights):
-    model = xgb.XGBClassifier(objective='multi:softmax', max_depth=1, num_class=3, random_state=41)
-
-    model.fit(x_train, y_train.values.ravel(), sample_weight=weights)
-
-    return model
+    for i in range(cm.shape[0]):
+        disp = ConfusionMatrixDisplay(confusion_matrix=cm[i],
+                                      display_labels=[i, "rest"])
+        disp = disp.plot()
+    plt.show()
 
 
 def output_submission(model, x_test, id_test):
@@ -160,14 +98,18 @@ def one_hot_to_class(y, num_classes):
 
 def evaluation_metrics(y_true, y_predicted, text):
     print("\n---------", text, "---------\n")
+    classes = np.unique(y_true)
     # confusion matrix
     plot_confusion_matrix(y_true, y_predicted, classes=classes,
                           title=text + ' - Confusion matrix', normalize=False)
     plt.show()
 
     # convert from one hot encoding to class labels if needed
+    number_classes = len(classes)
     y_true = one_hot_to_class(y_true, num_classes=number_classes)
     y_predicted = one_hot_to_class(y_predicted, num_classes=number_classes)
+
+    # plot_individual_cm(y_true, y_predicted)
 
     # report
     print(text, 'report')
@@ -220,29 +162,14 @@ if __name__ == '__main__':
     print(x_train.shape)
 
     # --------------------------------------------------------------------------------------------------------------
-    # Compute class weights
-    classes = np.unique(y_train['y'])
-    number_classes = len(classes)
-    class_weights = list(class_weight.compute_class_weight(class_weight='balanced',
-                                                           classes=classes,
-                                                           y=y_train['y']))
-
-    weights = y_train.copy()
-    for i in range(0, len(class_weights)):
-        weights.loc[weights.y == i] = class_weights[i]
-
-    nr_features = x_train.shape[1]
+    # Sampling
+    ds = data_preprocessing.DataSampling("SMOTETomek")
+    x_train, y_train = ds.fit_resample(x_train, y_train)
 
     # --------------------------------------------------------------------------------------------------------------
     # Fit model
-    xgb_on = False
-    if xgb_on:
-        model = xgb_classifier(x_train, y_train, weights)
-    else:
-        # to on hot
-        y_train = tf.keras.utils.to_categorical(y_train, 3)
-        y_validation = tf.keras.utils.to_categorical(y_validation, 3)
-        model = neural_network(x_train, y_train, class_weights, nr_features)
+    clf = Classifier("xgb")
+    model = clf.fit(X=x_train, y=y_train)
 
     # --------------------------------------------------------------------------------------------------------------
     # Evaluation
@@ -253,7 +180,7 @@ if __name__ == '__main__':
     evaluation_metrics(y_train, y_predict_train, "Train")
     evaluation_metrics(y_validation, y_predict_validation, "Validation")
 
-    if True:
+    if False:
         train_data_y = tf.keras.utils.to_categorical(train_data_y, 3)
         best_model.fit(train_data_x, train_data_y)
         output_submission(best_model, x_test, id_test)
