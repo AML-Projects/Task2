@@ -9,6 +9,7 @@ from imblearn.ensemble import BalancedRandomForestClassifier, EasyEnsembleClassi
     BalancedBaggingClassifier
 from keras.layers import Dense, Dropout
 from keras.models import Sequential
+from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import GaussianNB
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils import class_weight
@@ -58,8 +59,6 @@ def baseline_model(nr_features):
 
 
 def neural_network(x, y, class_weights, nr_features):
-    class_weights = dict(zip(range(len(class_weights)), class_weights))
-
     model = baseline_model(nr_features)
 
     # model = KerasClassifier(build_fn=model)
@@ -88,7 +87,7 @@ class Classifier:
         self.classifier = classifier
 
     def fit(self, X, y):
-        class_weights = self.compute_class_weights(y)
+        class_weights, class_weights_dict = self.compute_class_weights(y)
 
         if self.classifier == "BalancedRandomForestClassifier":
             model = BalancedRandomForestClassifier(n_estimators=100, random_state=0)
@@ -103,7 +102,7 @@ class Classifier:
                                               random_state=0)
 
         elif self.classifier == "GaussianNB":
-            model = GaussianNB().fit(X, y)
+            model = GaussianNB()
 
         elif self.classifier == "RUSBoostClassifier":
             model = RUSBoostClassifier(n_estimators=200, algorithm='SAMME.R', random_state=0)
@@ -115,14 +114,24 @@ class Classifier:
 
             model = xgb_classifier(X, y, weights)
             return model
-        else:
+        elif self.classifier == "LogisticRegression":
+            model = LogisticRegression(penalty='l2',
+                                       C=1,
+                                       class_weight=class_weights_dict,
+                                       max_iter=100,
+                                       n_jobs=-1,
+                                       random_state=0)
+
+        elif self.classifier == "NN":
             # y to one hot encoding
             y = tf.keras.utils.to_categorical(y, 3)
 
             nr_features = X.shape[1]
-            model = neural_network(X, y, class_weights, nr_features)
+            model = neural_network(X, y, class_weights_dict, nr_features)
 
             return model
+        else:
+            raise ValueError("Model not existing")
 
         model.fit(X, y)
 
@@ -136,4 +145,7 @@ class Classifier:
                                                                classes=classes,
                                                                y=y['y']))
         print("\nClass weights:\n", pd.DataFrame(class_weights))
-        return class_weights
+
+        print("\nSamples per group before classification\n", y.groupby("y")["y"].count())
+
+        return class_weights, dict(zip(range(len(class_weights)), class_weights))
