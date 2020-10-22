@@ -27,7 +27,7 @@ class DataSampling:
             sampler = ClusterCentroids(random_state=41)
 
         if self.over_sampling_method == "NearMiss":
-            sampler = NearMiss().fit_resample(X, y)
+            sampler = NearMiss()#.fit_resample(X, y)
 
         if self.over_sampling_method == "AllKNN":
             sampler = AllKNN(sampling_strategy='not minority', n_jobs=-1)
