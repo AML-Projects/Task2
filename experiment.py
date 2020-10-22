@@ -9,6 +9,7 @@ from sklearn.preprocessing import StandardScaler, Normalizer
 
 import data_preprocessing
 from classifier import Classifier
+from feature_selector import FeatureSelector
 
 
 def plot_individual_cm(y_true, y_predicted):
@@ -165,8 +166,19 @@ if __name__ == '__main__':
     print("\ntrain shape", x_train.shape)
 
     # --------------------------------------------------------------------------------------------------------------
+    # Feature Selection
+    fs = FeatureSelector("None")
+    x_train = fs.fit_transform(x_train, y_train)
+    x_validation = fs.transform(x_validation)
+    x_test = fs.transform(x_test)
+
+    print("\ntrain shape", x_train.shape)
+
+    # visualize(x_train, y_train)
+
+    # --------------------------------------------------------------------------------------------------------------
     # Sampling
-    ds = data_preprocessing.DataSampling("SMOTETomek")
+    ds = data_preprocessing.DataSampling("None")
     x_train, y_train = ds.fit_resample(x_train, y_train)
 
     # --------------------------------------------------------------------------------------------------------------
@@ -180,7 +192,7 @@ if __name__ == '__main__':
 
     # --------------------------------------------------------------------------------------------------------------
     # Fit model
-    clf = Classifier("xgb")
+    clf = Classifier("SVC")
     model = clf.fit(X=x_train, y=y_train)
 
     # --------------------------------------------------------------------------------------------------------------
@@ -193,6 +205,7 @@ if __name__ == '__main__':
     evaluation_metrics(y_validation, y_predict_validation, "Validation")
 
     if False:
-        train_data_y = tf.keras.utils.to_categorical(train_data_y, 3)
-        best_model.fit(train_data_x, train_data_y)
+        # train_data_y = tf.keras.utils.to_categorical(train_data_y, 3)
+        best_model.fit(pd.DataFrame(x_train).append(pd.DataFrame(x_validation), ignore_index=True),
+                       pd.DataFrame(y_train).append(pd.DataFrame(y_validation), ignore_index=True))
         output_submission(best_model, x_test, id_test)

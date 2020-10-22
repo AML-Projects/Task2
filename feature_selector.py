@@ -5,6 +5,7 @@ from sklearn.kernel_approximation import Nystroem
 class FeatureSelector(TransformerMixin):
     def __init__(self, method="None"):
         self.method = method
+        print("\nData Sampling:", self.method)
         self.feature_map_nystroem = Nystroem(
             gamma=None,
             n_components=200,
