@@ -74,7 +74,7 @@ def plot_predicted_clusters(x, y, components, clusterer, title="", interactive=F
 
     # plot cluster prediction based only on the supplied components
     y_pred = clusterer.fit_predict(components)
-    subplot_components(components, 223, "Predicted on only the supplied components", y_pred)
+    subplot_components(components, 212, "Predicted on only the supplied components", y_pred)
 
 
 def subplot_components(components, plot_nr, plot_title, y_pred):
