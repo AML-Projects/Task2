@@ -11,6 +11,7 @@ from keras.layers import Dense, Dropout
 from keras.models import Sequential
 from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import GaussianNB
+from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils import class_weight
 from tensorflow.python.keras.optimizer_v2.nadam import Nadam
@@ -121,6 +122,9 @@ class Classifier:
                                        max_iter=100,
                                        n_jobs=-1,
                                        random_state=0)
+
+        elif self.classifier == "SVC":
+            model = SVC(C=1, class_weight=class_weights_dict, random_state=41)
 
         elif self.classifier == "NN":
             # y to one hot encoding
