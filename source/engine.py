@@ -17,7 +17,7 @@ from source import evaluation
 from source.classifier import Classifier
 from source.configuration import Configuration
 from source.data_sampler import DataSampling
-from source.feature_selector import FeatureSelector
+from source.feature_extractor import FeatureExtractor
 
 
 class Engine:
@@ -213,7 +213,7 @@ class Engine:
         # --------------------------------------------------------------------------------------------------------------
         # Feature Selection
         fs_dict = self.get_serach_params('feature_selector')
-        fs = FeatureSelector(**fs_dict)
+        fs = FeatureExtractor(**fs_dict)
 
         x_train_split = fs.fit_transform(x_train_split, y_train_split)
         x_validation_split = fs.transform(x_validation_split)

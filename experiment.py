@@ -5,7 +5,7 @@ from sklearn.preprocessing import StandardScaler, Normalizer
 from source.classifier import Classifier
 from source.data_sampler import DataSampling
 from source.evaluation import one_hot_to_class, evaluation_metrics
-from source.feature_selector import FeatureSelector
+from source.feature_extractor import FeatureExtractor
 
 
 def output_submission(model, x_test, id_test):
@@ -64,7 +64,7 @@ if __name__ == '__main__':
 
     # --------------------------------------------------------------------------------------------------------------
     # Feature Selection
-    fs = FeatureSelector("None")
+    fs = FeatureExtractor("Nystroem")
     x_train = fs.fit_transform(x_train, y_train)
     x_validation = fs.transform(x_validation)
     x_test = fs.transform(x_test)
@@ -90,7 +90,7 @@ if __name__ == '__main__':
     # --------------------------------------------------------------------------------------------------------------
     # Fit model
     clf = Classifier("SVC")
-    model = clf.fit(X=x_train, y=y_train)
+    model, results = clf.fit(X=x_train, y=y_train)
 
     # --------------------------------------------------------------------------------------------------------------
     # Evaluation
