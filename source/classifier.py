@@ -11,7 +11,7 @@ from imblearn.ensemble import BalancedRandomForestClassifier, EasyEnsembleClassi
 from keras.layers import Dense, Dropout
 from keras.models import Sequential
 from sklearn.linear_model import LogisticRegression
-from sklearn.model_selection import StratifiedKFold, GridSearchCV
+from sklearn.model_selection import StratifiedKFold, GridSearchCV, RandomizedSearchCV
 from sklearn.naive_bayes import GaussianNB
 from sklearn.svm import SVC
 from sklearn.tree import DecisionTreeClassifier
@@ -80,9 +80,10 @@ def neural_network(x, y, class_weights, nr_features):
 
 
 class Classifier:
-    def __init__(self, classifier):
+    def __init__(self, classifier, random_search=True):
         self.classifier = classifier
         self.results = {}
+        self.random_search = random_search
         Logcreator.info(self.classifier)
 
     def getModelAndParams(self, y):
@@ -168,7 +169,7 @@ class Classifier:
         else:
             model, model_param, fit_param = self.getModelAndParams(y)
 
-        nr_folds = math.floor(math.sqrt(X.shape[0]) / 2)
+        nr_folds = math.floor(math.sqrt(X.shape[0]) / 3)
 
         best_model, self.results = self.do_grid_search(model, nr_folds, parameters=model_param, fit_parameter=fit_param,
                                                        X=X,
@@ -179,46 +180,58 @@ class Classifier:
     def getFitResults(self):
         return self.results
 
-    @staticmethod
-    def do_grid_search(model, nr_folds, parameters, fit_parameter, X, y):
-        Logcreator.info("\nStarting Grid Search\n")
+    def do_grid_search(self, model, nr_folds, parameters, fit_parameter, X, y):
+        Logcreator.info("\nStarting Parameter Search\n")
 
-        grid_search = Classifier.getGridSearchInstance(model, nr_folds, parameters)
+        searcher = Classifier.get_search_instance(model, nr_folds, parameters, self.random_search)
+        searcher.fit(X, y, **fit_parameter)
 
-        grid_search.fit(X, y, **fit_parameter)
-
-        results = Classifier.eavluate_grid_search(grid_search)
-
-        best_model = grid_search.best_estimator_
+        results = Classifier.evaluate_search_results(searcher)
+        best_model = searcher.best_estimator_
 
         return best_model, results
 
     @staticmethod
-    def eavluate_grid_search(grid_search):
+    def evaluate_search_results(seracher):
         # Best estimator
-        Logcreator.info("Best estimator from GridSearch: {}".format(grid_search.best_estimator_))
-        Logcreator.info("Best alpha found: {}".format(grid_search.best_params_))
-        Logcreator.info("Best training-score with mse loss: {}".format(grid_search.best_score_))
-        results = pd.DataFrame(grid_search.cv_results_)
+        Logcreator.info("Best estimator from GridSearch: {}".format(seracher.best_estimator_))
+        Logcreator.info("Best alpha found: {}".format(seracher.best_params_))
+        Logcreator.info("Best training-score with mse loss: {}".format(seracher.best_score_))
+        results = pd.DataFrame(seracher.cv_results_)
         results.sort_values(by='rank_test_score', inplace=True)
         Logcreator.info(
             results[['params', 'mean_test_score', 'std_test_score', 'mean_train_score', 'std_train_score']].head(30))
         return results
 
     @staticmethod
-    def getGridSearchInstance(model, nr_folds, parameters):
+    def get_search_instance(model, nr_folds, parameters, random_search=False):
         skf = StratifiedKFold(shuffle=True, n_splits=nr_folds, random_state=41)
-        grid_search = GridSearchCV(model, parameters,
-                                   scoring='balanced_accuracy',
-                                   # use every cpu thread
-                                   n_jobs=-1,
-                                   # Refit an estimator using the best found parameters
-                                   refit=True,
-                                   cv=skf,
-                                   # Return train score to check for overfitting
-                                   return_train_score=True,
-                                   verbose=1)
-        return grid_search
+
+        if random_search:
+            number_of_searches = 100
+            searcher = RandomizedSearchCV(model, parameters,
+                                          scoring='balanced_accuracy',
+                                          n_iter=number_of_searches,
+                                          # use every cpu thread
+                                          n_jobs=-1,
+                                          # Refit an estimator using the best found parameters
+                                          refit=True,
+                                          cv=skf,
+                                          # Return train score to check for overfitting
+                                          return_train_score=True,
+                                          verbose=1)
+        else:
+            searcher = GridSearchCV(model, parameters,
+                                    scoring='balanced_accuracy',
+                                    # use every cpu thread
+                                    n_jobs=-1,
+                                    # Refit an estimator using the best found parameters
+                                    refit=True,
+                                    cv=skf,
+                                    # Return train score to check for overfitting
+                                    return_train_score=True,
+                                    verbose=1)
+        return searcher
 
     @staticmethod
     def compute_class_weights(y):
