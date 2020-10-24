@@ -5,10 +5,11 @@
         "log_file" : "logs.txt"
     },
     "feature_selector": {
-		"method" : "None"
+		"method" : "None",
+        "n_components" : 200
     },
 	"data_sampler": {
-		"sampling_method": "random",
+		"sampling_method": "None",
 	},
 	"classifier": {
 		"classifier": "xgb",

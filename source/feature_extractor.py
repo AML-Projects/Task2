@@ -8,9 +8,9 @@ from logcreator.logcreator import Logcreator
 
 
 class FeatureExtractor(TransformerMixin):
-    def __init__(self, method="None"):
+    def __init__(self, method="None", n_components=200):
         self.method = method
-        self.n_components = 200
+        self.n_components = n_components
         self.transformer = None
         Logcreator.info("\nFeature Extraction:", self.method)
 
