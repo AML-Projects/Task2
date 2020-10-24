@@ -8,7 +8,7 @@
 		"method" : "None"
     },
 	"data_sampler": {
-		"over_sampling_method": "random",
+		"sampling_method": "random",
 	},
 	"classifier": {
 		"classifier": "xgb",

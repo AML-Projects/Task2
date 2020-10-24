@@ -6,39 +6,39 @@ from logcreator.logcreator import Logcreator
 
 
 class DataSampling:
-    def __init__(self, over_sampling_method):
-        self.over_sampling_method = over_sampling_method
-        Logcreator.info("\nData Sampling:", self.over_sampling_method)
+    def __init__(self, sampling_method):
+        self.sampling_method = sampling_method
+        Logcreator.info("\nData Sampling:", self.sampling_method)
 
     def sampling(self, X, y):
         # oversampling
-        if self.over_sampling_method == "random":
+        if self.sampling_method == "random":
             sampler = RandomOverSampler(random_state=41)
 
-        if self.over_sampling_method == "SMOTE":
+        if self.sampling_method == "SMOTE":
             sampler = SMOTE(n_jobs=-1, random_state=41)
 
-        if self.over_sampling_method == "ADASYN":
+        if self.sampling_method == "ADASYN":
             sampler = ADASYN(n_jobs=-1, random_state=41)
 
         # under sampling
-        if self.over_sampling_method == "RandomUnderSampler":
+        if self.sampling_method == "RandomUnderSampler":
             sampler = RandomUnderSampler(random_state=0)
 
-        if self.over_sampling_method == "ClusterCentroids":
+        if self.sampling_method == "ClusterCentroids":
             sampler = ClusterCentroids(random_state=41)
 
-        if self.over_sampling_method == "NearMiss":
-            sampler = NearMiss()#.fit_resample(X, y)
+        if self.sampling_method == "NearMiss":
+            sampler = NearMiss()  # .fit_resample(X, y)
 
-        if self.over_sampling_method == "AllKNN":
+        if self.sampling_method == "AllKNN":
             sampler = AllKNN(sampling_strategy='not minority', n_jobs=-1)
 
         # over and under sampling
-        if self.over_sampling_method == "SMOTEENN":
+        if self.sampling_method == "SMOTEENN":
             sampler = SMOTEENN(n_jobs=-1, random_state=41)
 
-        if self.over_sampling_method == "SMOTETomek":
+        if self.sampling_method == "SMOTETomek":
             sampler = SMOTETomek(n_jobs=-1, random_state=41)
 
         x_sampled, y_sampled = sampler.fit_resample(X, y)
@@ -48,7 +48,7 @@ class DataSampling:
         return x_sampled, y_sampled
 
     def fit_resample(self, X, y):
-        if self.over_sampling_method == "None":
+        if self.sampling_method == "None":
             return X, y
         return self.sampling(X, y)
 
