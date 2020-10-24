@@ -1,11 +1,20 @@
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 from sklearn.metrics import ConfusionMatrixDisplay
 from sklearn.metrics import balanced_accuracy_score, multilabel_confusion_matrix, classification_report
 from sklearn.metrics import confusion_matrix
 
 from logcreator.logcreator import Logcreator
+
+
+def plot_individual_cm(y_true, y_predicted):
+    cm = multilabel_confusion_matrix(y_true, y_predicted, labels=[0, 1, 2])
+
+    for i in range(cm.shape[0]):
+        disp = ConfusionMatrixDisplay(confusion_matrix=cm[i],
+                                      display_labels=[i, "rest"])
+        disp = disp.plot()
+    plt.show()
 
 
 def plot_confusion_matrix(y_true, y_pred, classes,
