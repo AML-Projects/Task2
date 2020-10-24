@@ -83,6 +83,8 @@ class Classifier:
     def __init__(self, classifier, random_search=True):
         self.classifier = classifier
         self.results = {}
+        if isinstance(random_search, str):
+            random_search = random_search == "True"
         self.random_search = random_search
         Logcreator.info(self.classifier)
 
@@ -181,7 +183,7 @@ class Classifier:
         return self.results
 
     def do_grid_search(self, model, nr_folds, parameters, fit_parameter, X, y):
-        Logcreator.info("\nStarting Parameter Search\n")
+        Logcreator.info("\nStarting Parameter Search")
 
         searcher = Classifier.get_search_instance(model, nr_folds, parameters, self.random_search)
         searcher.fit(X, y, **fit_parameter)
@@ -192,12 +194,12 @@ class Classifier:
         return best_model, results
 
     @staticmethod
-    def evaluate_search_results(seracher):
+    def evaluate_search_results(searcher):
         # Best estimator
-        Logcreator.info("Best estimator from GridSearch: {}".format(seracher.best_estimator_))
-        Logcreator.info("Best alpha found: {}".format(seracher.best_params_))
-        Logcreator.info("Best training-score with mse loss: {}".format(seracher.best_score_))
-        results = pd.DataFrame(seracher.cv_results_)
+        Logcreator.info("Best estimator from GridSearch: {}".format(searcher.best_estimator_))
+        Logcreator.info("Best alpha found: {}".format(searcher.best_params_))
+        Logcreator.info("Best training-score with mse loss: {}".format(searcher.best_score_))
+        results = pd.DataFrame(searcher.cv_results_)
         results.sort_values(by='rank_test_score', inplace=True)
         Logcreator.info(
             results[['params', 'mean_test_score', 'std_test_score', 'mean_train_score', 'std_train_score']].head(30))
@@ -208,6 +210,7 @@ class Classifier:
         skf = StratifiedKFold(shuffle=True, n_splits=nr_folds, random_state=41)
 
         if random_search:
+            Logcreator.info("-> random search")
             number_of_searches = 100
             searcher = RandomizedSearchCV(model, parameters,
                                           scoring='balanced_accuracy',
@@ -221,6 +224,7 @@ class Classifier:
                                           return_train_score=True,
                                           verbose=1)
         else:
+            Logcreator.info("-> grid search")
             searcher = GridSearchCV(model, parameters,
                                     scoring='balanced_accuracy',
                                     # use every cpu thread

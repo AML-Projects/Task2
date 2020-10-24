@@ -12,5 +12,6 @@
 	},
 	"classifier": {
 		"classifier": "xgb",
+		"random_search" : "False"
 	},
 }
