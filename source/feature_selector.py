@@ -1,11 +1,13 @@
 from sklearn.base import TransformerMixin
 from sklearn.kernel_approximation import Nystroem
 
+from logcreator.logcreator import Logcreator
+
 
 class FeatureSelector(TransformerMixin):
     def __init__(self, method="None"):
         self.method = method
-        print("\nData Sampling:", self.method)
+        Logcreator.info("\nData Sampling:", self.method)
         self.feature_map_nystroem = Nystroem(
             gamma=None,
             n_components=200,

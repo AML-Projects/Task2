@@ -5,6 +5,8 @@ from sklearn.metrics import ConfusionMatrixDisplay
 from sklearn.metrics import balanced_accuracy_score, multilabel_confusion_matrix, classification_report
 from sklearn.metrics import confusion_matrix
 
+from logcreator.logcreator import Logcreator
+
 
 def plot_confusion_matrix(y_true, y_pred, classes,
                           normalize=False,
@@ -31,11 +33,11 @@ def plot_confusion_matrix(y_true, y_pred, classes,
     # classes = classes[unique_labels(y_true, y_pred)]
     if normalize:
         cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
-        print("Normalized confusion matrix")
+        Logcreator.info("Normalized confusion matrix")
     else:
-        print('Confusion matrix, without normalization')
+        Logcreator.info('Confusion matrix, without normalization')
 
-    print(cm)
+    Logcreator.info(cm)
 
     fig, ax = plt.subplots()
     im = ax.imshow(cm, interpolation='nearest', cmap=cmap)
@@ -72,7 +74,7 @@ def one_hot_to_class(y, num_classes):
 
 
 def evaluation_metrics(y_true, y_predicted, text):
-    print("\n---------", text, "---------\n")
+    Logcreator.info("\n---------", text, "---------\n")
     classes = np.unique(y_true)
     # confusion matrix
     plot_confusion_matrix(y_true, y_predicted, classes=classes,
@@ -87,9 +89,9 @@ def evaluation_metrics(y_true, y_predicted, text):
     # plot_individual_cm(y_true, y_predicted)
 
     # report
-    print(text, 'report')
-    print(classification_report(y_true, y_predicted))
+    Logcreator.info(text, 'report')
+    Logcreator.info(classification_report(y_true, y_predicted))
 
     # balanced accuracy score
     score = balanced_accuracy_score(y_true, y_predicted)
-    print("bas_score on", text, "split:", score)
+    Logcreator.info("bas_score on", text, "split:", score)

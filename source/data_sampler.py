@@ -2,11 +2,13 @@ from imblearn.combine import SMOTEENN, SMOTETomek
 from imblearn.over_sampling import RandomOverSampler, SMOTE, ADASYN
 from imblearn.under_sampling import AllKNN, ClusterCentroids, RandomUnderSampler, NearMiss
 
+from logcreator.logcreator import Logcreator
+
 
 class DataSampling:
     def __init__(self, over_sampling_method):
         self.over_sampling_method = over_sampling_method
-        print("\nData Sampling:", self.over_sampling_method)
+        Logcreator.info("\nData Sampling:", self.over_sampling_method)
 
     def sampling(self, X, y):
         # oversampling
@@ -41,7 +43,7 @@ class DataSampling:
 
         x_sampled, y_sampled = sampler.fit_resample(X, y)
 
-        print("\nResampled shape\n", x_sampled.shape)
+        Logcreator.info("\nResampled shape\n", x_sampled.shape)
 
         return x_sampled, y_sampled
 

@@ -155,7 +155,7 @@ class Classifier:
 
     @staticmethod
     def do_grid_search(model, nr_folds, parameters, X, y):
-        print("\nStarting Grid Search\n")
+        Logcreator.info("\nStarting Grid Search\n")
 
         skf = StratifiedKFold(shuffle=True, n_splits=nr_folds, random_state=41)
 
@@ -173,14 +173,14 @@ class Classifier:
         grid_search.fit(X, y)
 
         # Best estimator
-        print("Best estimator from GridSearch: {}".format(grid_search.best_estimator_))
-        print("Best alpha found: {}".format(grid_search.best_params_))
-        print("Best training-score with mse loss: {}".format(grid_search.best_score_))
+        Logcreator.info("Best estimator from GridSearch: {}".format(grid_search.best_estimator_))
+        Logcreator.info("Best alpha found: {}".format(grid_search.best_params_))
+        Logcreator.info("Best training-score with mse loss: {}".format(grid_search.best_score_))
 
         results = pd.DataFrame(grid_search.cv_results_)
         results.sort_values(by='rank_test_score', inplace=True)
 
-        print(
+        Logcreator.info(
             results[['params', 'mean_test_score', 'std_test_score', 'mean_train_score', 'std_train_score']].head(30))
 
         best_model = grid_search.best_estimator_
@@ -194,8 +194,8 @@ class Classifier:
         class_weights = list(class_weight.compute_class_weight(class_weight='balanced',
                                                                classes=classes,
                                                                y=y['y']))
-        print("\nClass weights:\n", pd.DataFrame(class_weights))
+        Logcreator.info("\nClass weights:\n", pd.DataFrame(class_weights))
 
-        print("\nSamples per group before classification\n", y.groupby("y")["y"].count())
+        Logcreator.info("\nSamples per group before classification\n", y.groupby("y")["y"].count())
 
         return class_weights, dict(zip(range(len(class_weights)), class_weights))
