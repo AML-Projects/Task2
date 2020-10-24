@@ -57,15 +57,15 @@ if __name__ == "__main__":
         engine.search(x_train, y_train, x_test)
     else:
         # Train
-        classifier, x_test_split, y_test_split, x_train_split, y_train_split, search_results = engine.train(
+        classifier, x_test_split, y_test_split, x_train_split, y_train_split, x_test_transformed, search_results = engine.train(
             x_train=x_train, y_train=y_train, x_test=x_test)
+
         # Predict
-        if not args.handin:
-            engine.predict(clf=classifier, x_test_split=x_test_split, y_test_split=y_test_split, x_test_index=None,
-                           x_train_split=x_train_split, y_train_split=y_train_split)
-        else:
-            engine.predict(clf=classifier, x_test_split=x_test_split, y_test_split=None, x_test_index=x_test.index,
-                           x_train_split=x_train_split, y_train_split=y_train_split)
+        engine.predict(clf=classifier, x_test_split=x_test_split, y_test_split=y_test_split,
+                       x_train_split=x_train_split, y_train_split=y_train_split)
+
+        if args.handin:
+            engine.output_submission(clf=classifier, x_test=x_test_transformed, x_test_index=x_test.index)
 
     end = time.time()
     Logcreator.info("Finished processing in %d [s]." % (end - start))

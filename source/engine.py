@@ -245,9 +245,9 @@ class Engine:
         best_model = clf.fit(X=x_train_split, y=y_train_split)
         results = clf.getFitResults()
 
-        return best_model, x_validation_split, y_validation_split, x_train_split, y_train_split, results
+        return best_model, x_validation_split, y_validation_split, x_train_split, y_train_split, x_test, results
 
-    def predict(self, clf, x_test_split, y_test_split, x_test_index, x_train_split, y_train_split):
+    def predict(self, clf, x_test_split, y_test_split, x_train_split, y_train_split):
         y_predict_train = clf.predict(x_train_split)
 
         evaluation.evaluation_metrics(y_train_split, y_predict_train, "Train")
@@ -257,9 +257,8 @@ class Engine:
 
             evaluation.evaluation_metrics(y_test_split, y_predict_validation, "Validation")
 
-        else:
-            # TODO move to different method
-            predicted_values = clf.predict(x_test_split)
-            output_csv = pd.concat([pd.Series(x_test_index.values), pd.Series(predicted_values.flatten())], axis=1)
-            output_csv.columns = ["id", "y"]
-            pd.DataFrame.to_csv(output_csv, os.path.join(Configuration.output_directory, 'submit.csv'), index=False)
+    def output_submission(self, clf, x_test, x_test_index):
+        predicted_values = clf.predict(x_test)
+        output_csv = pd.concat([pd.Series(x_test_index.values), pd.Series(predicted_values.flatten())], axis=1)
+        output_csv.columns = ["id", "y"]
+        pd.DataFrame.to_csv(output_csv, os.path.join(Configuration.output_directory, 'submit.csv'), index=False)
