@@ -243,8 +243,9 @@ class Engine:
         clf_dict = self.get_serach_params('classifier')
         clf = Classifier(**clf_dict)
         best_model = clf.fit(X=x_train_split, y=y_train_split)
+        results = clf.getFitResults()
 
-        return best_model, x_validation_split, y_validation_split, x_train_split, y_train_split, {}
+        return best_model, x_validation_split, y_validation_split, x_train_split, y_train_split, results
 
     def predict(self, clf, x_test_split, y_test_split, x_test_index, x_train_split, y_train_split):
         y_predict_train = clf.predict(x_train_split)

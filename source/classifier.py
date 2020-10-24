@@ -21,14 +21,6 @@ from tensorflow.python.keras.optimizer_v2.nadam import Nadam
 from logcreator.logcreator import Logcreator
 
 
-def xgb_classifier(x_train, y_train, weights):
-    model = xgb.XGBClassifier(objective='multi:softmax', max_depth=1, num_class=3, random_state=41)
-
-    model.fit(x_train, y_train.values.ravel(), sample_weight=weights)
-
-    return model
-
-
 def baseline_model(nr_features):
     model = Sequential()
     model.add(Dense(128, input_dim=nr_features,
@@ -90,12 +82,14 @@ def neural_network(x, y, class_weights, nr_features):
 class Classifier:
     def __init__(self, classifier):
         self.classifier = classifier
+        self.results = {}
         Logcreator.info(self.classifier)
 
-    def fit(self, X, y):
+    def getModelAndParams(self, y):
         class_weights, class_weights_dict = self.compute_class_weights(y)
 
         params = {}
+        fit_params = {}
 
         if self.classifier == "BalancedRandomForestClassifier":
             model = BalancedRandomForestClassifier(n_estimators=100, random_state=0)
@@ -116,12 +110,20 @@ class Classifier:
             model = RUSBoostClassifier(n_estimators=200, algorithm='SAMME.R', random_state=0)
 
         elif self.classifier == "xgb":
+            model = xgb.XGBClassifier(objective='multi:softmax', max_depth=1, num_class=3, random_state=41)
+
+            params['objective'] = ['multi:softmax']
+            # setting max_depth to high results in overfitting
+            params['max_depth'] = [4, 6]
+            params['min_child_weight'] = [1, 3]
+            # subsampling of rows: lower values of subsample can prevent overfitting
+            params['subsample'] = [i / 10. for i in range(8, 11)]
+
             weights = y.copy()
             for i in range(0, len(class_weights)):
                 weights.loc[weights.y == i] = class_weights[i]
 
-            model = xgb_classifier(X, y, weights)
-            return model
+            fit_params['sample_weight'] = weights
 
         elif self.classifier == "LogisticRegression":
             model = LogisticRegression(penalty='l2',
@@ -136,29 +138,65 @@ class Classifier:
             params['C'] = [1]
             params['kernel'] = ['rbf', 'linear', 'poly']
 
-        elif self.classifier == "NN":
+        else:
+            raise ValueError("Model not existing")
+
+        return model, params, fit_params
+
+    def fit(self, X, y):
+        class_weights, class_weights_dict = self.compute_class_weights(y)
+
+        if self.classifier == "NN":
             # y to one hot encoding
             y = tf.keras.utils.to_categorical(y, 3)
 
             nr_features = X.shape[1]
             model = neural_network(X, y, class_weights_dict, nr_features)
 
-            return model
+            return model, {}
         else:
-            raise ValueError("Model not existing")
+            model, model_param, fit_param = self.getModelAndParams(y)
 
         nr_folds = math.floor(math.sqrt(X.shape[0]) / 2)
 
-        best_model, results = self.do_grid_search(model, nr_folds, parameters=params, X=X, y=y.values.ravel())
+        best_model, self.results = self.do_grid_search(model, nr_folds, parameters=model_param, fit_parameter=fit_param,
+                                                       X=X,
+                                                       y=y.values.ravel())
 
         return best_model
 
+    def getFitResults(self):
+        return self.results
+
     @staticmethod
-    def do_grid_search(model, nr_folds, parameters, X, y):
+    def do_grid_search(model, nr_folds, parameters, fit_parameter, X, y):
         Logcreator.info("\nStarting Grid Search\n")
 
-        skf = StratifiedKFold(shuffle=True, n_splits=nr_folds, random_state=41)
+        grid_search = Classifier.getGridSearchInstance(model, nr_folds, parameters)
 
+        grid_search.fit(X, y, **fit_parameter)
+
+        results = Classifier.eavluate_grid_search(grid_search)
+
+        best_model = grid_search.best_estimator_
+
+        return best_model, results
+
+    @staticmethod
+    def eavluate_grid_search(grid_search):
+        # Best estimator
+        Logcreator.info("Best estimator from GridSearch: {}".format(grid_search.best_estimator_))
+        Logcreator.info("Best alpha found: {}".format(grid_search.best_params_))
+        Logcreator.info("Best training-score with mse loss: {}".format(grid_search.best_score_))
+        results = pd.DataFrame(grid_search.cv_results_)
+        results.sort_values(by='rank_test_score', inplace=True)
+        Logcreator.info(
+            results[['params', 'mean_test_score', 'std_test_score', 'mean_train_score', 'std_train_score']].head(30))
+        return results
+
+    @staticmethod
+    def getGridSearchInstance(model, nr_folds, parameters):
+        skf = StratifiedKFold(shuffle=True, n_splits=nr_folds, random_state=41)
         grid_search = GridSearchCV(model, parameters,
                                    scoring='balanced_accuracy',
                                    # use every cpu thread
@@ -169,23 +207,7 @@ class Classifier:
                                    # Return train score to check for overfitting
                                    return_train_score=True,
                                    verbose=1)
-
-        grid_search.fit(X, y)
-
-        # Best estimator
-        Logcreator.info("Best estimator from GridSearch: {}".format(grid_search.best_estimator_))
-        Logcreator.info("Best alpha found: {}".format(grid_search.best_params_))
-        Logcreator.info("Best training-score with mse loss: {}".format(grid_search.best_score_))
-
-        results = pd.DataFrame(grid_search.cv_results_)
-        results.sort_values(by='rank_test_score', inplace=True)
-
-        Logcreator.info(
-            results[['params', 'mean_test_score', 'std_test_score', 'mean_train_score', 'std_train_score']].head(30))
-
-        best_model = grid_search.best_estimator_
-
-        return best_model, results
+        return grid_search
 
     @staticmethod
     def compute_class_weights(y):
