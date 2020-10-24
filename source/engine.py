@@ -18,6 +18,7 @@ from source.classifier import Classifier
 from source.configuration import Configuration
 from source.data_sampler import DataSampling
 from source.feature_extractor import FeatureExtractor
+from source.visualize import visualize_prediction
 
 
 class Engine:
@@ -251,11 +252,13 @@ class Engine:
         y_predict_train = clf.predict(x_train_split)
 
         evaluation.evaluation_metrics(y_train_split, y_predict_train, "Train")
+        visualize_prediction(x_train_split, y_train_split, y_predict_train, "Train")
 
         if y_test_split is not None:
             y_predict_validation = clf.predict(x_test_split)
 
             evaluation.evaluation_metrics(y_test_split, y_predict_validation, "Validation")
+            visualize_prediction(x_test_split, y_test_split, y_predict_validation, "Validation")
 
     def output_submission(self, clf, x_test, x_test_index):
         predicted_values = clf.predict(x_test)

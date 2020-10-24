@@ -7,6 +7,8 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.manifold import LocallyLinearEmbedding, TSNE, MDS, Isomap
 from sklearn.preprocessing import StandardScaler
 
+from source.visualize import plot_true_labels, subplot_components
+
 
 def visualize(x, y):
     """
@@ -70,23 +72,6 @@ def visualize(x, y):
     """
 
 
-def plot_true_labels(x, y, components, title="", save_img=True, interactive=False):
-    if interactive:
-        # pip install PyQt5
-        import matplotlib as mpl
-        mpl.use("Qt5Agg")
-
-    fig = plt.figure(figsize=(12, 12))
-    fig.suptitle(title, fontsize=20)
-    fig.set_dpi(150)
-
-    # plot ture values
-    y_pred = y.values.T
-    subplot_components(components, 111, "True labels", y_pred)
-    if save_img:
-        plt.savefig(fname="./img/extraction/" + title + ".png")
-
-
 def plot_predicted_clusters(x, y, components, clusterer, title="", interactive=True):
     if interactive:
         # pip install PyQt5
@@ -111,17 +96,3 @@ def plot_predicted_clusters(x, y, components, clusterer, title="", interactive=T
     subplot_components(components, 212, "Predicted on only the supplied components", y_pred)
 
 
-def subplot_components(components, plot_nr, plot_title, y_pred):
-    if components.shape[1] == 3:
-        ax = plt.subplot(plot_nr, projection='3d')
-        ax.autoscale(tight=True)
-        ax.scatter(components[:, 0], components[:, 1], components[:, 2], c=y_pred)
-        ax.elev = 65.0
-        ax.azim = 45.0
-        ax.set_zlabel('component 2')
-    else:
-        plt.subplot(plot_nr)
-        plt.scatter(components[:, 0], components[:, 1], c=y_pred)
-    plt.xlabel('component 0')
-    plt.ylabel('component 1')
-    plt.title(plot_title)
