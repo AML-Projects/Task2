@@ -48,7 +48,7 @@ class DataSampling:
         return x_sampled, y_sampled
 
     def fit_resample(self, X, y):
-        if self.sampling_method == "None":
+        if self.sampling_method is None:
             return X, y
         return self.sampling(X, y)
 
