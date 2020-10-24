@@ -1,4 +1,5 @@
 from sklearn.base import TransformerMixin
+from sklearn.cross_decomposition import CCA, PLSRegression
 from sklearn.decomposition import FastICA
 from sklearn.kernel_approximation import Nystroem
 from sklearn.manifold import LocallyLinearEmbedding, TSNE
@@ -24,10 +25,16 @@ class FeatureExtractor(TransformerMixin):
             self.transformer = FastICA(n_components=self.n_components, random_state=41)
 
         elif self.method == "LLE":
-            self.transformer = LocallyLinearEmbedding(n_components=self.n_components)
+            self.transformer = LocallyLinearEmbedding(n_components=self.n_components, random_state=41)
 
         elif self.method == "TSNE":
-            self.transformer = TSNE(n_components=self.n_components, verbose=1, perplexity=40, n_iter=300)
+            self.transformer = TSNE(n_components=self.n_components, random_state=41)
+
+        elif self.method == "CCA":
+            self.transformer = CCA(n_components=2)
+
+        elif self.method == "PLSRegression":
+            self.transformer = PLSRegression(n_components=self.n_components)
 
         else:
             return self
