@@ -114,10 +114,21 @@ class Classifier:
 
             params['objective'] = ['multi:softmax']
             # setting max_depth to high results in overfitting
-            params['max_depth'] = [4, 6]
-            params['min_child_weight'] = [1, 3]
+            params['max_depth'] = [3, 4, 5]
             # subsampling of rows: lower values of subsample can prevent overfitting
-            params['subsample'] = [i / 10. for i in range(8, 11)]
+            params['subsample'] = [i / 10. for i in range(7, 11)]
+
+            extensive = False
+            if extensive:
+                params['learning_rate'] = [0.1, 0.2, 0.3]
+                params['n_estimators'] = [50, 100, 150]
+                params['gamma'] = [0, 0.1, 0.2]
+                params['min_child_weight'] = [0, 0.5, 1]
+                params['max_delta_step'] = [0]
+                params['colsample_bytree'] = [0.6, 0.8, 1]
+                params['colsample_bylevel'] = [1]
+                params['reg_alpha'] = [0, 1e-2, 1, 1e1]
+                params['reg_lambda'] = [0, 1e-2, 1, 1e1]
 
             weights = y.copy()
             for i in range(0, len(class_weights)):
