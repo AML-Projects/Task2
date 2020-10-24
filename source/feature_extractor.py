@@ -11,7 +11,7 @@ class FeatureExtractor(TransformerMixin):
         self.method = method
         self.n_components = 200
         self.transformer = None
-        Logcreator.info("\nData Sampling:", self.method)
+        Logcreator.info("\nFeature Extraction:", self.method)
 
     def fit(self, X, y):
         if self.method == "Nystroem":
