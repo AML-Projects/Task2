@@ -1,0 +1,16 @@
+{
+    "environment": {
+        "name" : "describe the run",
+        "output_path": "trainings",
+        "log_file" : "logs.txt"
+    },
+    "feature_selector": {
+		"method" : "None"
+    },
+	"data_sampler": {
+		"over_sampling_method": "random",
+	},
+	"classifier": {
+		"classifier": "xgb",
+	},
+}

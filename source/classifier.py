@@ -18,6 +18,8 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils import class_weight
 from tensorflow.python.keras.optimizer_v2.nadam import Nadam
 
+from logcreator.logcreator import Logcreator
+
 
 def xgb_classifier(x_train, y_train, weights):
     model = xgb.XGBClassifier(objective='multi:softmax', max_depth=1, num_class=3, random_state=41)
@@ -88,6 +90,7 @@ def neural_network(x, y, class_weights, nr_features):
 class Classifier:
     def __init__(self, classifier):
         self.classifier = classifier
+        Logcreator.info(self.classifier)
 
     def fit(self, X, y):
         class_weights, class_weights_dict = self.compute_class_weights(y)
