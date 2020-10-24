@@ -7,9 +7,9 @@ from sklearn.metrics import balanced_accuracy_score, multilabel_confusion_matrix
 from sklearn.metrics import confusion_matrix
 from sklearn.preprocessing import StandardScaler, Normalizer
 
-import data_preprocessing
-from classifier import Classifier
-from feature_selector import FeatureSelector
+from source.classifier import Classifier
+from source.data_sampler import DataSampling
+from source.feature_selector import FeatureSelector
 
 
 def plot_individual_cm(y_true, y_predicted):
@@ -178,7 +178,7 @@ if __name__ == '__main__':
 
     # --------------------------------------------------------------------------------------------------------------
     # Sampling
-    ds = data_preprocessing.DataSampling("None")
+    ds = DataSampling("None")
     x_train, y_train = ds.fit_resample(x_train, y_train)
 
     # --------------------------------------------------------------------------------------------------------------

@@ -1,3 +1,5 @@
+from collections import Counter
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -6,9 +8,9 @@ from sklearn.metrics import ConfusionMatrixDisplay
 from sklearn.metrics import balanced_accuracy_score, multilabel_confusion_matrix, classification_report
 from sklearn.metrics import confusion_matrix
 from sklearn.preprocessing import StandardScaler, Normalizer
-from collections import Counter
-import data_preprocessing
-from classifier import Classifier
+
+from source.classifier import Classifier
+from source.data_sampler import DataSampling
 
 
 def plot_individual_cm(y_true, y_predicted):
@@ -166,7 +168,7 @@ if __name__ == '__main__':
 
     # --------------------------------------------------------------------------------------------------------------
     # # Sampling
-    ds = data_preprocessing.DataSampling("SMOTEENN")
+    ds = DataSampling("SMOTEENN")
     # x_train, y_train = ds.fit_resample(x_train, y_train)
     x_train_s, y_train_s = ds.fit_resample(x_train, y_train)
     # --------------------------------------------------------------------------------------------------------------
@@ -213,10 +215,9 @@ if __name__ == '__main__':
     y_predict_val3 = model3.predict(x_validation)
     y_predict_val33 = model33.predict(x_validation)
     y_predict_val_tmp = np.vstack((y_predict_val1, y_predict_val2, y_predict_val3, y_predict_val11, y_predict_val33)).T
-    tmp =  map(lambda curr_row: Counter(curr_row).most_common(1)[0][0], y_predict_val_tmp)
+    tmp = map(lambda curr_row: Counter(curr_row).most_common(1)[0][0], y_predict_val_tmp)
     y_predict_val = list(tmp)
     y_predict_validation = np.array(y_predict_val)
-
 
     # y_predict_validation = best_model.predict(x_validation)
     #
@@ -234,7 +235,7 @@ if __name__ == '__main__':
         print("begin fit to whole train set")
         train_data_x_s, train_data_y_s = ds.fit_resample(train_data_x.values, train_data_y)
 
-        #Fit Models
+        # Fit Models
         clf = Classifier("SVC")
         # model = clf.fit(X=x_train, y=y_train)
         model1 = clf.fit(X=train_data_x.values, y=train_data_y)
@@ -265,8 +266,5 @@ if __name__ == '__main__':
         output_csv = pd.concat([id_test, pd.Series(y_predict)], axis=1)
         output_csv.columns = ["id", "y"]
         pd.DataFrame.to_csv(output_csv, "./trainings/submit_ensemble.csv", index=False)
-
-
-
 
         # output_submission(model=model, x_test=x_test, id_test=id_test )
