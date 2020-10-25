@@ -167,7 +167,7 @@ class Classifier:
             nr_features = X.shape[1]
             model = neural_network(X, y, class_weights_dict, nr_features)
 
-            return model, {}
+            return model
         else:
             model, model_param, fit_param = self.getModelAndParams(y)
 
