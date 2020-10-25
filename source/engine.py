@@ -9,8 +9,10 @@ import itertools
 import os
 
 import pandas as pd
+from numpy.random import seed
 from sklearn import model_selection
 from sklearn.preprocessing import StandardScaler, Normalizer, MinMaxScaler
+from tensorflow.python.framework.random_seed import set_random_seed
 
 from logcreator.logcreator import Logcreator
 from source import evaluation
@@ -23,8 +25,11 @@ from source.visualize import visualize_prediction, visualize_true_labels
 
 
 class Engine:
-    def __init__(self):
+    def __init__(self, fix_random_seeds=True):
         Logcreator.info("Training initialized")
+        if fix_random_seeds:
+            seed(1)
+            set_random_seed(1)
 
     def search(self, x_train, y_train, x_test):
 
