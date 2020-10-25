@@ -6,6 +6,28 @@ from sklearn.decomposition import PCA
 from source.configuration import Configuration
 
 
+def visualize_true_labels(x, y_true, title='', save_img=False, interactive=False):
+    pca = PCA(n_components=3)
+
+    components = pca.fit_transform(x)
+
+    if interactive:
+        # pip install PyQt5
+        import matplotlib as mpl
+        mpl.use("Qt5Agg")
+
+    fig = plt.figure(figsize=(12, 12))
+    fig.suptitle(title + ": True vs Predicted", fontsize=20)
+    fig.set_dpi(100)
+
+    # plot ture values
+    subplot_components(components, 111, "True labels", y_true, elev=45.0)
+
+    plt.show()
+    if save_img:
+        plt.savefig(os.path.join(Configuration.output_directory, title + "_True" + ".png"))
+
+
 def visualize_prediction(x, y_true, y_pred, title='', save_img=False, interactive=False):
     pca = PCA(n_components=3)
 
