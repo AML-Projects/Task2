@@ -10,15 +10,16 @@ import os
 
 import pandas as pd
 from sklearn import model_selection
-from sklearn.preprocessing import StandardScaler, Normalizer
+from sklearn.preprocessing import StandardScaler, Normalizer, MinMaxScaler
 
 from logcreator.logcreator import Logcreator
 from source import evaluation
+from source.autoencoder import AutoEncoder
 from source.classifier import Classifier
 from source.configuration import Configuration
 from source.data_sampler import DataSampling
 from source.feature_extractor import FeatureExtractor
-from source.visualize import visualize_prediction
+from source.visualize import visualize_prediction, visualize_true_labels
 
 
 class Engine:
@@ -191,6 +192,7 @@ class Engine:
             model_selection.train_test_split(x_train, y_train,
                                              test_size=0.2,
                                              stratify=y_train,
+                                             shuffle=True,
                                              random_state=41)
 
         Logcreator.info("\nTrain samples per group\n", y_train_split.groupby("y")["y"].count().values)
@@ -210,6 +212,25 @@ class Engine:
         x_validation_split = scaler.transform(x_validation_split)
         x_test = scaler.transform(x_test)
         Logcreator.info("\ntrain shape", x_train_split.shape)
+
+        # --------------------------------------------------------------------------------------------------------------
+        # Feature Extraction
+        # TODO move to feature extraction
+        auto_encoder = False
+        if auto_encoder:
+            scaler = MinMaxScaler(feature_range=(-1, 1))
+
+            x_train_split = scaler.fit_transform(x_train_split)
+            x_validation_split = scaler.transform(x_validation_split)
+            x_test = scaler.transform(x_test)
+
+            ae = AutoEncoder()
+            x_train_split = ae.fit_transform(x_train_split, y_train_split)
+            x_validation_split = ae.transform(x_validation_split)
+            x_test = ae.transform(x_test)
+
+            visualize_true_labels(x_train_split, y_train_split, "Train")
+            visualize_true_labels(x_validation_split, y_validation_split, "Validation")
 
         # --------------------------------------------------------------------------------------------------------------
         # Feature Selection
