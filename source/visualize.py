@@ -17,7 +17,7 @@ def visualize_true_labels(x, y_true, title='', save_img=False, interactive=False
         mpl.use("Qt5Agg")
 
     fig = plt.figure(figsize=(12, 12))
-    fig.suptitle(title + ": True vs Predicted", fontsize=20)
+    fig.suptitle(title + ": PCA True labels", fontsize=20)
     fig.set_dpi(100)
 
     # plot ture values
