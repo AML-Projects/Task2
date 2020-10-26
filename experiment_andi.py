@@ -1,125 +1,29 @@
 from collections import Counter
 
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from sklearn.utils import class_weight
+import os
+from sklearn.datasets import make_classification
+from sklearn.linear_model import LogisticRegression
+from sklearn.multiclass import OneVsRestClassifier
+from matplotlib import pyplot as plt
+from sklearn.decomposition import PCA
+from sklearn.svm import SVC
 from sklearn import model_selection
 from sklearn.metrics import ConfusionMatrixDisplay
 from sklearn.metrics import balanced_accuracy_score, multilabel_confusion_matrix, classification_report
 from sklearn.metrics import confusion_matrix
-from sklearn.preprocessing import StandardScaler, Normalizer
+from sklearn.preprocessing import StandardScaler, Normalizer, RobustScaler
+from imblearn.combine import SMOTEENN, SMOTETomek
+from imblearn.over_sampling import RandomOverSampler, SMOTE, ADASYN
+from imblearn.under_sampling import AllKNN, ClusterCentroids, RandomUnderSampler, NearMiss
+from sklearn.model_selection import StratifiedKFold, GridSearchCV, RandomizedSearchCV
+from source.visualize import visualize_prediction
+from source import evaluation
 
 from source.classifier import Classifier
 from source.data_sampler import DataSampling
-
-
-def plot_individual_cm(y_true, y_predicted):
-    cm = multilabel_confusion_matrix(y_true, y_predicted, labels=[0, 1, 2])
-
-    for i in range(cm.shape[0]):
-        disp = ConfusionMatrixDisplay(confusion_matrix=cm[i],
-                                      display_labels=[i, "rest"])
-        disp = disp.plot()
-    plt.show()
-
-
-def output_submission(model, x_test, id_test):
-    # make predictions
-    predict = model.predict(x_test)
-    predict = one_hot_to_class(predict, 3)
-    # output
-    output_csv = pd.concat([id_test, pd.Series(predict)], axis=1)
-    output_csv.columns = ["id", "y"]
-    pd.DataFrame.to_csv(output_csv, "./trainings/submit.csv", index=False)
-
-
-def plot_confusion_matrix(y_true, y_pred, classes,
-                          normalize=False,
-                          title=None,
-                          cmap=plt.cm.Greens):
-    """
-    This function prints and plots the confusion matrix.
-    Normalization can be applied by setting `normalize=True`.
-    https://scikit-learn.org/0.21/auto_examples/model_selection/plot_confusion_matrix.html
-    """
-    if not title:
-        if normalize:
-            title = 'Normalized confusion matrix'
-        else:
-            title = 'Confusion matrix, without normalization'
-
-    # check if arrays are one hot encoded
-    y_true = one_hot_to_class(y_true, len(np.unique(classes)))
-    y_pred = one_hot_to_class(y_pred, len(np.unique(classes)))
-
-    # Compute confusion matrix
-    cm = confusion_matrix(y_true, y_pred)
-    # Only use the labels that appear in the data
-    # classes = classes[unique_labels(y_true, y_pred)]
-    if normalize:
-        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
-        print("Normalized confusion matrix")
-    else:
-        print('Confusion matrix, without normalization')
-
-    print(cm)
-
-    fig, ax = plt.subplots()
-    im = ax.imshow(cm, interpolation='nearest', cmap=cmap)
-    ax.figure.colorbar(im, ax=ax)
-    # We want to show all ticks...
-    ax.set(xticks=np.arange(cm.shape[1]),
-           yticks=np.arange(cm.shape[0]),
-           # ... and label them with the respective list entries
-           xticklabels=classes, yticklabels=classes,
-           title=title,
-           ylabel='True label',
-           xlabel='Predicted label')
-
-    # Rotate the tick labels and set their alignment.
-    plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
-             rotation_mode="anchor")
-
-    # Loop over data dimensions and create text annotations.
-    fmt = '.2f' if normalize else 'd'
-    thresh = cm.max() / 2.
-    for i in range(cm.shape[0]):
-        for j in range(cm.shape[1]):
-            ax.text(j, i, format(cm[i, j], fmt),
-                    ha="center", va="center",
-                    color="white" if cm[i, j] > thresh else "black")
-    fig.tight_layout()
-    return ax
-
-
-def one_hot_to_class(y, num_classes):
-    if len(y.shape) > 1 and y.shape[1] == num_classes:
-        y = np.argmax(y, axis=1)
-    return y
-
-
-def evaluation_metrics(y_true, y_predicted, text):
-    print("\n---------", text, "---------\n")
-    classes = np.unique(y_true)
-    # confusion matrix
-    plot_confusion_matrix(y_true, y_predicted, classes=classes,
-                          title=text + ' - Confusion matrix', normalize=True)
-    plt.show()
-
-    # convert from one hot encoding to class labels if needed
-    number_classes = len(classes)
-    y_true = one_hot_to_class(y_true, num_classes=number_classes)
-    y_predicted = one_hot_to_class(y_predicted, num_classes=number_classes)
-
-    # plot_individual_cm(y_true, y_predicted)
-
-    # report
-    print(text, 'report')
-    print(classification_report(y_true, y_predicted))
-
-    # balanced accuracy score
-    score = balanced_accuracy_score(y_true, y_predicted)
-    print("bas_score on", text, "split:", score)
 
 
 if __name__ == '__main__':
@@ -140,131 +44,115 @@ if __name__ == '__main__':
     pd.set_option('display.width', None)
     pd.set_option('display.max_colwidth', None)
 
+    print("Train-Data Shpae: " + str(train_data_x.shape))
+    print("Test-Data Shape: " + str(x_test.shape))
+
     # --------------------------------------------------------------------------------------------------------------
     # Split
-    x_train, x_validation, y_train, y_validation = \
-        model_selection.train_test_split(train_data_x, train_data_y,
-                                         test_size=0.2,
-                                         stratify=train_data_y,
-                                         random_state=41)
+    # x_train, x_test, y_train, y_test = \
+    #     model_selection.train_test_split(train_data_x, train_data_y,
+    #                                      test_size=0.2,
+    #                                      stratify=train_data_y,
+    #                                      random_state=41)
 
-    print("\nTrain samples per group\n", y_train.groupby("y")["y"].count().values)
-    print("\nValidation samples per group\n", y_validation.groupby("y")["y"].count().values)
+    #print("\nTrain samples per group\n", train_data_x.groupby("y")["y"].count().values)
+    print("\nValidation samples per group\n", train_data_y.groupby("y")["y"].count().values)
 
     # reset all indexes
-    x_train.reset_index(drop=True, inplace=True)
-    x_validation.reset_index(drop=True, inplace=True)
-    y_train.reset_index(drop=True, inplace=True)
-    y_validation.reset_index(drop=True, inplace=True)
+    train_data_x.reset_index(drop=True, inplace=True)
+    train_data_y.reset_index(drop=True, inplace=True)
+    test_data.reset_index(drop=True, inplace=True)
+
+    pca = PCA(n_components=100)
+    components = pca.fit_transform(train_data_x)
+
+    for i in range(1,10):
+
+        fig = plt.figure(figsize=(12, 12))
+        fig.suptitle("PCA of Training data", fontsize=20)
+        fig.set_dpi(100)
+        classes = ['c0', 'c1', 'c2']
+        plt.scatter(components[:, 0], components[:, i], c=train_data_y.to_numpy())
+        cb = plt.colorbar()
+        # loc = np.arange(0, max(train_data_y), max(train_data_y) / float(len(classes)))
+        cb.set_ticks([0, 1, 2])
+        cb.set_ticklabels(classes)
+        plt.xlabel('component 0')
+
+        plt.ylabel('component ' + str(i))
+        plt.show()
 
     # --------------------------------------------------------------------------------------------------------------
-    # Scaling
-    scaler = StandardScaler()
+    # Split
+    train_data_x, x_test_split, train_data_y, y_test_split = \
+        model_selection.train_test_split(train_data_x, train_data_y, test_size=0.2, stratify=train_data_y, random_state=41)
 
-    x_train = scaler.fit_transform(x_train)
-    x_validation = scaler.transform(x_validation)
-    x_test = scaler.transform(x_test)
-    print("\ntrain shape", x_train.shape)
+
+
+
 
     # --------------------------------------------------------------------------------------------------------------
     # # Sampling
-    ds = DataSampling("SMOTEENN")
-    # x_train, y_train = ds.fit_resample(x_train, y_train)
-    x_train_s, y_train_s = ds.fit_resample(x_train, y_train)
+    #train_data_x, train_data_y = SMOTEENN(n_jobs=-1, random_state=41).fit_resample(train_data_x, train_data_y)
+    #train_data_x, train_data_y = RandomOverSampler(random_state=41).fit_resample(train_data_x, train_data_y)
+    #train_data_x, train_data_y = SMOTE(n_jobs=-1, random_state=41).fit_resample(train_data_x, train_data_y)
+    #train_data_x, train_data_y = ADASYN(n_jobs=-1, random_state=41).fit_resample(train_data_x, train_data_y)
+    #train_data_x, train_data_y = RandomUnderSampler(random_state=0).fit_resample(train_data_x, train_data_y)
+    train_data_x, train_data_y = ClusterCentroids(random_state=41).fit_resample(train_data_x, train_data_y)
+    train_data_x, train_data_y = AllKNN(sampling_strategy='not minority', n_jobs=-1).fit_resample(train_data_x, train_data_y)
+    train_data_x, train_data_y = SMOTETomek(n_jobs=-1, random_state=41).fit_resample(train_data_x, train_data_y)
+    print("\n Trainset samples per group\n", train_data_y.groupby("y")["y"].count().values)
+    print("\n Testset samples per group\n", y_test_split.groupby("y")["y"].count().values)
     # --------------------------------------------------------------------------------------------------------------
-    # Normalize samples?
-    normalize_samples = False
-    if normalize_samples:
-        norm = Normalizer()
-        x_train = norm.fit_transform(x_train)
-        x_validation = norm.transform(x_validation)
-        x_test = norm.transform(x_test)
+    # Scaling
+    scaler = RobustScaler()
+    #
+    train_data_x = scaler.fit_transform(train_data_x)
+    x_test_split = scaler.transform(x_test_split)
+    test_data = scaler.transform(x_test)
+    print("\ntrain shape", train_data_x.shape)
 
     # --------------------------------------------------------------------------------------------------------------
     # Fit model
 
-    clf = Classifier("SVC")
-    # model = clf.fit(X=x_train, y=y_train)
-    model1 = clf.fit(X=x_train, y=y_train)
-    model11 = clf.fit(X=x_train_s, y=y_train_s)
+    #Compute class weights:
+    classes = np.unique(train_data_y['y'])
+    class_weights = list(class_weight.compute_class_weight(class_weight='balanced', classes=classes, y=train_data_y['y']))
+    print("\nClass weights:\n", pd.DataFrame(class_weights))
+    print("\nSamples per group before classification\n", train_data_y.groupby("y")["y"].count())
+    class_weights_dict = dict(zip(range(len(class_weights)), class_weights))
 
-    clf_xgb = Classifier("xgb")
-    model2 = clf_xgb.fit(X=x_train_s, y=y_train_s)
 
-    clf_lr = Classifier("BalancedRandomForestClassifier")
-    model3 = clf_lr.fit(X=x_train, y=y_train)
-    model33 = clf_lr.fit(X=x_train_s, y=y_train_s)
 
-    # --------------------------------------------------------------------------------------------------------------
-    # Evaluation
-    # best_model = model
+    #Do prediction with svc
+    model = SVC(C=1, class_weight=class_weights_dict, random_state=41, decision_function_shape='ovo')
 
-    y_predict_train1 = model1.predict(x_train)
-    y_predict_train11 = model11.predict(x_train)
-    y_predict_train2 = model2.predict(x_train)
-    y_predict_train3 = model3.predict(x_train)
-    y_predict_train33 = model33.predict(x_train)
-    y_predict_train_tmp = np.vstack((y_predict_train1, y_predict_train2, y_predict_train3, y_predict_train11, y_predict_train33)).T
-    tmp = map(lambda curr_row: Counter(curr_row).most_common(1)[0][0], y_predict_train_tmp)
-    y_predict_train = list(tmp)
-    y_predict_train = np.array(y_predict_train)
 
-    y_predict_val1 = model1.predict(x_validation)
-    y_predict_val11 = model11.predict(x_validation)
-    y_predict_val2 = model2.predict(x_validation)
-    y_predict_val3 = model3.predict(x_validation)
-    y_predict_val33 = model33.predict(x_validation)
-    y_predict_val_tmp = np.vstack((y_predict_val1, y_predict_val2, y_predict_val3, y_predict_val11, y_predict_val33)).T
-    tmp = map(lambda curr_row: Counter(curr_row).most_common(1)[0][0], y_predict_val_tmp)
-    y_predict_val = list(tmp)
-    y_predict_validation = np.array(y_predict_val)
 
-    # y_predict_validation = best_model.predict(x_validation)
-    #
-    evaluation_metrics(y_train, y_predict_train, "Train ensemble without up/down sampling")
-    evaluation_metrics(y_validation, y_predict_validation, "Validation ensemble without up/down sampling")
-    # #
-    # if False:
-    #     train_data_y = tf.keras.utils.to_categorical(train_data_y, 3)
-    #     best_model.fit(train_data_x, train_data_y)
-    #     output_submission(best_model, x_test, id_test)
-    #
-    # # --------------------------------------------------------------------------------------------------------------
-    # # Hand in
-    if True:
-        print("begin fit to whole train set")
-        train_data_x_s, train_data_y_s = ds.fit_resample(train_data_x.values, train_data_y)
 
-        # Fit Models
-        clf = Classifier("SVC")
-        # model = clf.fit(X=x_train, y=y_train)
-        model1 = clf.fit(X=train_data_x.values, y=train_data_y)
-        model11 = clf.fit(X=train_data_x_s, y=train_data_y_s)
 
-        clf_xgb = Classifier("xgb")
-        model2 = clf_xgb.fit(X=train_data_x_s, y=train_data_y_s)
 
-        clf_lr = Classifier("BalancedRandomForestClassifier")
-        model3 = clf_lr.fit(X=train_data_x.values, y=train_data_y)
-        model33 = clf_lr.fit(X=train_data_x_s, y=train_data_y_s)
-        print("begin predict whole test set")
-        # Predict each model
-        y_predict_1 = model1.predict(x_test)
-        y_predict_11 = model11.predict(x_test)
-        y_predict_2 = model2.predict(x_test)
-        y_predict_3 = model3.predict(x_test)
-        y_predict_33 = model33.predict(x_test)
-        # Predict make into one
-        y_predict_tmp = np.vstack(
-            (y_predict_1, y_predict_2, y_predict_3, y_predict_11, y_predict_33)).T
-        tmp = map(lambda curr_row: Counter(curr_row).most_common(1)[0][0], y_predict_tmp)
-        y_predict = list(tmp)
-        y_predict = np.array(y_predict)
+    params = {}
+    fit_params = {}
+    params['C'] = [1]
+    params['kernel'] = ['rbf', 'linear', 'poly']
 
-        # model = clf.fit(X=train_data_x, y=train_data_y)
-        print("make submission csv file")
-        output_csv = pd.concat([id_test, pd.Series(y_predict)], axis=1)
-        output_csv.columns = ["id", "y"]
-        pd.DataFrame.to_csv(output_csv, "./trainings/submit_ensemble.csv", index=False)
+    skf = StratifiedKFold(shuffle=True, n_splits=5, random_state=41)
+    searcher = GridSearchCV(estimator=model, param_grid=params, scoring='balanced_accuracy', n_jobs=-1, refit=True, cv=skf, return_train_score=True, verbose=1)
+    searcher.fit(train_data_x, train_data_y)
 
-        # output_submission(model=model, x_test=x_test, id_test=id_test )
+    # Best estimator
+    print("Best estimator from GridSearch: {}".format(searcher.best_estimator_))
+    print("Best alpha found: {}".format(searcher.best_params_))
+    print("Best training-score with mse loss: {}".format(searcher.best_score_))
+    results = pd.DataFrame(searcher.cv_results_)
+    results.sort_values(by='rank_test_score', inplace=True)
+    print(results[['params', 'mean_test_score', 'std_test_score', 'mean_train_score', 'std_train_score']].head(30))
+    best_model = searcher.best_estimator_
+
+    y_predict = best_model.predict(x_test_split)
+
+    evaluation.evaluation_metrics(y_test_split, y_predict, "Test")
+    visualize_prediction(x_test_split, y_test_split.to_numpy(), y_predict, "Test")
+
+
