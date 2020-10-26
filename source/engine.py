@@ -14,6 +14,7 @@ from sklearn import model_selection
 from sklearn.preprocessing import StandardScaler, Normalizer, MinMaxScaler
 from tensorflow.python.framework.random_seed import set_random_seed
 
+from helpers import argumenthelper
 from logcreator.logcreator import Logcreator
 from source import evaluation
 from source.autoencoder import AutoEncoder
@@ -193,7 +194,13 @@ class Engine:
 
         # --------------------------------------------------------------------------------------------------------------
         # Split
-        x_train_split, x_validation_split, y_train_split, y_validation_split = \
+        if argumenthelper.get_args().handin:
+            x_train_split = x_train
+            y_train_split = y_train
+            x_test_split = x_test
+            y_test_split = None
+        else:
+            x_train_split, x_test_split, y_train_split, y_test_split = \
             model_selection.train_test_split(x_train, y_train,
                                              test_size=0.2,
                                              stratify=y_train,
@@ -201,21 +208,22 @@ class Engine:
                                              random_state=41)
 
         Logcreator.info("\nTrain samples per group\n", y_train_split.groupby("y")["y"].count().values)
-        Logcreator.info("\nValidation samples per group\n", y_validation_split.groupby("y")["y"].count().values)
+        if y_test_split is not None:
+            Logcreator.info("\nTest samples per group\n", y_test_split.groupby("y")["y"].count().values)
 
         # reset all indexes
         x_train_split.reset_index(drop=True, inplace=True)
-        x_validation_split.reset_index(drop=True, inplace=True)
+        x_test_split.reset_index(drop=True, inplace=True)
         y_train_split.reset_index(drop=True, inplace=True)
-        y_validation_split.reset_index(drop=True, inplace=True)
+        if y_test_split != None:
+            y_test_split.reset_index(drop=True, inplace=True)
 
         # --------------------------------------------------------------------------------------------------------------
         # Scaling
         scaler = StandardScaler()
 
         x_train_split = scaler.fit_transform(x_train_split)
-        x_validation_split = scaler.transform(x_validation_split)
-        x_test = scaler.transform(x_test)
+        x_test_split = scaler.transform(x_test_split)
         Logcreator.info("\ntrain shape", x_train_split.shape)
 
         # --------------------------------------------------------------------------------------------------------------
@@ -243,8 +251,7 @@ class Engine:
         fs = FeatureExtractor(**fs_dict)
 
         x_train_split = fs.fit_transform(x_train_split, y_train_split)
-        x_validation_split = fs.transform(x_validation_split)
-        x_test = fs.transform(x_test)
+        x_test_split = fs.transform(x_test_split)
 
         Logcreator.info("\ntrain shape", x_train_split.shape)
 
@@ -262,8 +269,7 @@ class Engine:
         if normalize_samples:
             norm = Normalizer()
             x_train_split = norm.fit_transform(x_train_split)
-            x_validation_split = norm.transform(x_validation_split)
-            x_test = norm.transform(x_test)
+            x_test_split = norm.transform(x_test_split)
 
         # --------------------------------------------------------------------------------------------------------------
         # Fit model
@@ -272,7 +278,7 @@ class Engine:
         best_model = clf.fit(X=x_train_split, y=y_train_split)
         results = clf.getFitResults()
 
-        return best_model, x_validation_split, y_validation_split, x_train_split, y_train_split, x_test, results
+        return best_model, x_test_split, y_test_split, x_train_split, y_train_split, results
 
     def predict(self, clf, x_test_split, y_test_split, x_train_split, y_train_split):
         y_predict_train = clf.predict(x_train_split)
