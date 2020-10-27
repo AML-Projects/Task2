@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas
 from sklearn.metrics import ConfusionMatrixDisplay
 from sklearn.metrics import balanced_accuracy_score, multilabel_confusion_matrix, classification_report
 from sklearn.metrics import confusion_matrix
@@ -78,6 +79,8 @@ def plot_confusion_matrix(y_true, y_pred, classes,
 
 def one_hot_to_class(y, num_classes):
     if len(y.shape) > 1 and y.shape[1] == num_classes:
+        if isinstance(y, pandas.DataFrame):
+            y = y.values
         y = np.argmax(y, axis=1)
     return y
 
