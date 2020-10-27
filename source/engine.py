@@ -215,7 +215,7 @@ class Engine:
         x_train_split.reset_index(drop=True, inplace=True)
         x_test_split.reset_index(drop=True, inplace=True)
         y_train_split.reset_index(drop=True, inplace=True)
-        if y_test_split != None:
+        if y_test_split is not None:
             y_test_split.reset_index(drop=True, inplace=True)
 
         # --------------------------------------------------------------------------------------------------------------
