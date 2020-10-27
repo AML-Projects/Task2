@@ -7,7 +7,7 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.manifold import LocallyLinearEmbedding, TSNE, MDS, Isomap
 from sklearn.preprocessing import StandardScaler
 
-from source.visualize import plot_true_labels, subplot_components
+from helpers.visualize import plot_true_labels, subplot_components
 
 
 def visualize(x, y):

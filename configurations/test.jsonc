@@ -8,11 +8,25 @@
 		"method" : "None",
         "n_components" : 200
     },
+	"scaler" : {
+		"name" : "robustscaler"
+	},
 	"data_sampler": {
-		"sampling_method": "None",
+		"sampling_method": "SMOTEENN",
 	},
 	"classifier": {
-		"classifier": "xgb",
+		"classifier": "SVC",
 		"random_search" : "False"
 	},
+	"search" : {
+		"data_sampler" : {
+			"sampling_method" : ["random", "SMOTE", "ADASYN", "RandomUnderSampler", "ClusterCentroids", "NearMiss", "AllKNN", "SMOTEENN", "SMOTETomek"]
+		},
+		"scaler" : {
+			"name" : ["robustscaler"]
+		},
+		"classifier" : {
+			"classifier" : ["SVC"]
+		}
+	}
 }

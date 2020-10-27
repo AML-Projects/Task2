@@ -148,9 +148,12 @@ class Classifier:
                                        random_state=0)
 
         elif self.classifier == "SVC":
-            model = SVC(C=1, class_weight=class_weights_dict, random_state=41)
-            params['C'] = [1]
-            params['kernel'] = ['rbf', 'linear', 'poly']
+            model = SVC(class_weight=class_weights_dict, random_state=41, decision_function_shape='ovo')
+            kernel = ['rbf']
+            gamma_range = np.logspace(-3, -3, 1)
+            c_range = np.logspace(2, 2, 1)
+            params = dict(gamma=gamma_range, kernel=kernel, C=c_range)
+
 
         else:
             raise ValueError("Model not existing")
@@ -171,8 +174,8 @@ class Classifier:
         else:
             model, model_param, fit_param = self.getModelAndParams(y)
 
-        nr_folds = math.floor(math.sqrt(X.shape[0]) / 3)
-
+        #nr_folds = math.floor(math.sqrt(X.shape[0]) / 3)
+        nr_folds = 10
         best_model, self.results = self.do_grid_search(model, nr_folds, parameters=model_param, fit_parameter=fit_param,
                                                        X=X,
                                                        y=y.values.ravel())

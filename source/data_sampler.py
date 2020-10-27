@@ -12,6 +12,7 @@ class DataSampling:
 
     def sampling(self, X, y):
         # oversampling
+        sampler = None
         if self.sampling_method == "random":
             sampler = RandomOverSampler(random_state=41)
 
@@ -52,9 +53,3 @@ class DataSampling:
             return X, y
         return self.sampling(X, y)
 
-
-def preprocess_data(x_train, y_train, x_val, y_val):
-    ds = DataSampling("ADASYN")
-    x_train, y_train = ds.fit_resample(x_train, y_train)
-
-    return x_train, y_train, x_val, y_val

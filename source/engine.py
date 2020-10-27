@@ -10,19 +10,17 @@ import os
 
 import pandas as pd
 from numpy.random import seed
-from sklearn import model_selection
-from sklearn.preprocessing import StandardScaler, Normalizer, MinMaxScaler
+from sklearn.preprocessing import Normalizer, MinMaxScaler
 from tensorflow.python.framework.random_seed import set_random_seed
-
-from helpers import argumenthelper
+from helpers import evaluation
 from logcreator.logcreator import Logcreator
-from source import evaluation
 from source.autoencoder import AutoEncoder
 from source.classifier import Classifier
 from source.configuration import Configuration
 from source.data_sampler import DataSampling
 from source.feature_extractor import FeatureExtractor
-from source.visualize import visualize_prediction, visualize_true_labels
+from helpers.visualize import visualize_prediction, visualize_true_labels
+from source.scaler import Scaler
 
 
 class Engine:
@@ -32,128 +30,102 @@ class Engine:
             seed(1)
             set_random_seed(1)
 
-    def search(self, x_train, y_train, x_test):
+    def search(self, x_train_split, y_train_split, x_test_split, y_test_split):
+        pd.set_option('display.max_rows', None)
+        pd.set_option('display.max_columns', None)
+        pd.set_option('display.width', None)
+        pd.set_option('display.max_colwidth', None)
 
-        imputer_par_list = self.get_serach_list('search.imputer')
-        outlier_par_list = self.get_serach_list('search.outlier')
-        feature_selector_par_list = self.get_serach_list('search.feature_selector')
-        normalizer_par_list = self.get_serach_list('search.normalizer')
-        regression_par_list = self.get_serach_list('search.regression')
+        data_sampler_par_list = self.get_search_list('search.data_sampler')
+        scaler_par_list = self.get_search_list('search.scaler')
+        classifier_par_list = self.get_search_list('search.classifier')
 
-        number_of_loops = len(imputer_par_list) * len(outlier_par_list) * len(feature_selector_par_list) \
-                          * len(normalizer_par_list) * len(regression_par_list)
+
+        number_of_loops = len(data_sampler_par_list) * len(scaler_par_list) * len(classifier_par_list)
 
         Logcreator.h1("Number of loops:", number_of_loops)
         loop_counter = 0
 
         # prepare out columns names
-        columns_out = ["Loop_counter", "R2 Score Test", "R2 Score Training"]
+        columns_out = ["Loop_counter", "BAS Score Test"]
         columns_out.extend(['params', 'mean_test_score', 'std_test_score', 'mean_train_score', 'std_train_score'])
         # combine all keys
-        columns_out.extend(['imputer_' + s for s in list(imputer_par_list[0].keys())])
-        columns_out.extend(['outlier_' + s for s in list(outlier_par_list[0].keys())])
-        columns_out.extend(['feature_selector_' + s for s in list(feature_selector_par_list[0].keys())])
-        columns_out.extend(['normalizer_' + s for s in list(normalizer_par_list[0].keys())])
-        columns_out.extend(['regression_' + s for s in list(regression_par_list[0].keys())])
+        columns_out.extend(['data_sampler_' + s for s in list(data_sampler_par_list[0].keys())])
+        columns_out.extend(['scaler_' + s for s in list(scaler_par_list[0].keys())])
+        columns_out.extend(['classifier_' + s for s in list(classifier_par_list[0].keys())])
 
         # create output dataframe
         results_out = pd.DataFrame(columns=columns_out)
         pd.DataFrame.to_csv(results_out, os.path.join(Configuration.output_directory, 'search_results.csv'),
                             index=False)
 
-        """
+
         try:
-            for imp_data in imputer_par_list:
+            for data_sampler_data in data_sampler_par_list:
 
-                imputer = Imputer(**imp_data)
-                x_train_imp, y_train_imp, x_test_imp = imputer.transform_custom(x_train=x_train,
-                                                                                y_train=y_train,
-                                                                                x_test=x_test)
+                ds = DataSampling(**data_sampler_data)
+                x_train_split, y_train_split = ds.fit_resample(x_train_split, y_train_split)
+                Logcreator.info("\n Trainset samples per group\n", y_train_split.groupby("y")["y"].count().values)
 
-                for out_data in outlier_par_list:
+                for scaler_data in scaler_par_list:
 
-                    outlier = Outliers(**out_data)
-                    x_train_out, y_train_out, x_test_out = outlier.transform_custom(x_train=x_train_imp,
-                                                                                    y_train=y_train_imp,
-                                                                                    x_test=x_test_imp)
+                    scaler = Scaler(**scaler_data)
+                    x_train_split, y_train_split, x_test_split = scaler.transform_custom(x_train=x_train_split,
+                                                                                          y_train=y_train_split,
+                                                                                          x_test=x_test_split)
 
-                    for feature_selector_data in feature_selector_par_list:
+                    for classifier_data in classifier_par_list:
+                        Logcreator.info("\n--------------------------------------")
+                        Logcreator.info("Iteration", loop_counter)
+                        Logcreator.info("Data_sampler", data_sampler_data)
+                        Logcreator.info("Scaler", scaler_data)
+                        Logcreator.info("Classifier", classifier_data)
+                        Logcreator.info("\n----------------------------------------")
 
-                        feature_selector = FeatureSelector(**feature_selector_data)
+                        #Train classifier
+                        clf = Classifier(**classifier_data)
+                        best_model = clf.fit(X=x_train_split, y=y_train_split)
+                        search_results = clf.getFitResults()
 
-                        x_train_fs, y_train_fs, x_test_fs = feature_selector.transform_custom(x_train=x_train_out,
-                                                                                              y_train=y_train_out,
-                                                                                              x_test=x_test_out)
+                        #Predict test data
+                        y_predict_test = best_model.predict(x_test_split)
+                        score_test = evaluation.evaluation_metrics(y_test_split, y_predict_test, "Test", False)
+                        Logcreator.info("BAS Score achieved on test set: {}".format(score_test))
+                        #visualize_prediction(x_test_split, y_test_split, y_predict_test, "Test")
 
-                        for normalizer_data in normalizer_par_list:
 
-                            normalizer = Normalizer(**normalizer_data)
+                        output = pd.DataFrame()
 
-                            x_train_norm, y_train_norm, x_test_norm = normalizer.transform_custom(x_train=x_train_fs,
-                                                                                                  y_train=y_train_fs,
-                                                                                                  x_test=x_test_fs)
+                        nrOfOutputRows = 5 if len(search_results) > 5 else len(search_results)
+                        for i in range(0,
+                                       nrOfOutputRows):  # append multiple rows of the grid search result, not just the best
+                            # update output
+                            output_row = list()
+                            output_row.append(loop_counter)
+                            output_row.append(score_test)
+                            output_row.extend(search_results[
+                                                  ['params', 'mean_test_score', 'std_test_score',
+                                                   'mean_train_score',
+                                                   'std_train_score']].iloc[i])
 
-                            for regression_data in regression_par_list:
-                                # TODO clean up output of current parameters
-                                Logcreator.info("\n--------------------------------------")
-                                Logcreator.info("Iteration", loop_counter)
-                                Logcreator.info("imputer", imp_data)
-                                Logcreator.info("outlier", out_data)
-                                Logcreator.info("feature_selector", feature_selector_data)
-                                Logcreator.info("normalizer", normalizer_data)
-                                Logcreator.info("regression", regression_data)
-                                Logcreator.info("\n----------------------------------------")
+                            output_row.extend(list(data_sampler_data.values()))
+                            output_row.extend(list(scaler_data.values()))
+                            output_row.extend(list(classifier_data.values()))
+                            output = output.append(pd.DataFrame(output_row, index=results_out.columns).T)
 
-                                regressor = Regression(**regression_data)
-                                best_model, x_test_split, y_test_split, x_train_split, y_train_split, search_results = \
-                                    regressor.fit_predict(
-                                        x_train=x_train_norm, y_train=y_train_norm,
-                                        x_test=x_test_norm, handin=False)
-
-                                predicted_values = best_model.predict(x_train_split)
-                                score_train = r2_score(y_true=y_train_split, y_pred=predicted_values)
-                                Logcreator.info("R2 Score achieved on training set: {}".format(score_train))
-
-                                predicted_values = best_model.predict(x_test_split)
-                                score_test = r2_score(y_true=y_test_split, y_pred=predicted_values)
-                                Logcreator.info("R2 Score achieved on test set: {}".format(score_test))
-
-                                output = pd.DataFrame()
-                                for i in range(0,
-                                               5):  # append multiple rows of the grid search result, not just the best
-                                    # update output
-                                    # TODO not so nice because we only take the values, so the order has to be correct;
-                                    #  Maybe converte everything to one dictionary and then append the dictionary to the pandas dataframe;
-                                    #  But works for now as long as the order is correct
-                                    output_row = list()
-                                    output_row.append(loop_counter)
-                                    output_row.append(score_test)
-                                    output_row.append(score_train)
-                                    output_row.extend(search_results[
-                                                          ['params', 'mean_test_score', 'std_test_score',
-                                                           'mean_train_score',
-                                                           'std_train_score']].iloc[i])
-
-                                    output_row.extend(list(imp_data.values()))
-                                    output_row.extend(list(out_data.values()))
-                                    output_row.extend(list(feature_selector_data.values()))
-                                    output_row.extend(list(normalizer_data.values()))
-                                    output_row.extend(list(regression_data.values()))
-                                    output = output.append(pd.DataFrame(output_row, index=results_out.columns).T)
-
-                                # Write to csv
-                                pd.DataFrame.to_csv(output,
-                                                    os.path.join(Configuration.output_directory, 'search_results.csv'),
-                                                    index=False, mode='a', header=False)
-                                # Increase loop counter
-                                loop_counter = loop_counter + 1
+                        # Write to csv
+                        pd.DataFrame.to_csv(output,
+                                            os.path.join(Configuration.output_directory, 'search_results.csv'),
+                                            index=False, mode='a', header=False)
+                        # Increase loop counter
+                        loop_counter = loop_counter + 1
             
         finally:
             Logcreator.info("Search finished")
-        """
 
-    def get_serach_list(self, config_name):
-        param_dict = self.get_serach_params(config_name)
+
+    def get_search_list(self, config_name):
+        param_dict = self.get_search_params(config_name)
         keys, values = zip(*param_dict.items())
 
         search_list = list()
@@ -164,7 +136,7 @@ class Engine:
 
         return search_list
 
-    def get_serach_params(self, config_name):
+    def get_search_params(self, config_name):
         """
         Not so nice to parse the data from the file to a dictionary...
         Parameters have to have the exact name of the actual class parameter!
@@ -186,46 +158,27 @@ class Engine:
 
         return param_dict
 
-    def train(self, x_train, y_train, x_test):
+    def train(self, x_train_split, y_train_split, x_test_split):
         pd.set_option('display.max_rows', None)
         pd.set_option('display.max_columns', None)
         pd.set_option('display.width', None)
         pd.set_option('display.max_colwidth', None)
 
+
         # --------------------------------------------------------------------------------------------------------------
-        # Split
-        if argumenthelper.get_args().handin:
-            x_train_split = x_train
-            y_train_split = y_train
-            x_test_split = x_test
-            y_test_split = None
-        else:
-            x_train_split, x_test_split, y_train_split, y_test_split = \
-            model_selection.train_test_split(x_train, y_train,
-                                             test_size=0.2,
-                                             stratify=y_train,
-                                             shuffle=True,
-                                             random_state=41)
-
-        Logcreator.info("\nTrain samples per group\n", y_train_split.groupby("y")["y"].count().values)
-        if y_test_split is not None:
-            Logcreator.info("\nTest samples per group\n", y_test_split.groupby("y")["y"].count().values)
-
-        # reset all indexes
-        x_train_split.reset_index(drop=True, inplace=True)
-        x_test_split.reset_index(drop=True, inplace=True)
-        y_train_split.reset_index(drop=True, inplace=True)
-        if y_test_split is not None:
-            y_test_split.reset_index(drop=True, inplace=True)
+        # Sampling
+        ds = DataSampling(sampling_method=Configuration.get('data_sampler.sampling_method'))
+        #ds_dict = self.get_serach_params('data_sampler')
+        #ds = DataSampling(ds)
+        x_train_split, y_train_split = ds.fit_resample(x_train_split, y_train_split)
+        Logcreator.info("\n Trainset samples per group\n", y_train_split.groupby("y")["y"].count().values)
 
         # --------------------------------------------------------------------------------------------------------------
         # Scaling
-        scaler = StandardScaler()
-
-        x_train_split = scaler.fit_transform(x_train_split)
-        x_test_split = scaler.transform(x_test_split)
-        Logcreator.info("\ntrain shape", x_train_split.shape)
-
+        scaler = Scaler(name=Configuration.get('scaler.name'))
+        x_train_split, y_train_split, x_test_split = scaler.transform_custom(x_train=x_train_split,
+                                                                                           y_train=y_train_split,
+                                                                                           x_test=x_test_split)
         # --------------------------------------------------------------------------------------------------------------
         # Feature Extraction
         # TODO move to feature extraction
@@ -234,34 +187,30 @@ class Engine:
             scaler = MinMaxScaler(feature_range=(-1, 1))
 
             x_train_split = scaler.fit_transform(x_train_split)
-            x_validation_split = scaler.transform(x_validation_split)
-            x_test = scaler.transform(x_test)
+            x_test_split = scaler.transform(x_test_split)
 
             ae = AutoEncoder()
             x_train_split = ae.fit_transform(x_train_split, y_train_split)
-            x_validation_split = ae.transform(x_validation_split)
-            x_test = ae.transform(x_test)
+            x_test_split = ae.transform(x_test_split)
 
             visualize_true_labels(x_train_split, y_train_split, "Train")
-            visualize_true_labels(x_validation_split, y_validation_split, "Validation")
+            #visualize_true_labels(x_test_split, y_test_split, "Validation")
 
         # --------------------------------------------------------------------------------------------------------------
         # Feature Selection
-        fs_dict = self.get_serach_params('feature_selector')
-        fs = FeatureExtractor(**fs_dict)
+        featureselection = False
+        if featureselection:
+            fs_dict = self.get_search_params('feature_selector')
+            fs = FeatureExtractor(**fs_dict)
 
-        x_train_split = fs.fit_transform(x_train_split, y_train_split)
-        x_test_split = fs.transform(x_test_split)
+            x_train_split = fs.fit_transform(x_train_split, y_train_split)
+            x_test_split = fs.transform(x_test_split)
 
-        Logcreator.info("\ntrain shape", x_train_split.shape)
+            Logcreator.info("\ntrain shape", x_train_split.shape)
 
         # visualize(x_train, y_train)
 
-        # --------------------------------------------------------------------------------------------------------------
-        # Sampling
-        ds_dict = self.get_serach_params('data_sampler')
-        ds = DataSampling(**ds_dict)
-        x_train_split, y_train_split = ds.fit_resample(x_train_split, y_train_split)
+
 
         # --------------------------------------------------------------------------------------------------------------
         # Normalize samples?
@@ -273,12 +222,11 @@ class Engine:
 
         # --------------------------------------------------------------------------------------------------------------
         # Fit model
-        clf_dict = self.get_serach_params('classifier')
-        clf = Classifier(**clf_dict)
+        clf = Classifier(classifier=Configuration.get('classifier.name'), random_search=Configuration.get('classifier.random_search'))
         best_model = clf.fit(X=x_train_split, y=y_train_split)
         results = clf.getFitResults()
 
-        return best_model, x_test_split, y_test_split, x_train_split, y_train_split, results
+        return best_model, x_test_split, x_train_split, y_train_split, results
 
     def predict(self, clf, x_test_split, y_test_split, x_train_split, y_train_split):
         y_predict_train = clf.predict(x_train_split)
@@ -287,10 +235,9 @@ class Engine:
         visualize_prediction(x_train_split, y_train_split, y_predict_train, "Train")
 
         if y_test_split is not None:
-            y_predict_validation = clf.predict(x_test_split)
-
-            evaluation.evaluation_metrics(y_test_split, y_predict_validation, "Validation")
-            visualize_prediction(x_test_split, y_test_split, y_predict_validation, "Validation")
+            y_predict_test = clf.predict(x_test_split)
+            evaluation.evaluation_metrics(y_test_split, y_predict_test, "Test")
+            visualize_prediction(x_test_split, y_test_split, y_predict_test, "Test")
 
     def output_submission(self, clf, x_test, x_test_index):
         predicted_values = clf.predict(x_test)

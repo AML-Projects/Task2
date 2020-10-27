@@ -4,7 +4,7 @@ from sklearn.preprocessing import StandardScaler, Normalizer
 
 from source.classifier import Classifier
 from source.data_sampler import DataSampling
-from source.evaluation import one_hot_to_class, evaluation_metrics
+from helpers.evaluation import one_hot_to_class, evaluation_metrics
 from source.feature_extractor import FeatureExtractor
 
 
@@ -98,8 +98,8 @@ if __name__ == '__main__':
     y_predict_train = best_model.predict(x_train)
     y_predict_validation = best_model.predict(x_validation)
 
-    evaluation_metrics(y_train, y_predict_train, "Train")
-    evaluation_metrics(y_validation, y_predict_validation, "Validation")
+    evaluation_metrics(y_train, y_predict_train, "Train", True)
+    evaluation_metrics(y_validation, y_predict_validation, "Validation", True)
 
     if False:
         # train_data_y = tf.keras.utils.to_categorical(train_data_y, 3)

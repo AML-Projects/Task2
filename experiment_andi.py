@@ -1,42 +1,22 @@
-from collections import Counter
-
-from source.configuration import Configuration
-from source.engine import Engine
-from logcreator.logcreator import Logcreator
-from helpers import argumenthelper
+from helpers import evaluation
 import numpy as np
-import os
 import time
 import argparse
-import pandas as pd
 import pandas as pd
 from sklearn.utils import class_weight
 import os
 from source.configuration import Configuration
-from source.engine import Engine
 from logcreator.logcreator import Logcreator
 from helpers import argumenthelper
-from sklearn.datasets import make_classification
-from sklearn.linear_model import LogisticRegression
-from sklearn.multiclass import OneVsRestClassifier
 from matplotlib import pyplot as plt
 from sklearn.decomposition import PCA
 from sklearn.svm import SVC
 from sklearn import model_selection
-from sklearn.metrics import ConfusionMatrixDisplay
-from sklearn.metrics import balanced_accuracy_score, multilabel_confusion_matrix, classification_report
-from sklearn.metrics import confusion_matrix
-from sklearn.preprocessing import StandardScaler, Normalizer, RobustScaler
-from imblearn.combine import SMOTEENN, SMOTETomek
-from imblearn.over_sampling import RandomOverSampler, SMOTE, ADASYN
-from imblearn.under_sampling import AllKNN, ClusterCentroids, RandomUnderSampler, NearMiss
-from sklearn.model_selection import StratifiedKFold, GridSearchCV, RandomizedSearchCV
-from source.visualize import visualize_prediction
-from source import evaluation
+from sklearn.preprocessing import RobustScaler
+from imblearn.combine import SMOTEENN
+from sklearn.model_selection import StratifiedKFold, GridSearchCV
 from matplotlib.colors import Normalize
 
-from source.classifier import Classifier
-from source.data_sampler import DataSampling
 
 class MidpointNormalize(Normalize):
 
@@ -173,7 +153,6 @@ if __name__ == '__main__':
     #kernel = ['rbf', 'linear', 'poly', 'sigmoid']
     #gamma_range = np.logspace(-9, 3,5)
     #c_range = np.logspace(-2, 10, 5)
-
     kernel = ['rbf']
     gamma_range = np.logspace(-3, -3, 1)
     c_range = np.logspace(2, 2, 1)
@@ -224,7 +203,7 @@ if __name__ == '__main__':
         pd.DataFrame.to_csv(output_csv, os.path.join(Configuration.output_directory, 'submit.csv'), index=False)
     else:
         y_predict = best_model.predict(x_test_split)
-        evaluation.evaluation_metrics(y_test_split, y_predict, "Test")
+        evaluation.evaluation_metrics(y_test_split, y_predict, "Test", True)
         #visualize_prediction(x_test_split, y_test_split.to_numpy(), y_predict, "Test")
 
 

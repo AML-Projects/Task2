@@ -9,7 +9,7 @@ import os
 import time
 import argparse
 import pandas as pd
-
+from sklearn import model_selection
 from source.configuration import Configuration
 from source.engine import Engine
 from logcreator.logcreator import Logcreator
@@ -51,15 +51,43 @@ if __name__ == "__main__":
     Logcreator.info("Shape of test samples: {}".format(x_test.shape))
     Logcreator.info(x_test.head())
 
+    #Prepare data for training
+    Logcreator.info("Train-Data Shpae: " + str(x_train.shape))
+    Logcreator.info("Test-Data Shape: " + str(x_test.shape))
+    Logcreator.info("\nValidation samples per group\n", y_train.groupby("y")["y"].count().values)
+    pd.set_option('display.max_rows', None)
+    pd.set_option('display.max_columns', None)
+    pd.set_option('display.width', None)
+    pd.set_option('display.max_colwidth', None)
+
+    #Split data into training and testdata
+    if args.handin:
+        x_train_split = x_train
+        y_train_split = y_train
+        x_test_split = x_test
+        y_test_split = None
+    else:
+        x_train_split, x_test_split, y_train_split, y_test_split = \
+            model_selection.train_test_split(x_train, y_train, test_size=0.2, stratify=y_train, shuffle=True, random_state=41)
+    Logcreator.info("\nTrain samples per group\n", y_train_split.groupby("y")["y"].count().values)
+    if y_test_split is not None:
+        Logcreator.info("\nTest samples per group\n", y_test_split.groupby("y")["y"].count().values)
+
+    # reset all indexes
+    x_train_split.reset_index(drop=True, inplace=True)
+    y_train_split.reset_index(drop=True, inplace=True)
+    x_test_split.reset_index(drop=True, inplace=True)
+    if y_test_split is not None:
+        y_test_split.reset_index(drop=True, inplace=True)
+
     engine = Engine()
     # Hyperparamter Search
     if args.hyperparamsearch:
-        engine.search(x_train, y_train, x_test)
+        engine.search(x_train_split, y_train_split, x_test_split, y_test_split)
     else:
-
         # Train
-        classifier, x_test_split, y_test_split, x_train_split, y_train_split, search_results = engine.train(
-            x_train=x_train, y_train=y_train, x_test=x_test)
+        classifier, x_test_split, x_train_split, y_train_split, search_results = engine.train(
+            x_train_split=x_train_split, y_train_split=y_train_split, x_test_split=x_test_split, )
 
         # Predict
         engine.predict(clf=classifier, x_test_split=x_test_split, y_test_split=y_test_split,

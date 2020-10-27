@@ -85,13 +85,14 @@ def one_hot_to_class(y, num_classes):
     return y
 
 
-def evaluation_metrics(y_true, y_predicted, text):
+def evaluation_metrics(y_true, y_predicted, text, showPlot=True):
     Logcreator.info("\n---------", text, "---------\n")
     classes = np.unique(y_true)
     # confusion matrix
     plot_confusion_matrix(y_true, y_predicted, classes=classes,
                           title=text + ' - Confusion matrix', normalize=True)
-    plt.show()
+    if showPlot:
+        plt.show()
 
     # convert from one hot encoding to class labels if needed
     number_classes = len(classes)
@@ -107,3 +108,4 @@ def evaluation_metrics(y_true, y_predicted, text):
     # balanced accuracy score
     score = balanced_accuracy_score(y_true, y_predicted)
     Logcreator.info("bas_score on", text, "split:", score)
+    return score
