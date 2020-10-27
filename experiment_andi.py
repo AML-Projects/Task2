@@ -21,10 +21,20 @@ from imblearn.under_sampling import AllKNN, ClusterCentroids, RandomUnderSampler
 from sklearn.model_selection import StratifiedKFold, GridSearchCV, RandomizedSearchCV
 from source.visualize import visualize_prediction
 from source import evaluation
+from matplotlib.colors import Normalize
 
 from source.classifier import Classifier
 from source.data_sampler import DataSampling
 
+class MidpointNormalize(Normalize):
+
+    def __init__(self, vmin=None, vmax=None, midpoint=None, clip=False):
+        self.midpoint = midpoint
+        Normalize.__init__(self, vmin, vmax, clip)
+
+    def __call__(self, value, clip=None):
+        x, y = [self.vmin, self.midpoint, self.vmax], [0, 0.5, 1]
+        return np.ma.masked_array(np.interp(value, x, y))
 
 if __name__ == '__main__':
     # --------------------------------------------------------------------------------------------------------------
@@ -61,12 +71,12 @@ if __name__ == '__main__':
     # reset all indexes
     train_data_x.reset_index(drop=True, inplace=True)
     train_data_y.reset_index(drop=True, inplace=True)
-    test_data.reset_index(drop=True, inplace=True)
+    x_test.reset_index(drop=True, inplace=True)
 
     pca = PCA(n_components=100)
     components = pca.fit_transform(train_data_x)
 
-    for i in range(1,10):
+    for i in range(1,1):
 
         fig = plt.figure(figsize=(12, 12))
         fig.suptitle("PCA of Training data", fontsize=20)
@@ -84,32 +94,33 @@ if __name__ == '__main__':
 
     # --------------------------------------------------------------------------------------------------------------
     # Split
-    train_data_x, x_test_split, train_data_y, y_test_split = \
+    handin = False
+    if not handin:
+        train_data_x, x_test_split, train_data_y, y_test_split = \
         model_selection.train_test_split(train_data_x, train_data_y, test_size=0.2, stratify=train_data_y, random_state=41)
-
-
-
+    else:
+        x_test_split = x_test
 
 
     # --------------------------------------------------------------------------------------------------------------
     # # Sampling
-    #train_data_x, train_data_y = SMOTEENN(n_jobs=-1, random_state=41).fit_resample(train_data_x, train_data_y)
+    train_data_x, train_data_y = SMOTEENN(n_jobs=-1, random_state=41).fit_resample(train_data_x, train_data_y)
     #train_data_x, train_data_y = RandomOverSampler(random_state=41).fit_resample(train_data_x, train_data_y)
     #train_data_x, train_data_y = SMOTE(n_jobs=-1, random_state=41).fit_resample(train_data_x, train_data_y)
     #train_data_x, train_data_y = ADASYN(n_jobs=-1, random_state=41).fit_resample(train_data_x, train_data_y)
     #train_data_x, train_data_y = RandomUnderSampler(random_state=0).fit_resample(train_data_x, train_data_y)
-    train_data_x, train_data_y = ClusterCentroids(random_state=41).fit_resample(train_data_x, train_data_y)
-    train_data_x, train_data_y = AllKNN(sampling_strategy='not minority', n_jobs=-1).fit_resample(train_data_x, train_data_y)
-    train_data_x, train_data_y = SMOTETomek(n_jobs=-1, random_state=41).fit_resample(train_data_x, train_data_y)
+    #train_data_x, train_data_y = ClusterCentroids(random_state=41).fit_resample(train_data_x, train_data_y)
+    #train_data_x, train_data_y = AllKNN(sampling_strategy='not minority', n_jobs=-1).fit_resample(train_data_x, train_data_y)
+    #train_data_x, train_data_y = SMOTETomek(n_jobs=-1, random_state=41).fit_resample(train_data_x, train_data_y)
     print("\n Trainset samples per group\n", train_data_y.groupby("y")["y"].count().values)
-    print("\n Testset samples per group\n", y_test_split.groupby("y")["y"].count().values)
+    if not handin:
+        print("\n Testset samples per group\n", y_test_split.groupby("y")["y"].count().values)
     # --------------------------------------------------------------------------------------------------------------
     # Scaling
     scaler = RobustScaler()
     #
     train_data_x = scaler.fit_transform(train_data_x)
     x_test_split = scaler.transform(x_test_split)
-    test_data = scaler.transform(x_test)
     print("\ntrain shape", train_data_x.shape)
 
     # --------------------------------------------------------------------------------------------------------------
@@ -125,34 +136,60 @@ if __name__ == '__main__':
 
 
     #Do prediction with svc
-    model = SVC(C=1, class_weight=class_weights_dict, random_state=41, decision_function_shape='ovo')
+    model = SVC(class_weight=class_weights_dict, random_state=41, decision_function_shape='ovo')
 
-
-
-
-
-
-    params = {}
-    fit_params = {}
-    params['C'] = [1]
-    params['kernel'] = ['rbf', 'linear', 'poly']
+    kernel = ['rbf', 'linear', 'poly']
+    gamma_range = np.logspace(-9, 3,13)
+    c_range = np.logspace(-2, 10, 13)
+    param_grid = dict(gamma=gamma_range, kernel=kernel, C=c_range)
 
     skf = StratifiedKFold(shuffle=True, n_splits=5, random_state=41)
-    searcher = GridSearchCV(estimator=model, param_grid=params, scoring='balanced_accuracy', n_jobs=-1, refit=True, cv=skf, return_train_score=True, verbose=1)
+    searcher = GridSearchCV(estimator=model, param_grid=param_grid, scoring='balanced_accuracy', n_jobs=-1, refit=True, cv=skf, return_train_score=True, verbose=1)
     searcher.fit(train_data_x, train_data_y)
 
     # Best estimator
     print("Best estimator from GridSearch: {}".format(searcher.best_estimator_))
-    print("Best alpha found: {}".format(searcher.best_params_))
+    print("Best parameters found: {}".format(searcher.best_params_))
     print("Best training-score with mse loss: {}".format(searcher.best_score_))
     results = pd.DataFrame(searcher.cv_results_)
     results.sort_values(by='rank_test_score', inplace=True)
     print(results[['params', 'mean_test_score', 'std_test_score', 'mean_train_score', 'std_train_score']].head(30))
     best_model = searcher.best_estimator_
 
-    y_predict = best_model.predict(x_test_split)
 
-    evaluation.evaluation_metrics(y_test_split, y_predict, "Test")
-    visualize_prediction(x_test_split, y_test_split.to_numpy(), y_predict, "Test")
+
+    scores = searcher.cv_results_['mean_test_score'].reshape(len(c_range),
+                                                         len(gamma_range))
+
+    # Draw heatmap of the validation accuracy as a function of gamma and C
+    #
+    # The score are encoded as colors with the hot colormap which varies from dark
+    # red to bright yellow. As the most interesting scores are all located in the
+    # 0.92 to 0.97 range we use a custom normalizer to set the mid-point to 0.92 so
+    # as to make it easier to visualize the small variations of score values in the
+    # interesting range while not brutally collapsing all the low score values to
+    # the same color.
+
+    plt.figure(figsize=(8, 6))
+    plt.subplots_adjust(left=.2, right=0.95, bottom=0.15, top=0.95)
+    plt.imshow(scores, interpolation='nearest', cmap=plt.cm.hot,
+               norm=MidpointNormalize(vmin=0.2, midpoint=0.92))
+    plt.xlabel('gamma')
+    plt.ylabel('C')
+    plt.colorbar()
+    plt.xticks(np.arange(len(gamma_range)), gamma_range, rotation=45)
+    plt.yticks(np.arange(len(c_range)), c_range)
+    plt.title('Validation accuracy')
+    plt.show()
+
+    if handin:
+        y_predict = best_model.predict(x_test_split)
+        output_csv = pd.concat([pd.Series(x_test.index.values), pd.Series(y_predict.flatten())], axis=1)
+        output_csv.columns = ["id", "y"]
+        pd.DataFrame.to_csv(output_csv, os.path.join("D:\\temp", 'submit.csv'), index=False)
+    else:
+        y_predict = best_model.predict(x_test_split)
+        evaluation.evaluation_metrics(y_test_split, y_predict, "Test")
+        visualize_prediction(x_test_split, y_test_split.to_numpy(), y_predict, "Test")
 
 
