@@ -1,9 +1,21 @@
 from collections import Counter
 
+from source.configuration import Configuration
+from source.engine import Engine
+from logcreator.logcreator import Logcreator
+from helpers import argumenthelper
 import numpy as np
+import os
+import time
+import argparse
+import pandas as pd
 import pandas as pd
 from sklearn.utils import class_weight
 import os
+from source.configuration import Configuration
+from source.engine import Engine
+from logcreator.logcreator import Logcreator
+from helpers import argumenthelper
 from sklearn.datasets import make_classification
 from sklearn.linear_model import LogisticRegression
 from sklearn.multiclass import OneVsRestClassifier
@@ -37,6 +49,27 @@ class MidpointNormalize(Normalize):
         return np.ma.masked_array(np.interp(value, x, y))
 
 if __name__ == '__main__':
+    global config
+    # Sample Config: --handin true --configuration D:\GitHub\AML\Task1\configurations\test.jsonc
+    parser = argparse.ArgumentParser(
+        description="Executes a training session.")
+    parser.add_argument('--configuration', default='./configurations/test.jsonc',
+                        type=str, help="Environment and training configuration.")
+    parser.add_argument('--workingdir', default=os.getcwd(), type=str,
+                        help="Working directory (default: current directory).")
+    parser.add_argument('--handin', default=False, type=argumenthelper.boolean_string,
+                        help="If set to true, whole trainingset used for training")
+    parser.add_argument('--hyperparamsearch', default=False, type=argumenthelper.boolean_string,
+                        help="If set to true, will perform hyper parameter search, else it will only fit the given model")
+
+    args = argumenthelper.parse_args(parser)
+    start = time.time()
+    Configuration.initialize(args.configuration, args.workingdir)
+    Logcreator.initialize()
+
+    Logcreator.h1("Task 02 - MRI Desease classification")
+    Logcreator.info("Environment: %s" % Configuration.get('environment.name'))
+
     # --------------------------------------------------------------------------------------------------------------
     # Read input data
     train_data_x = pd.read_csv("./data/X_train.csv")
@@ -54,8 +87,8 @@ if __name__ == '__main__':
     pd.set_option('display.width', None)
     pd.set_option('display.max_colwidth', None)
 
-    print("Train-Data Shpae: " + str(train_data_x.shape))
-    print("Test-Data Shape: " + str(x_test.shape))
+    Logcreator.info("Train-Data Shpae: " + str(train_data_x.shape))
+    Logcreator.info("Test-Data Shape: " + str(x_test.shape))
 
     # --------------------------------------------------------------------------------------------------------------
     # Split
@@ -66,7 +99,7 @@ if __name__ == '__main__':
     #                                      random_state=41)
 
     #print("\nTrain samples per group\n", train_data_x.groupby("y")["y"].count().values)
-    print("\nValidation samples per group\n", train_data_y.groupby("y")["y"].count().values)
+    Logcreator.info("\nValidation samples per group\n", train_data_y.groupby("y")["y"].count().values)
 
     # reset all indexes
     train_data_x.reset_index(drop=True, inplace=True)
@@ -94,8 +127,7 @@ if __name__ == '__main__':
 
     # --------------------------------------------------------------------------------------------------------------
     # Split
-    handin = False
-    if not handin:
+    if not args.handin:
         train_data_x, x_test_split, train_data_y, y_test_split = \
         model_selection.train_test_split(train_data_x, train_data_y, test_size=0.2, stratify=train_data_y, random_state=41)
     else:
@@ -112,16 +144,16 @@ if __name__ == '__main__':
     #train_data_x, train_data_y = ClusterCentroids(random_state=41).fit_resample(train_data_x, train_data_y)
     #train_data_x, train_data_y = AllKNN(sampling_strategy='not minority', n_jobs=-1).fit_resample(train_data_x, train_data_y)
     #train_data_x, train_data_y = SMOTETomek(n_jobs=-1, random_state=41).fit_resample(train_data_x, train_data_y)
-    print("\n Trainset samples per group\n", train_data_y.groupby("y")["y"].count().values)
-    if not handin:
-        print("\n Testset samples per group\n", y_test_split.groupby("y")["y"].count().values)
+    Logcreator.info("\n Trainset samples per group\n", train_data_y.groupby("y")["y"].count().values)
+    if not args.handin:
+        Logcreator.info("\n Testset samples per group\n", y_test_split.groupby("y")["y"].count().values)
     # --------------------------------------------------------------------------------------------------------------
     # Scaling
     scaler = RobustScaler()
     #
     train_data_x = scaler.fit_transform(train_data_x)
     x_test_split = scaler.transform(x_test_split)
-    print("\ntrain shape", train_data_x.shape)
+    Logcreator.info("\ntrain shape", train_data_x.shape)
 
     # --------------------------------------------------------------------------------------------------------------
     # Fit model
@@ -129,8 +161,8 @@ if __name__ == '__main__':
     #Compute class weights:
     classes = np.unique(train_data_y['y'])
     class_weights = list(class_weight.compute_class_weight(class_weight='balanced', classes=classes, y=train_data_y['y']))
-    print("\nClass weights:\n", pd.DataFrame(class_weights))
-    print("\nSamples per group before classification\n", train_data_y.groupby("y")["y"].count())
+    Logcreator.info("\nClass weights:\n", pd.DataFrame(class_weights))
+    Logcreator.info("\nSamples per group before classification\n", train_data_y.groupby("y")["y"].count())
     class_weights_dict = dict(zip(range(len(class_weights)), class_weights))
 
 
@@ -138,28 +170,29 @@ if __name__ == '__main__':
     #Do prediction with svc
     model = SVC(class_weight=class_weights_dict, random_state=41, decision_function_shape='ovo')
 
-    kernel = ['rbf', 'linear', 'poly']
-    gamma_range = np.logspace(-9, 3,13)
-    c_range = np.logspace(-2, 10, 13)
+    #kernel = ['rbf', 'linear', 'poly', 'sigmoid']
+    #gamma_range = np.logspace(-9, 3,5)
+    #c_range = np.logspace(-2, 10, 5)
+
+    kernel = ['rbf']
+    gamma_range = np.logspace(-3, -3, 1)
+    c_range = np.logspace(2, 2, 1)
     param_grid = dict(gamma=gamma_range, kernel=kernel, C=c_range)
 
-    skf = StratifiedKFold(shuffle=True, n_splits=5, random_state=41)
+    skf = StratifiedKFold(shuffle=True, n_splits=10, random_state=41)
     searcher = GridSearchCV(estimator=model, param_grid=param_grid, scoring='balanced_accuracy', n_jobs=-1, refit=True, cv=skf, return_train_score=True, verbose=1)
-    searcher.fit(train_data_x, train_data_y)
+    searcher.fit(train_data_x, train_data_y.values.ravel())
 
     # Best estimator
-    print("Best estimator from GridSearch: {}".format(searcher.best_estimator_))
-    print("Best parameters found: {}".format(searcher.best_params_))
-    print("Best training-score with mse loss: {}".format(searcher.best_score_))
+    Logcreator.info("Best estimator from GridSearch: {}".format(searcher.best_estimator_))
+    Logcreator.info("Best parameters found: {}".format(searcher.best_params_))
+    Logcreator.info("Best training-score with mse loss: {}".format(searcher.best_score_))
     results = pd.DataFrame(searcher.cv_results_)
     results.sort_values(by='rank_test_score', inplace=True)
-    print(results[['params', 'mean_test_score', 'std_test_score', 'mean_train_score', 'std_train_score']].head(30))
+    Logcreator.info(results[['params', 'mean_test_score', 'std_test_score', 'mean_train_score', 'std_train_score']].head(30))
     best_model = searcher.best_estimator_
 
-
-
-    scores = searcher.cv_results_['mean_test_score'].reshape(len(c_range),
-                                                         len(gamma_range))
+    scores = searcher.cv_results_['mean_test_score'].reshape(len(c_range), len(gamma_range), len(kernel))
 
     # Draw heatmap of the validation accuracy as a function of gamma and C
     #
@@ -170,26 +203,28 @@ if __name__ == '__main__':
     # interesting range while not brutally collapsing all the low score values to
     # the same color.
 
-    plt.figure(figsize=(8, 6))
-    plt.subplots_adjust(left=.2, right=0.95, bottom=0.15, top=0.95)
-    plt.imshow(scores, interpolation='nearest', cmap=plt.cm.hot,
-               norm=MidpointNormalize(vmin=0.2, midpoint=0.92))
-    plt.xlabel('gamma')
-    plt.ylabel('C')
-    plt.colorbar()
-    plt.xticks(np.arange(len(gamma_range)), gamma_range, rotation=45)
-    plt.yticks(np.arange(len(c_range)), c_range)
-    plt.title('Validation accuracy')
-    plt.show()
+    for i, kern in enumerate(kernel):
+        plt.figure(figsize=(8, 6))
+        plt.subplots_adjust(left=.2, right=0.95, bottom=0.15, top=0.95)
+        plt.imshow(scores[:, :, i], interpolation='nearest', cmap=plt.cm.hot,
+                   norm=MidpointNormalize(vmin=0.2, midpoint=0.92))
+        plt.xlabel('gamma')
+        plt.ylabel('C')
+        plt.colorbar()
+        plt.xticks(np.arange(len(gamma_range)), gamma_range, rotation=45)
+        plt.yticks(np.arange(len(c_range)), c_range)
+        plt.title('Validation accuracy ' + kern)
+        plt.show()
+        plt.savefig(os.path.join(Configuration.output_directory, "validation accuracy " + kern + "_HeatMap_C_gamma" + ".png"))
 
-    if handin:
+    if args.handin:
         y_predict = best_model.predict(x_test_split)
         output_csv = pd.concat([pd.Series(x_test.index.values), pd.Series(y_predict.flatten())], axis=1)
         output_csv.columns = ["id", "y"]
-        pd.DataFrame.to_csv(output_csv, os.path.join("D:\\temp", 'submit.csv'), index=False)
+        pd.DataFrame.to_csv(output_csv, os.path.join(Configuration.output_directory, 'submit.csv'), index=False)
     else:
         y_predict = best_model.predict(x_test_split)
         evaluation.evaluation_metrics(y_test_split, y_predict, "Test")
-        visualize_prediction(x_test_split, y_test_split.to_numpy(), y_predict, "Test")
+        #visualize_prediction(x_test_split, y_test_split.to_numpy(), y_predict, "Test")
 
 
