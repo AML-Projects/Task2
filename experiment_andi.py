@@ -116,7 +116,7 @@ if __name__ == '__main__':
 
     # --------------------------------------------------------------------------------------------------------------
     # # Sampling
-    train_data_x, train_data_y = SMOTEENN(n_jobs=-1, random_state=41).fit_resample(train_data_x, train_data_y)
+    #train_data_x, train_data_y = SMOTEENN(n_jobs=-1, random_state=41).fit_resample(train_data_x, train_data_y)
     #train_data_x, train_data_y = RandomOverSampler(random_state=41).fit_resample(train_data_x, train_data_y)
     #train_data_x, train_data_y = SMOTE(n_jobs=-1, random_state=41).fit_resample(train_data_x, train_data_y)
     #train_data_x, train_data_y = ADASYN(n_jobs=-1, random_state=41).fit_resample(train_data_x, train_data_y)
@@ -124,9 +124,9 @@ if __name__ == '__main__':
     #train_data_x, train_data_y = ClusterCentroids(random_state=41).fit_resample(train_data_x, train_data_y)
     #train_data_x, train_data_y = AllKNN(sampling_strategy='not minority', n_jobs=-1).fit_resample(train_data_x, train_data_y)
     #train_data_x, train_data_y = SMOTETomek(n_jobs=-1, random_state=41).fit_resample(train_data_x, train_data_y)
-    Logcreator.info("\n Trainset samples per group\n", train_data_y.groupby("y")["y"].count().values)
-    if not args.handin:
-        Logcreator.info("\n Testset samples per group\n", y_test_split.groupby("y")["y"].count().values)
+    # Logcreator.info("\n Trainset samples per group\n", train_data_y.groupby("y")["y"].count().values)
+    # if not args.handin:
+    #     Logcreator.info("\n Testset samples per group\n", y_test_split.groupby("y")["y"].count().values)
     # --------------------------------------------------------------------------------------------------------------
     # Scaling
     scaler = RobustScaler()
@@ -138,63 +138,69 @@ if __name__ == '__main__':
     # --------------------------------------------------------------------------------------------------------------
     # Fit model
 
-    #Compute class weights:
-    classes = np.unique(train_data_y['y'])
-    class_weights = list(class_weight.compute_class_weight(class_weight='balanced', classes=classes, y=train_data_y['y']))
-    Logcreator.info("\nClass weights:\n", pd.DataFrame(class_weights))
-    Logcreator.info("\nSamples per group before classification\n", train_data_y.groupby("y")["y"].count())
-    class_weights_dict = dict(zip(range(len(class_weights)), class_weights))
+    do_gridsearch = False
+    if do_gridsearch:
+        #Compute class weights:
+        classes = np.unique(train_data_y['y'])
+        class_weights = list(class_weight.compute_class_weight(class_weight='balanced', classes=classes, y=train_data_y['y']))
+        Logcreator.info("\nClass weights:\n", pd.DataFrame(class_weights))
+        Logcreator.info("\nSamples per group before classification\n", train_data_y.groupby("y")["y"].count())
+        class_weights_dict = dict(zip(range(len(class_weights)), class_weights))
+
+        #Do prediction with svc
+        model = SVC(gamma='scale', class_weight='balanced', random_state=None, shrinking=True, decision_function_shape='ovo')
 
 
+        kernel = ['rbf']
+        #gamma_range = np.logspace(-9, 3, 5)
+        #c_range = np.logspace(-2, 4, 7)
+        gamma_range = ['scale']
+        c_range = [1.0, 1.02, 1.04, 1.06, 1.08, 1.1, 1.12, 1.14, 1.16, 1.18, 1.2]
+        param_grid = dict(kernel=kernel, C=c_range)
 
-    #Do prediction with svc
-    model = SVC(class_weight=class_weights_dict, random_state=41, decision_function_shape='ovo')
+        skf = StratifiedKFold(shuffle=True, n_splits=10, random_state=41)
+        searcher = GridSearchCV(estimator=model, param_grid=param_grid, scoring='balanced_accuracy', n_jobs=-1, refit=True, cv=skf, return_train_score=True, verbose=1)
+        searcher.fit(train_data_x, train_data_y.values.ravel())
 
-    #kernel = ['rbf', 'linear', 'poly', 'sigmoid']
-    #gamma_range = np.logspace(-9, 3,5)
-    #c_range = np.logspace(-2, 10, 5)
-    kernel = ['rbf']
-    gamma_range = np.logspace(-3, -3, 1)
-    c_range = np.logspace(2, 2, 1)
-    param_grid = dict(gamma=gamma_range, kernel=kernel, C=c_range)
+        # Best estimator
+        Logcreator.info("Best estimator from GridSearch: {}".format(searcher.best_estimator_))
+        Logcreator.info("Best parameters found: {}".format(searcher.best_params_))
+        Logcreator.info("Best training-score with mse loss: {}".format(searcher.best_score_))
+        results = pd.DataFrame(searcher.cv_results_)
+        results.sort_values(by='rank_test_score', inplace=True)
+        Logcreator.info(results[['params', 'mean_test_score', 'std_test_score', 'mean_train_score', 'std_train_score']].head(30))
+        best_model = searcher.best_estimator_
 
-    skf = StratifiedKFold(shuffle=True, n_splits=10, random_state=41)
-    searcher = GridSearchCV(estimator=model, param_grid=param_grid, scoring='balanced_accuracy', n_jobs=-1, refit=True, cv=skf, return_train_score=True, verbose=1)
-    searcher.fit(train_data_x, train_data_y.values.ravel())
+        scores = searcher.cv_results_['mean_test_score'].reshape(len(c_range), len(gamma_range), len(kernel))
 
-    # Best estimator
-    Logcreator.info("Best estimator from GridSearch: {}".format(searcher.best_estimator_))
-    Logcreator.info("Best parameters found: {}".format(searcher.best_params_))
-    Logcreator.info("Best training-score with mse loss: {}".format(searcher.best_score_))
-    results = pd.DataFrame(searcher.cv_results_)
-    results.sort_values(by='rank_test_score', inplace=True)
-    Logcreator.info(results[['params', 'mean_test_score', 'std_test_score', 'mean_train_score', 'std_train_score']].head(30))
-    best_model = searcher.best_estimator_
+        # Draw heatmap of the validation accuracy as a function of gamma and C
+        #
+        # The score are encoded as colors with the hot colormap which varies from dark
+        # red to bright yellow. As the most interesting scores are all located in the
+        # 0.92 to 0.97 range we use a custom normalizer to set the mid-point to 0.92 so
+        # as to make it easier to visualize the small variations of score values in the
+        # interesting range while not brutally collapsing all the low score values to
+        # the same color.
 
-    scores = searcher.cv_results_['mean_test_score'].reshape(len(c_range), len(gamma_range), len(kernel))
+        for i, kern in enumerate(kernel):
+            plt.figure(figsize=(8, 6))
+            plt.subplots_adjust(left=.2, right=0.95, bottom=0.15, top=0.95)
+            plt.imshow(scores[:, :, i], interpolation='nearest', cmap=plt.cm.hot,
+                       norm=MidpointNormalize(vmin=0.2, midpoint=0.92))
+            plt.xlabel('gamma')
+            plt.ylabel('C')
+            plt.colorbar()
+            plt.xticks(np.arange(len(gamma_range)), gamma_range, rotation=45)
+            plt.yticks(np.arange(len(c_range)), c_range)
+            plt.title('Validation accuracy ' + kern)
+            plt.show()
+            plt.savefig(os.path.join(Configuration.output_directory, "validation accuracy " + kern + "_HeatMap_C_gamma" + ".png"))
+    else:
+        best_model = SVC(C=1.1, class_weight='balanced', gamma='scale', kernel='rbf', max_iter=-1, probability=True,
+                    random_state=None,
+                    shrinking=True, tol=0.001, verbose=False, decision_function_shape='ovo')
+        best_model.fit(train_data_x, train_data_y.values.ravel())
 
-    # Draw heatmap of the validation accuracy as a function of gamma and C
-    #
-    # The score are encoded as colors with the hot colormap which varies from dark
-    # red to bright yellow. As the most interesting scores are all located in the
-    # 0.92 to 0.97 range we use a custom normalizer to set the mid-point to 0.92 so
-    # as to make it easier to visualize the small variations of score values in the
-    # interesting range while not brutally collapsing all the low score values to
-    # the same color.
-
-    for i, kern in enumerate(kernel):
-        plt.figure(figsize=(8, 6))
-        plt.subplots_adjust(left=.2, right=0.95, bottom=0.15, top=0.95)
-        plt.imshow(scores[:, :, i], interpolation='nearest', cmap=plt.cm.hot,
-                   norm=MidpointNormalize(vmin=0.2, midpoint=0.92))
-        plt.xlabel('gamma')
-        plt.ylabel('C')
-        plt.colorbar()
-        plt.xticks(np.arange(len(gamma_range)), gamma_range, rotation=45)
-        plt.yticks(np.arange(len(c_range)), c_range)
-        plt.title('Validation accuracy ' + kern)
-        plt.show()
-        plt.savefig(os.path.join(Configuration.output_directory, "validation accuracy " + kern + "_HeatMap_C_gamma" + ".png"))
 
     if args.handin:
         y_predict = best_model.predict(x_test_split)
@@ -205,5 +211,3 @@ if __name__ == '__main__':
         y_predict = best_model.predict(x_test_split)
         evaluation.evaluation_metrics(y_test_split, y_predict, "Test", True)
         #visualize_prediction(x_test_split, y_test_split.to_numpy(), y_predict, "Test")
-
-
