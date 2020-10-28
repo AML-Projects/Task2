@@ -14,6 +14,13 @@ class DataSplitter:
         self.method = method
         pass
 
+    def visualize_helper(self, x, y=None, step_text="", log_text=""):
+        visualize_true_labels(x, y,
+                              title=step_text + "_" + log_text,
+                              save_img=True,
+                              save_location="../data/split/img",
+                              interactive=False)
+
     def split_data(self, x, y=None, log_text="", pca_boundary=0):
         """
         Split data according to PCA component 0 according to the supplied boundary.
@@ -27,7 +34,7 @@ class DataSplitter:
         scaler = RobustScaler()
         x_scaled = scaler.fit_transform(x)
 
-        visualize_true_labels(x, y_train, "Before split - " + log_text, interactive=False)
+        self.visualize_helper(x, y, "Before split", log_text)
 
         remove_rows = self.do_split(pca_boundary, x_scaled, log_text)
 
@@ -41,13 +48,13 @@ class DataSplitter:
             y1 = y.drop(index=self.remove_idx2)
             y2 = y.drop(index=self.remove_idx1)
 
-            visualize_true_labels(x1, y1, title="Split 1 - " + log_text)
-            visualize_true_labels(x2, y2, title="Split 2 - " + log_text)
+            self.visualize_helper(x1, y1, "Split 1", log_text)
+            self.visualize_helper(x2, y2, "Split 2", log_text)
 
             return x1, y1, x2, y2
 
-        visualize_true_labels(x1, y_true=None, title="Split 1 - " + log_text)
-        visualize_true_labels(x2, y_true=None, title="Split 2 - " + log_text)
+        self.visualize_helper(x1, None, "Split 1", log_text)
+        self.visualize_helper(x2, None, "Split 2", log_text)
 
         return x1, x2
 
@@ -57,7 +64,7 @@ class DataSplitter:
 
             y_cluster_pred = clusterer.fit_predict(x)
 
-            visualize_true_labels(x, y_cluster_pred, log_text + " Cluster split boundary", interactive=False)
+            self.visualize_helper(x, y_cluster_pred, "Cluster split boundary", log_text)
 
             remove_rows = (pd.DataFrame(y_cluster_pred) == 0)
         else:
@@ -115,7 +122,7 @@ if __name__ == '__main__':
     Logcreator.info("\nSplit 2 - Train\n", y2_train.groupby("y")["y"].count().values)
 
     # save to file
-    save_active = True
+    save_active = False
     if save_active:
         save_to_file(x1_train, 'x1_train.csv')
         save_to_file(y1_train, 'y1_train.csv')
