@@ -12,14 +12,15 @@ import pandas as pd
 from numpy.random import seed
 from sklearn.preprocessing import Normalizer, MinMaxScaler
 from tensorflow.python.framework.random_seed import set_random_seed
+
 from helpers import evaluation
+from helpers.visualize import visualize_prediction, visualize_true_labels
 from logcreator.logcreator import Logcreator
 from source.autoencoder import AutoEncoder
 from source.classifier import Classifier
 from source.configuration import Configuration
 from source.data_sampler import DataSampling
 from source.feature_extractor import FeatureExtractor
-from helpers.visualize import visualize_prediction, visualize_true_labels
 from source.scaler import Scaler
 
 
@@ -222,7 +223,8 @@ class Engine:
 
         # --------------------------------------------------------------------------------------------------------------
         # Fit model
-        clf = Classifier(classifier=Configuration.get('classifier.name'), random_search=Configuration.get('classifier.random_search'))
+        clf = Classifier(classifier=Configuration.get('classifier.classifier'),
+                         random_search=Configuration.get('classifier.random_search'))
         best_model = clf.fit(X=x_train_split, y=y_train_split)
         results = clf.getFitResults()
 
