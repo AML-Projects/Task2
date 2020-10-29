@@ -20,7 +20,9 @@ from source.autoencoder import AutoEncoder
 from source.classifier import Classifier
 from source.configuration import Configuration
 from source.data_sampler import DataSampling
+from source.feature_adder import FeatureAdder
 from source.feature_extractor import FeatureExtractor
+from source.feature_transformer import FeatureTransformer
 from source.scaler import Scaler
 
 
@@ -211,7 +213,18 @@ class Engine:
 
         # visualize(x_train, y_train)
 
+        # --------------------------------------------------------------------------------------------------------------
+        # Feature transformation
+        ft = FeatureTransformer(method="None")
+        x_train_split = ft.fit_transform(x_train_split)
+        x_test_split = ft.transform(x_test_split)
 
+        # --------------------------------------------------------------------------------------------------------------
+        # Feature adder
+        fadder = FeatureAdder(clustering=False, custom=False)
+        fadder.fit(x_train_split)
+        x_train_split = fadder.transform(x_train_split)
+        x_test_split = fadder.transform(x_test_split)
 
         # --------------------------------------------------------------------------------------------------------------
         # Normalize samples?
