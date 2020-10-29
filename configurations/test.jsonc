@@ -8,11 +8,18 @@
 		"method" : "None",
         "n_components" : 200
     },
+    "feature_adder" : {
+        "clustering_on" : "False",
+         "n_clusters" : 16,
+         "custom_on" : "False",
+         "auto_encoder_on" : "False",
+         "n_encoder_features" : 16,
+    },
 	"scaler" : {
 		"name" : "robustscaler"
 	},
 	"data_sampler": {
-		"sampling_method": "SMOTEENN",
+		"sampling_method": "None",
 	},
 	"classifier": {
 		"classifier": "SVC",
