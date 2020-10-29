@@ -1,0 +1,1253 @@
+20201029-194102	Task 02 - MRI Desease classification
+20201029-194102	Info: Environment: describe the run
+20201029-194103	Info: Shape of training_samples: (4800, 1000)
+20201029-194103	Info:            x0        x1        x2  ...      x997      x998      x999
+id                                 ...                              
+0.0 -1.498973  1.448201  2.784979  ... -0.004883  3.173465  2.179183
+1.0 -0.521470 -0.493049  0.891382  ...  0.971394  0.604963  0.355499
+2.0 -0.417724 -0.019106  0.938377  ...  0.842709  2.086818  0.512741
+3.0 -0.471972  0.000398  0.784836  ...  0.426496  0.336746  1.304973
+4.0  0.201026 -0.579901  0.638809  ...  0.825237  1.044778  0.071464
+
+[5 rows x 1000 columns]
+20201029-194103	Info: Shape of training labels: (4800, 1)
+20201029-194104	Info:     y
+id   
+0   1
+1   0
+2   1
+3   1
+4   1
+20201029-194104	Info: Shape of test samples: (4100, 1000)
+20201029-194104	Info:            x0        x1        x2  ...      x997      x998      x999
+id                                 ...                              
+0.0 -1.079476  1.026788  2.025148  ...  0.597379  1.127784  2.924234
+1.0 -1.104064  2.587608  0.870833  ... -0.325131  2.295994  3.219922
+2.0  0.162656 -0.869909  0.502366  ...  0.264860  0.742492 -0.105276
+3.0 -0.224210 -0.226734  0.940147  ...  0.802260  0.397065  0.596587
+4.0 -0.571950  0.946702  1.021095  ...  0.952334  0.986242  2.301550
+
+[5 rows x 1000 columns]
+20201029-194104	Info: Train-Data Shpae: (4800, 1000)
+20201029-194104	Info: Test-Data Shape: (4100, 1000)
+20201029-194104	Info: 
+Validation samples per group
+ [ 600 3600  600]
+20201029-194104	Info: 
+Train samples per group
+ [ 480 2880  480]
+20201029-194104	Info: 
+Test samples per group
+ [120 720 120]
+20201029-194104	Info: Training initialized
+20201029-194104	Number of loops: 16
+20201029-194104	Info: 
+Data Sampling: None
+20201029-194104	Info: 
+ Trainset samples per group
+ [ 480 2880  480]
+20201029-194104	Info: Start normalizer
+20201029-194105	Info: 
+train shape (3840, 1000)
+20201029-194105	Info: 
+Feature Adder:
+20201029-194105	Info: 
+--------------------------------------
+20201029-194105	Info: Iteration 0
+20201029-194105	Info: Data_sampler {'sampling_method': 'None'}
+20201029-194105	Info: Scaler {'name': 'robustscaler'}
+20201029-194105	Info: Feature Adder {'auto_encoder_on': 'False', 'clustering_on': 'False', 'custom_on': 'False', 'n_clusters': 16, 'n_encoder_features': 32}
+20201029-194105	Info: Classifier {'classifier': 'BalancedRandomForestClassifier'}
+20201029-194105	Info: 
+----------------------------------------
+20201029-194105	Info: 
+Classifier: BalancedRandomForestClassifier
+20201029-194105	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201029-194105	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201029-194105	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201029-194105	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201029-194105	Info: 
+Starting Parameter Search
+20201029-194105	Info: -> grid search
+20201029-194129	Info: Best estimator from GridSearch: BalancedRandomForestClassifier(class_weight='balanced_subsample',
+                               random_state=41)
+20201029-194129	Info: Best alpha found: {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'auto'}
+20201029-194129	Info: Best training-score with mse loss: 0.6693287037037037
+20201029-194129	Info:                                                                                                                     params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0          {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'auto'}         0.669329        0.034342          0.915355         0.001858
+3           {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'all'}         0.659144        0.023097          0.915818         0.002040
+1      {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'majority'}         0.655093        0.025994          0.915805         0.001506
+2  {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'not majority'}         0.454630        0.021794          1.000000         0.000000
+20201029-194129	Info: 
+--------- Test ---------
+
+20201029-194129	Info: Normalized confusion matrix
+20201029-194129	Info: [[0.51666667 0.15       0.33333333]
+ [0.23333333 0.67916667 0.0875    ]
+ [0.28333333 0.06666667 0.65      ]]
+20201029-194129	Info: Test report
+20201029-194129	Info:               precision    recall  f1-score   support
+
+           0       0.23      0.52      0.32       120
+           1       0.95      0.68      0.79       720
+           2       0.43      0.65      0.52       120
+
+    accuracy                           0.66       960
+   macro avg       0.54      0.62      0.54       960
+weighted avg       0.80      0.66      0.70       960
+
+20201029-194129	Info: bas_score on Test split: 0.6152777777777777
+20201029-194129	Info: BAS Score achieved on test set: 0.6152777777777777
+20201029-194129	Info: 
+Feature Adder:
+20201029-194129	Info: 
+--------------------------------------
+20201029-194129	Info: Iteration 1
+20201029-194129	Info: Data_sampler {'sampling_method': 'None'}
+20201029-194129	Info: Scaler {'name': 'robustscaler'}
+20201029-194129	Info: Feature Adder {'auto_encoder_on': 'False', 'clustering_on': 'False', 'custom_on': 'False', 'n_clusters': 16, 'n_encoder_features': 64}
+20201029-194129	Info: Classifier {'classifier': 'BalancedRandomForestClassifier'}
+20201029-194129	Info: 
+----------------------------------------
+20201029-194129	Info: 
+Classifier: BalancedRandomForestClassifier
+20201029-194129	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201029-194129	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201029-194129	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201029-194129	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201029-194129	Info: 
+Starting Parameter Search
+20201029-194129	Info: -> grid search
+20201029-194153	Info: Best estimator from GridSearch: BalancedRandomForestClassifier(class_weight='balanced_subsample',
+                               random_state=41)
+20201029-194153	Info: Best alpha found: {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'auto'}
+20201029-194153	Info: Best training-score with mse loss: 0.6693287037037037
+20201029-194153	Info:                                                                                                                     params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0          {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'auto'}         0.669329        0.034342          0.915355         0.001858
+3           {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'all'}         0.659144        0.023097          0.915818         0.002040
+1      {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'majority'}         0.655093        0.025994          0.915805         0.001506
+2  {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'not majority'}         0.454630        0.021794          1.000000         0.000000
+20201029-194153	Info: 
+--------- Test ---------
+
+20201029-194153	Info: Normalized confusion matrix
+20201029-194153	Info: [[0.51666667 0.15       0.33333333]
+ [0.23333333 0.67916667 0.0875    ]
+ [0.28333333 0.06666667 0.65      ]]
+20201029-194153	Info: Test report
+20201029-194153	Info:               precision    recall  f1-score   support
+
+           0       0.23      0.52      0.32       120
+           1       0.95      0.68      0.79       720
+           2       0.43      0.65      0.52       120
+
+    accuracy                           0.66       960
+   macro avg       0.54      0.62      0.54       960
+weighted avg       0.80      0.66      0.70       960
+
+20201029-194153	Info: bas_score on Test split: 0.6152777777777777
+20201029-194153	Info: BAS Score achieved on test set: 0.6152777777777777
+20201029-194153	Info: 
+Feature Adder:
+20201029-194153	Info: [custom_on]
+20201029-194153	Info: 
+--------------------------------------
+20201029-194153	Info: Iteration 2
+20201029-194153	Info: Data_sampler {'sampling_method': 'None'}
+20201029-194153	Info: Scaler {'name': 'robustscaler'}
+20201029-194153	Info: Feature Adder {'auto_encoder_on': 'False', 'clustering_on': 'False', 'custom_on': 'True', 'n_clusters': 16, 'n_encoder_features': 32}
+20201029-194153	Info: Classifier {'classifier': 'BalancedRandomForestClassifier'}
+20201029-194153	Info: 
+----------------------------------------
+20201029-194153	Info: 
+Classifier: BalancedRandomForestClassifier
+20201029-194153	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201029-194153	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201029-194153	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201029-194153	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201029-194153	Info: 
+Starting Parameter Search
+20201029-194153	Info: -> grid search
+20201029-194216	Info: Best estimator from GridSearch: BalancedRandomForestClassifier(class_weight='balanced_subsample',
+                               random_state=41, sampling_strategy='majority')
+20201029-194216	Info: Best alpha found: {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'majority'}
+20201029-194216	Info: Best training-score with mse loss: 0.6662037037037039
+20201029-194216	Info:                                                                                                                     params  mean_test_score  std_test_score  mean_train_score  std_train_score
+1      {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'majority'}         0.666204        0.026606          0.917052         0.002566
+0          {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'auto'}         0.658565        0.022191          0.916744         0.001980
+3           {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'all'}         0.657060        0.027720          0.916731         0.002838
+2  {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'not majority'}         0.460417        0.022873          1.000000         0.000000
+20201029-194216	Info: 
+--------- Test ---------
+
+20201029-194216	Info: Normalized confusion matrix
+20201029-194216	Info: [[0.525      0.09166667 0.38333333]
+ [0.25277778 0.66388889 0.08333333]
+ [0.24166667 0.075      0.68333333]]
+20201029-194216	Info: Test report
+20201029-194216	Info:               precision    recall  f1-score   support
+
+           0       0.23      0.53      0.32       120
+           1       0.96      0.66      0.78       720
+           2       0.44      0.68      0.53       120
+
+    accuracy                           0.65       960
+   macro avg       0.54      0.62      0.55       960
+weighted avg       0.80      0.65      0.70       960
+
+20201029-194216	Info: bas_score on Test split: 0.6240740740740741
+20201029-194216	Info: BAS Score achieved on test set: 0.6240740740740741
+20201029-194216	Info: 
+Feature Adder:
+20201029-194216	Info: [custom_on]
+20201029-194216	Info: 
+--------------------------------------
+20201029-194216	Info: Iteration 3
+20201029-194216	Info: Data_sampler {'sampling_method': 'None'}
+20201029-194216	Info: Scaler {'name': 'robustscaler'}
+20201029-194216	Info: Feature Adder {'auto_encoder_on': 'False', 'clustering_on': 'False', 'custom_on': 'True', 'n_clusters': 16, 'n_encoder_features': 64}
+20201029-194216	Info: Classifier {'classifier': 'BalancedRandomForestClassifier'}
+20201029-194216	Info: 
+----------------------------------------
+20201029-194216	Info: 
+Classifier: BalancedRandomForestClassifier
+20201029-194216	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201029-194216	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201029-194216	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201029-194216	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201029-194216	Info: 
+Starting Parameter Search
+20201029-194216	Info: -> grid search
+20201029-194240	Info: Best estimator from GridSearch: BalancedRandomForestClassifier(class_weight='balanced_subsample',
+                               random_state=41, sampling_strategy='all')
+20201029-194240	Info: Best alpha found: {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'all'}
+20201029-194240	Info: Best training-score with mse loss: 0.6659722222222222
+20201029-194240	Info:                                                                                                                     params  mean_test_score  std_test_score  mean_train_score  std_train_score
+3           {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'all'}         0.665972        0.020764          0.918274         0.002643
+1      {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'majority'}         0.662037        0.025683          0.917451         0.001499
+0          {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'auto'}         0.661227        0.029676          0.917888         0.002219
+2  {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'not majority'}         0.457755        0.014468          0.999846         0.000309
+20201029-194240	Info: 
+--------- Test ---------
+
+20201029-194240	Info: Normalized confusion matrix
+20201029-194240	Info: [[0.50833333 0.11666667 0.375     ]
+ [0.23472222 0.68055556 0.08472222]
+ [0.26666667 0.075      0.65833333]]
+20201029-194240	Info: Test report
+20201029-194240	Info:               precision    recall  f1-score   support
+
+           0       0.23      0.51      0.32       120
+           1       0.96      0.68      0.79       720
+           2       0.43      0.66      0.52       120
+
+    accuracy                           0.66       960
+   macro avg       0.54      0.62      0.54       960
+weighted avg       0.80      0.66      0.70       960
+
+20201029-194240	Info: bas_score on Test split: 0.6157407407407408
+20201029-194240	Info: BAS Score achieved on test set: 0.6157407407407408
+20201029-194240	Info: 
+Feature Adder:
+20201029-194240	Info: [clustering_on]
+20201029-194245	Info: 
+--------------------------------------
+20201029-194245	Info: Iteration 4
+20201029-194245	Info: Data_sampler {'sampling_method': 'None'}
+20201029-194245	Info: Scaler {'name': 'robustscaler'}
+20201029-194245	Info: Feature Adder {'auto_encoder_on': 'False', 'clustering_on': 'True', 'custom_on': 'False', 'n_clusters': 16, 'n_encoder_features': 32}
+20201029-194245	Info: Classifier {'classifier': 'BalancedRandomForestClassifier'}
+20201029-194245	Info: 
+----------------------------------------
+20201029-194245	Info: 
+Classifier: BalancedRandomForestClassifier
+20201029-194245	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201029-194245	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201029-194245	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201029-194245	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201029-194245	Info: 
+Starting Parameter Search
+20201029-194245	Info: -> grid search
+20201029-194310	Info: Best estimator from GridSearch: BalancedRandomForestClassifier(class_weight='balanced_subsample',
+                               random_state=41)
+20201029-194310	Info: Best alpha found: {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'auto'}
+20201029-194310	Info: Best training-score with mse loss: 0.669675925925926
+20201029-194310	Info:                                                                                                                     params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0          {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'auto'}         0.669676        0.018678          0.917927         0.002107
+3           {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'all'}         0.663310        0.029583          0.917940         0.002564
+1      {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'majority'}         0.656944        0.022101          0.917631         0.002884
+2  {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'not majority'}         0.460185        0.019907          1.000000         0.000000
+20201029-194310	Info: 
+--------- Test ---------
+
+20201029-194310	Info: Normalized confusion matrix
+20201029-194310	Info: [[0.56666667 0.125      0.30833333]
+ [0.24305556 0.67777778 0.07916667]
+ [0.3        0.05       0.65      ]]
+20201029-194310	Info: Test report
+20201029-194310	Info:               precision    recall  f1-score   support
+
+           0       0.24      0.57      0.34       120
+           1       0.96      0.68      0.79       720
+           2       0.45      0.65      0.53       120
+
+    accuracy                           0.66       960
+   macro avg       0.55      0.63      0.56       960
+weighted avg       0.81      0.66      0.70       960
+
+20201029-194310	Info: bas_score on Test split: 0.6314814814814814
+20201029-194310	Info: BAS Score achieved on test set: 0.6314814814814814
+20201029-194310	Info: 
+Feature Adder:
+20201029-194310	Info: [clustering_on]
+20201029-194315	Info: 
+--------------------------------------
+20201029-194315	Info: Iteration 5
+20201029-194315	Info: Data_sampler {'sampling_method': 'None'}
+20201029-194315	Info: Scaler {'name': 'robustscaler'}
+20201029-194315	Info: Feature Adder {'auto_encoder_on': 'False', 'clustering_on': 'True', 'custom_on': 'False', 'n_clusters': 16, 'n_encoder_features': 64}
+20201029-194315	Info: Classifier {'classifier': 'BalancedRandomForestClassifier'}
+20201029-194315	Info: 
+----------------------------------------
+20201029-194315	Info: 
+Classifier: BalancedRandomForestClassifier
+20201029-194315	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201029-194315	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201029-194315	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201029-194315	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201029-194315	Info: 
+Starting Parameter Search
+20201029-194315	Info: -> grid search
+20201029-194341	Info: Best estimator from GridSearch: BalancedRandomForestClassifier(class_weight='balanced_subsample',
+                               random_state=41, sampling_strategy='majority')
+20201029-194341	Info: Best alpha found: {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'majority'}
+20201029-194341	Info: Best training-score with mse loss: 0.6636574074074074
+20201029-194341	Info:                                                                                                                     params  mean_test_score  std_test_score  mean_train_score  std_train_score
+1      {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'majority'}         0.663657        0.029226          0.917824         0.001810
+3           {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'all'}         0.660648        0.030765          0.917220         0.002837
+0          {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'auto'}         0.660301        0.025871          0.916924         0.001539
+2  {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'not majority'}         0.463079        0.016413          1.000000         0.000000
+20201029-194341	Info: 
+--------- Test ---------
+
+20201029-194341	Info: Normalized confusion matrix
+20201029-194341	Info: [[0.55833333 0.1        0.34166667]
+ [0.25555556 0.66527778 0.07916667]
+ [0.26666667 0.05833333 0.675     ]]
+20201029-194341	Info: Test report
+20201029-194341	Info:               precision    recall  f1-score   support
+
+           0       0.24      0.56      0.33       120
+           1       0.96      0.67      0.79       720
+           2       0.45      0.68      0.54       120
+
+    accuracy                           0.65       960
+   macro avg       0.55      0.63      0.55       960
+weighted avg       0.81      0.65      0.70       960
+
+20201029-194341	Info: bas_score on Test split: 0.6328703703703703
+20201029-194341	Info: BAS Score achieved on test set: 0.6328703703703703
+20201029-194341	Info: 
+Feature Adder:
+20201029-194341	Info: [clustering_on]
+20201029-194341	Info: [custom_on]
+20201029-194347	Info: 
+--------------------------------------
+20201029-194347	Info: Iteration 6
+20201029-194347	Info: Data_sampler {'sampling_method': 'None'}
+20201029-194347	Info: Scaler {'name': 'robustscaler'}
+20201029-194347	Info: Feature Adder {'auto_encoder_on': 'False', 'clustering_on': 'True', 'custom_on': 'True', 'n_clusters': 16, 'n_encoder_features': 32}
+20201029-194347	Info: Classifier {'classifier': 'BalancedRandomForestClassifier'}
+20201029-194347	Info: 
+----------------------------------------
+20201029-194347	Info: 
+Classifier: BalancedRandomForestClassifier
+20201029-194347	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201029-194347	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201029-194347	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201029-194347	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201029-194347	Info: 
+Starting Parameter Search
+20201029-194347	Info: -> grid search
+20201029-194413	Info: Best estimator from GridSearch: BalancedRandomForestClassifier(class_weight='balanced_subsample',
+                               random_state=41, sampling_strategy='all')
+20201029-194413	Info: Best alpha found: {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'all'}
+20201029-194413	Info: Best training-score with mse loss: 0.6725694444444443
+20201029-194413	Info:                                                                                                                     params  mean_test_score  std_test_score  mean_train_score  std_train_score
+3           {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'all'}         0.672569        0.023006          0.919187         0.002568
+1      {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'majority'}         0.671991        0.028162          0.919020         0.001579
+0          {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'auto'}         0.666782        0.027523          0.917876         0.001407
+2  {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'not majority'}         0.457986        0.018293          0.999923         0.000231
+20201029-194413	Info: 
+--------- Test ---------
+
+20201029-194413	Info: Normalized confusion matrix
+20201029-194413	Info: [[0.58333333 0.08333333 0.33333333]
+ [0.25694444 0.66944444 0.07361111]
+ [0.3        0.05833333 0.64166667]]
+20201029-194413	Info: Test report
+20201029-194413	Info:               precision    recall  f1-score   support
+
+           0       0.24      0.58      0.34       120
+           1       0.97      0.67      0.79       720
+           2       0.45      0.64      0.53       120
+
+    accuracy                           0.66       960
+   macro avg       0.55      0.63      0.55       960
+weighted avg       0.81      0.66      0.70       960
+
+20201029-194413	Info: bas_score on Test split: 0.6314814814814814
+20201029-194413	Info: BAS Score achieved on test set: 0.6314814814814814
+20201029-194413	Info: 
+Feature Adder:
+20201029-194413	Info: [clustering_on]
+20201029-194413	Info: [custom_on]
+20201029-194420	Info: 
+--------------------------------------
+20201029-194420	Info: Iteration 7
+20201029-194420	Info: Data_sampler {'sampling_method': 'None'}
+20201029-194420	Info: Scaler {'name': 'robustscaler'}
+20201029-194420	Info: Feature Adder {'auto_encoder_on': 'False', 'clustering_on': 'True', 'custom_on': 'True', 'n_clusters': 16, 'n_encoder_features': 64}
+20201029-194420	Info: Classifier {'classifier': 'BalancedRandomForestClassifier'}
+20201029-194420	Info: 
+----------------------------------------
+20201029-194420	Info: 
+Classifier: BalancedRandomForestClassifier
+20201029-194420	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201029-194420	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201029-194420	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201029-194420	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201029-194420	Info: 
+Starting Parameter Search
+20201029-194420	Info: -> grid search
+20201029-194446	Info: Best estimator from GridSearch: BalancedRandomForestClassifier(class_weight='balanced_subsample',
+                               random_state=41)
+20201029-194446	Info: Best alpha found: {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'auto'}
+20201029-194446	Info: Best training-score with mse loss: 0.672337962962963
+20201029-194446	Info:                                                                                                                     params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0          {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'auto'}         0.672338        0.031222          0.919162         0.001693
+3           {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'all'}         0.665741        0.026730          0.919856         0.002304
+1      {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'majority'}         0.655671        0.036495          0.917670         0.002104
+2  {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'not majority'}         0.466551        0.024745          1.000000         0.000000
+20201029-194446	Info: 
+--------- Test ---------
+
+20201029-194446	Info: Normalized confusion matrix
+20201029-194446	Info: [[0.58333333 0.1        0.31666667]
+ [0.24166667 0.68055556 0.07777778]
+ [0.275      0.08333333 0.64166667]]
+20201029-194446	Info: Test report
+20201029-194446	Info:               precision    recall  f1-score   support
+
+           0       0.25      0.58      0.35       120
+           1       0.96      0.68      0.80       720
+           2       0.45      0.64      0.53       120
+
+    accuracy                           0.66       960
+   macro avg       0.55      0.64      0.56       960
+weighted avg       0.81      0.66      0.71       960
+
+20201029-194446	Info: bas_score on Test split: 0.6351851851851852
+20201029-194446	Info: BAS Score achieved on test set: 0.6351851851851852
+20201029-194446	Info: 
+Feature Adder:
+20201029-194446	Info: [auto_encoder_on]
+20201029-194446	Info: 
+Auto encoder:
+20201029-194446	Info: add_noise = True
+20201029-194446	Info: encoded size = 32
+20201029-194446	Info: scaling_on = True
+20201029-194556	Info: 
+--------------------------------------
+20201029-194556	Info: Iteration 8
+20201029-194556	Info: Data_sampler {'sampling_method': 'None'}
+20201029-194556	Info: Scaler {'name': 'robustscaler'}
+20201029-194556	Info: Feature Adder {'auto_encoder_on': 'True', 'clustering_on': 'False', 'custom_on': 'False', 'n_clusters': 16, 'n_encoder_features': 32}
+20201029-194556	Info: Classifier {'classifier': 'BalancedRandomForestClassifier'}
+20201029-194556	Info: 
+----------------------------------------
+20201029-194556	Info: 
+Classifier: BalancedRandomForestClassifier
+20201029-194556	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201029-194556	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201029-194556	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201029-194556	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201029-194556	Info: 
+Starting Parameter Search
+20201029-194556	Info: -> grid search
+20201029-194622	Info: Best estimator from GridSearch: BalancedRandomForestClassifier(class_weight='balanced_subsample',
+                               random_state=41, sampling_strategy='majority')
+20201029-194622	Info: Best alpha found: {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'majority'}
+20201029-194622	Info: Best training-score with mse loss: 0.6678240740740741
+20201029-194622	Info:                                                                                                                     params  mean_test_score  std_test_score  mean_train_score  std_train_score
+1      {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'majority'}         0.667824        0.027511          0.918634         0.001889
+3           {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'all'}         0.664815        0.029767          0.919830         0.001689
+0          {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'auto'}         0.664005        0.034525          0.919946         0.001474
+2  {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'not majority'}         0.467245        0.023021          1.000000         0.000000
+20201029-194622	Info: 
+--------- Test ---------
+
+20201029-194622	Info: Normalized confusion matrix
+20201029-194622	Info: [[0.6        0.1        0.3       ]
+ [0.25833333 0.67083333 0.07083333]
+ [0.28333333 0.05833333 0.65833333]]
+20201029-194622	Info: Test report
+20201029-194622	Info:               precision    recall  f1-score   support
+
+           0       0.25      0.60      0.35       120
+           1       0.96      0.67      0.79       720
+           2       0.48      0.66      0.55       120
+
+    accuracy                           0.66       960
+   macro avg       0.56      0.64      0.56       960
+weighted avg       0.81      0.66      0.71       960
+
+20201029-194622	Info: bas_score on Test split: 0.6430555555555556
+20201029-194622	Info: BAS Score achieved on test set: 0.6430555555555556
+20201029-194622	Info: 
+Feature Adder:
+20201029-194622	Info: [auto_encoder_on]
+20201029-194622	Info: 
+Auto encoder:
+20201029-194622	Info: add_noise = True
+20201029-194622	Info: encoded size = 64
+20201029-194622	Info: scaling_on = True
+20201029-194729	Info: 
+--------------------------------------
+20201029-194729	Info: Iteration 9
+20201029-194729	Info: Data_sampler {'sampling_method': 'None'}
+20201029-194729	Info: Scaler {'name': 'robustscaler'}
+20201029-194729	Info: Feature Adder {'auto_encoder_on': 'True', 'clustering_on': 'False', 'custom_on': 'False', 'n_clusters': 16, 'n_encoder_features': 64}
+20201029-194729	Info: Classifier {'classifier': 'BalancedRandomForestClassifier'}
+20201029-194729	Info: 
+----------------------------------------
+20201029-194729	Info: 
+Classifier: BalancedRandomForestClassifier
+20201029-194729	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201029-194729	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201029-194729	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201029-194729	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201029-194729	Info: 
+Starting Parameter Search
+20201029-194729	Info: -> grid search
+20201029-194755	Info: Best estimator from GridSearch: BalancedRandomForestClassifier(class_weight='balanced_subsample',
+                               random_state=41)
+20201029-194755	Info: Best alpha found: {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'auto'}
+20201029-194755	Info: Best training-score with mse loss: 0.6763888888888889
+20201029-194755	Info:                                                                                                                     params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0          {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'auto'}         0.676389        0.030049          0.919059         0.002316
+1      {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'majority'}         0.674421        0.028374          0.919753         0.001519
+3           {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'all'}         0.671065        0.024392          0.920113         0.002026
+2  {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'not majority'}         0.478009        0.016063          1.000000         0.000000
+20201029-194755	Info: 
+--------- Test ---------
+
+20201029-194755	Info: Normalized confusion matrix
+20201029-194755	Info: [[0.55       0.11666667 0.33333333]
+ [0.2375     0.68194444 0.08055556]
+ [0.25       0.06666667 0.68333333]]
+20201029-194755	Info: Test report
+20201029-194755	Info:               precision    recall  f1-score   support
+
+           0       0.25      0.55      0.34       120
+           1       0.96      0.68      0.80       720
+           2       0.46      0.68      0.55       120
+
+    accuracy                           0.67       960
+   macro avg       0.55      0.64      0.56       960
+weighted avg       0.81      0.67      0.71       960
+
+20201029-194755	Info: bas_score on Test split: 0.638425925925926
+20201029-194755	Info: BAS Score achieved on test set: 0.638425925925926
+20201029-194755	Info: 
+Feature Adder:
+20201029-194755	Info: [custom_on]
+20201029-194755	Info: [auto_encoder_on]
+20201029-194755	Info: 
+Auto encoder:
+20201029-194755	Info: add_noise = True
+20201029-194755	Info: encoded size = 32
+20201029-194755	Info: scaling_on = True
+20201029-194904	Info: 
+--------------------------------------
+20201029-194904	Info: Iteration 10
+20201029-194904	Info: Data_sampler {'sampling_method': 'None'}
+20201029-194904	Info: Scaler {'name': 'robustscaler'}
+20201029-194904	Info: Feature Adder {'auto_encoder_on': 'True', 'clustering_on': 'False', 'custom_on': 'True', 'n_clusters': 16, 'n_encoder_features': 32}
+20201029-194904	Info: Classifier {'classifier': 'BalancedRandomForestClassifier'}
+20201029-194904	Info: 
+----------------------------------------
+20201029-194904	Info: 
+Classifier: BalancedRandomForestClassifier
+20201029-194904	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201029-194904	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201029-194904	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201029-194904	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201029-194904	Info: 
+Starting Parameter Search
+20201029-194904	Info: -> grid search
+20201029-194929	Info: Best estimator from GridSearch: BalancedRandomForestClassifier(class_weight='balanced_subsample',
+                               random_state=41, sampling_strategy='all')
+20201029-194929	Info: Best alpha found: {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'all'}
+20201029-194929	Info: Best training-score with mse loss: 0.6784722222222224
+20201029-194929	Info:                                                                                                                     params  mean_test_score  std_test_score  mean_train_score  std_train_score
+3           {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'all'}         0.678472        0.026285          0.920820         0.001798
+0          {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'auto'}         0.671412        0.022965          0.919997         0.002232
+1      {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'majority'}         0.657176        0.029197          0.919663         0.001614
+2  {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'not majority'}         0.479051        0.019336          1.000000         0.000000
+20201029-194929	Info: 
+--------- Test ---------
+
+20201029-194929	Info: Normalized confusion matrix
+20201029-194929	Info: [[0.58333333 0.09166667 0.325     ]
+ [0.25555556 0.66805556 0.07638889]
+ [0.275      0.05833333 0.66666667]]
+20201029-194929	Info: Test report
+20201029-194929	Info:               precision    recall  f1-score   support
+
+           0       0.24      0.58      0.34       120
+           1       0.96      0.67      0.79       720
+           2       0.46      0.67      0.54       120
+
+    accuracy                           0.66       960
+   macro avg       0.56      0.64      0.56       960
+weighted avg       0.81      0.66      0.70       960
+
+20201029-194929	Info: bas_score on Test split: 0.6393518518518518
+20201029-194929	Info: BAS Score achieved on test set: 0.6393518518518518
+20201029-194929	Info: 
+Feature Adder:
+20201029-194929	Info: [custom_on]
+20201029-194929	Info: [auto_encoder_on]
+20201029-194929	Info: 
+Auto encoder:
+20201029-194929	Info: add_noise = True
+20201029-194929	Info: encoded size = 64
+20201029-194929	Info: scaling_on = True
+20201029-195040	Info: 
+--------------------------------------
+20201029-195040	Info: Iteration 11
+20201029-195040	Info: Data_sampler {'sampling_method': 'None'}
+20201029-195040	Info: Scaler {'name': 'robustscaler'}
+20201029-195040	Info: Feature Adder {'auto_encoder_on': 'True', 'clustering_on': 'False', 'custom_on': 'True', 'n_clusters': 16, 'n_encoder_features': 64}
+20201029-195040	Info: Classifier {'classifier': 'BalancedRandomForestClassifier'}
+20201029-195040	Info: 
+----------------------------------------
+20201029-195040	Info: 
+Classifier: BalancedRandomForestClassifier
+20201029-195040	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201029-195040	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201029-195040	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201029-195040	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201029-195040	Info: 
+Starting Parameter Search
+20201029-195040	Info: -> grid search
+20201029-195106	Info: Best estimator from GridSearch: BalancedRandomForestClassifier(class_weight='balanced_subsample',
+                               random_state=41)
+20201029-195106	Info: Best alpha found: {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'auto'}
+20201029-195106	Info: Best training-score with mse loss: 0.6770833333333333
+20201029-195106	Info:                                                                                                                     params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0          {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'auto'}         0.677083        0.028483          0.920666         0.001476
+1      {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'majority'}         0.670833        0.033911          0.921669         0.001279
+3           {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'all'}         0.666551        0.028635          0.920486         0.001831
+2  {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'not majority'}         0.484954        0.023229          1.000000         0.000000
+20201029-195106	Info: 
+--------- Test ---------
+
+20201029-195106	Info: Normalized confusion matrix
+20201029-195106	Info: [[0.55       0.1        0.35      ]
+ [0.23194444 0.68333333 0.08472222]
+ [0.225      0.08333333 0.69166667]]
+20201029-195106	Info: Test report
+20201029-195106	Info:               precision    recall  f1-score   support
+
+           0       0.25      0.55      0.35       120
+           1       0.96      0.68      0.80       720
+           2       0.45      0.69      0.54       120
+
+    accuracy                           0.67       960
+   macro avg       0.55      0.64      0.56       960
+weighted avg       0.81      0.67      0.71       960
+
+20201029-195106	Info: bas_score on Test split: 0.6416666666666667
+20201029-195106	Info: BAS Score achieved on test set: 0.6416666666666667
+20201029-195106	Info: 
+Feature Adder:
+20201029-195106	Info: [clustering_on]
+20201029-195106	Info: [auto_encoder_on]
+20201029-195106	Info: 
+Auto encoder:
+20201029-195106	Info: add_noise = True
+20201029-195106	Info: encoded size = 32
+20201029-195106	Info: scaling_on = True
+20201029-195226	Info: 
+--------------------------------------
+20201029-195226	Info: Iteration 12
+20201029-195226	Info: Data_sampler {'sampling_method': 'None'}
+20201029-195226	Info: Scaler {'name': 'robustscaler'}
+20201029-195226	Info: Feature Adder {'auto_encoder_on': 'True', 'clustering_on': 'True', 'custom_on': 'False', 'n_clusters': 16, 'n_encoder_features': 32}
+20201029-195226	Info: Classifier {'classifier': 'BalancedRandomForestClassifier'}
+20201029-195226	Info: 
+----------------------------------------
+20201029-195226	Info: 
+Classifier: BalancedRandomForestClassifier
+20201029-195226	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201029-195226	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201029-195226	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201029-195226	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201029-195226	Info: 
+Starting Parameter Search
+20201029-195226	Info: -> grid search
+20201029-195252	Info: Best estimator from GridSearch: BalancedRandomForestClassifier(class_weight='balanced_subsample',
+                               random_state=41, sampling_strategy='all')
+20201029-195252	Info: Best alpha found: {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'all'}
+20201029-195252	Info: Best training-score with mse loss: 0.6770833333333333
+20201029-195252	Info:                                                                                                                     params  mean_test_score  std_test_score  mean_train_score  std_train_score
+3           {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'all'}         0.677083        0.025225          0.921412         0.002128
+0          {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'auto'}         0.675463        0.029870          0.921181         0.001386
+1      {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'majority'}         0.675000        0.025993          0.920563         0.001448
+2  {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'not majority'}         0.494444        0.016243          0.999923         0.000231
+20201029-195252	Info: 
+--------- Test ---------
+
+20201029-195252	Info: Normalized confusion matrix
+20201029-195252	Info: [[0.55833333 0.1        0.34166667]
+ [0.22361111 0.68472222 0.09166667]
+ [0.24166667 0.06666667 0.69166667]]
+20201029-195252	Info: Test report
+20201029-195252	Info:               precision    recall  f1-score   support
+
+           0       0.26      0.56      0.36       120
+           1       0.96      0.68      0.80       720
+           2       0.44      0.69      0.54       120
+
+    accuracy                           0.67       960
+   macro avg       0.55      0.64      0.56       960
+weighted avg       0.81      0.67      0.71       960
+
+20201029-195252	Info: bas_score on Test split: 0.6449074074074074
+20201029-195252	Info: BAS Score achieved on test set: 0.6449074074074074
+20201029-195252	Info: 
+Feature Adder:
+20201029-195252	Info: [clustering_on]
+20201029-195252	Info: [auto_encoder_on]
+20201029-195252	Info: 
+Auto encoder:
+20201029-195252	Info: add_noise = True
+20201029-195252	Info: encoded size = 64
+20201029-195252	Info: scaling_on = True
+20201029-195411	Info: 
+--------------------------------------
+20201029-195411	Info: Iteration 13
+20201029-195411	Info: Data_sampler {'sampling_method': 'None'}
+20201029-195411	Info: Scaler {'name': 'robustscaler'}
+20201029-195411	Info: Feature Adder {'auto_encoder_on': 'True', 'clustering_on': 'True', 'custom_on': 'False', 'n_clusters': 16, 'n_encoder_features': 64}
+20201029-195411	Info: Classifier {'classifier': 'BalancedRandomForestClassifier'}
+20201029-195411	Info: 
+----------------------------------------
+20201029-195411	Info: 
+Classifier: BalancedRandomForestClassifier
+20201029-195411	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201029-195411	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201029-195411	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201029-195411	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201029-195411	Info: 
+Starting Parameter Search
+20201029-195411	Info: -> grid search
+20201029-195437	Info: Best estimator from GridSearch: BalancedRandomForestClassifier(class_weight='balanced_subsample',
+                               random_state=41, sampling_strategy='all')
+20201029-195437	Info: Best alpha found: {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'all'}
+20201029-195437	Info: Best training-score with mse loss: 0.6805555555555556
+20201029-195437	Info:                                                                                                                     params  mean_test_score  std_test_score  mean_train_score  std_train_score
+3           {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'all'}         0.680556        0.030635          0.921759         0.001898
+1      {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'majority'}         0.672338        0.025821          0.920692         0.001890
+0          {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'auto'}         0.671644        0.029954          0.920975         0.001499
+2  {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'not majority'}         0.485069        0.016959          1.000000         0.000000
+20201029-195437	Info: 
+--------- Test ---------
+
+20201029-195437	Info: Normalized confusion matrix
+20201029-195437	Info: [[0.5        0.11666667 0.38333333]
+ [0.22777778 0.68333333 0.08888889]
+ [0.25833333 0.05833333 0.68333333]]
+20201029-195437	Info: Test report
+20201029-195437	Info:               precision    recall  f1-score   support
+
+           0       0.24      0.50      0.32       120
+           1       0.96      0.68      0.80       720
+           2       0.43      0.68      0.53       120
+
+    accuracy                           0.66       960
+   macro avg       0.54      0.62      0.55       960
+weighted avg       0.80      0.66      0.70       960
+
+20201029-195437	Info: bas_score on Test split: 0.6222222222222222
+20201029-195437	Info: BAS Score achieved on test set: 0.6222222222222222
+20201029-195437	Info: 
+Feature Adder:
+20201029-195437	Info: [clustering_on]
+20201029-195437	Info: [custom_on]
+20201029-195437	Info: [auto_encoder_on]
+20201029-195437	Info: 
+Auto encoder:
+20201029-195437	Info: add_noise = True
+20201029-195437	Info: encoded size = 32
+20201029-195437	Info: scaling_on = True
+20201029-195557	Info: 
+--------------------------------------
+20201029-195557	Info: Iteration 14
+20201029-195557	Info: Data_sampler {'sampling_method': 'None'}
+20201029-195557	Info: Scaler {'name': 'robustscaler'}
+20201029-195557	Info: Feature Adder {'auto_encoder_on': 'True', 'clustering_on': 'True', 'custom_on': 'True', 'n_clusters': 16, 'n_encoder_features': 32}
+20201029-195557	Info: Classifier {'classifier': 'BalancedRandomForestClassifier'}
+20201029-195557	Info: 
+----------------------------------------
+20201029-195557	Info: 
+Classifier: BalancedRandomForestClassifier
+20201029-195557	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201029-195557	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201029-195557	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201029-195557	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201029-195557	Info: 
+Starting Parameter Search
+20201029-195557	Info: -> grid search
+20201029-195624	Info: Best estimator from GridSearch: BalancedRandomForestClassifier(class_weight='balanced_subsample',
+                               random_state=41)
+20201029-195624	Info: Best alpha found: {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'auto'}
+20201029-195624	Info: Best training-score with mse loss: 0.6833333333333333
+20201029-195624	Info:                                                                                                                     params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0          {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'auto'}         0.683333        0.031277          0.921746         0.001758
+1      {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'majority'}         0.673958        0.025699          0.921798         0.001710
+3           {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'all'}         0.668981        0.026876          0.921888         0.001967
+2  {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'not majority'}         0.495255        0.024729          0.999923         0.000231
+20201029-195624	Info: 
+--------- Test ---------
+
+20201029-195624	Info: Normalized confusion matrix
+20201029-195624	Info: [[0.51666667 0.13333333 0.35      ]
+ [0.22638889 0.69305556 0.08055556]
+ [0.20833333 0.08333333 0.70833333]]
+20201029-195624	Info: Test report
+20201029-195624	Info:               precision    recall  f1-score   support
+
+           0       0.25      0.52      0.34       120
+           1       0.95      0.69      0.80       720
+           2       0.46      0.71      0.56       120
+
+    accuracy                           0.67       960
+   macro avg       0.55      0.64      0.56       960
+weighted avg       0.80      0.67      0.71       960
+
+20201029-195624	Info: bas_score on Test split: 0.6393518518518518
+20201029-195624	Info: BAS Score achieved on test set: 0.6393518518518518
+20201029-195624	Info: 
+Feature Adder:
+20201029-195624	Info: [clustering_on]
+20201029-195624	Info: [custom_on]
+20201029-195624	Info: [auto_encoder_on]
+20201029-195624	Info: 
+Auto encoder:
+20201029-195624	Info: add_noise = True
+20201029-195624	Info: encoded size = 64
+20201029-195624	Info: scaling_on = True
+20201029-195748	Info: 
+--------------------------------------
+20201029-195748	Info: Iteration 15
+20201029-195748	Info: Data_sampler {'sampling_method': 'None'}
+20201029-195748	Info: Scaler {'name': 'robustscaler'}
+20201029-195748	Info: Feature Adder {'auto_encoder_on': 'True', 'clustering_on': 'True', 'custom_on': 'True', 'n_clusters': 16, 'n_encoder_features': 64}
+20201029-195748	Info: Classifier {'classifier': 'BalancedRandomForestClassifier'}
+20201029-195748	Info: 
+----------------------------------------
+20201029-195748	Info: 
+Classifier: BalancedRandomForestClassifier
+20201029-195748	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201029-195748	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201029-195748	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201029-195748	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201029-195748	Info: 
+Starting Parameter Search
+20201029-195748	Info: -> grid search
+20201029-195814	Info: Best estimator from GridSearch: BalancedRandomForestClassifier(class_weight='balanced_subsample',
+                               random_state=41)
+20201029-195814	Info: Best alpha found: {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'auto'}
+20201029-195814	Info: Best training-score with mse loss: 0.681712962962963
+20201029-195814	Info:                                                                                                                     params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0          {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'auto'}         0.681713        0.032362          0.920872         0.000887
+3           {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'all'}         0.681713        0.022419          0.922467         0.002312
+1      {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'majority'}         0.672338        0.021344          0.920975         0.001921
+2  {'class_weight': 'balanced_subsample', 'max_features': 'auto', 'random_state': 41, 'sampling_strategy': 'not majority'}         0.490625        0.021420          0.999846         0.000309
+20201029-195814	Info: 
+--------- Test ---------
+
+20201029-195814	Info: Normalized confusion matrix
+20201029-195814	Info: [[0.55       0.10833333 0.34166667]
+ [0.20416667 0.70277778 0.09305556]
+ [0.275      0.09166667 0.63333333]]
+20201029-195814	Info: Test report
+20201029-195814	Info:               precision    recall  f1-score   support
+
+           0       0.27      0.55      0.36       120
+           1       0.95      0.70      0.81       720
+           2       0.41      0.63      0.50       120
+
+    accuracy                           0.68       960
+   macro avg       0.55      0.63      0.56       960
+weighted avg       0.80      0.68      0.71       960
+
+20201029-195814	Info: bas_score on Test split: 0.6287037037037037
+20201029-195814	Info: BAS Score achieved on test set: 0.6287037037037037
+20201029-195814	Info: Search finished
+20201029-195814	Info: Finished processing in 1031 [s].
