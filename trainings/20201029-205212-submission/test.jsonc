@@ -1,0 +1,47 @@
+{
+    "environment": {
+        "name" : "describe the run",
+        "output_path": "trainings",
+        "log_file" : "logs.txt"
+    },
+    "feature_selector": {
+		"method" : "None",
+        "n_components" : 200
+    },
+    "feature_adder" : {
+        "clustering_on" : "True",
+        "n_clusters" : 16,
+        "custom_on" : "False",
+        "auto_encoder_on" : "True",
+        "n_encoder_features" : 32,
+    },
+	"scaler" : {
+		"name" : "robustscaler"
+	},
+	"data_sampler": {
+		"sampling_method": "None",
+	},
+	"classifier": {
+		"classifier": "SVC",
+		"random_search" : "False"
+	},
+	"search" : {
+		"data_sampler" : {
+			"sampling_method" : ["None", "random", "SMOTE", "ADASYN", "RandomUnderSampler", "ClusterCentroids", "NearMiss", "AllKNN", "SMOTEENN", "SMOTETomek"]
+		},
+		"scaler" : {
+			"name" : ["robustscaler"]
+		},
+		"classifier" : {
+			"classifier" : ["SVC"]
+		},
+		"feature_adder" : {
+            "auto_encoder_on" : ["False", "True"],
+            "clustering_on" : ["False", "True"],
+            "custom_on" : ["False", "True"],
+            "n_clusters" : [8, 16],
+            "n_encoder_features" : [8, 16, 32],
+        },
+
+	}
+}
