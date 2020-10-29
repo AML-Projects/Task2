@@ -6,8 +6,9 @@ from sklearn.base import TransformerMixin
 
 
 class AutoEncoder(TransformerMixin):
-    def __init__(self, add_noise=True):
+    def __init__(self, add_noise=True, encoded_size=64):
         self.add_noise = add_noise
+        self.encoded_size = encoded_size
 
     def fit(self, x, y=None):
         """
@@ -19,10 +20,9 @@ class AutoEncoder(TransformerMixin):
         """
         input_size = x.shape[1]
         hidden_size = 128
-        encoded_size = 64
+        encoded_size = self.encoded_size
 
         # add noise to input
-
         if self.add_noise:
             noise_factor = 0.3
             x_train_noisy = x + noise_factor * np.random.normal(size=x.shape)
