@@ -10,13 +10,12 @@ import os
 
 import pandas as pd
 from numpy.random import seed
-from sklearn.preprocessing import Normalizer, MinMaxScaler
+from sklearn.preprocessing import Normalizer
 from tensorflow.python.framework.random_seed import set_random_seed
 
 from helpers import evaluation
-from helpers.visualize import visualize_prediction, visualize_true_labels
+from helpers.visualize import visualize_prediction
 from logcreator.logcreator import Logcreator
-from source.autoencoder import AutoEncoder
 from source.classifier import Classifier
 from source.configuration import Configuration
 from source.data_sampler import DataSampling
@@ -182,22 +181,6 @@ class Engine:
         x_train_split, y_train_split, x_test_split = scaler.transform_custom(x_train=x_train_split,
                                                                                            y_train=y_train_split,
                                                                                            x_test=x_test_split)
-        # --------------------------------------------------------------------------------------------------------------
-        # Feature Extraction
-        # TODO move to feature extraction
-        auto_encoder = False
-        if auto_encoder:
-            scaler = MinMaxScaler(feature_range=(-1, 1))
-
-            x_train_split = scaler.fit_transform(x_train_split)
-            x_test_split = scaler.transform(x_test_split)
-
-            ae = AutoEncoder()
-            x_train_split = ae.fit_transform(x_train_split, y_train_split)
-            x_test_split = ae.transform(x_test_split)
-
-            visualize_true_labels(x_train_split, y_train_split, "Train")
-            #visualize_true_labels(x_test_split, y_test_split, "Validation")
 
         # --------------------------------------------------------------------------------------------------------------
         # Feature Selection
