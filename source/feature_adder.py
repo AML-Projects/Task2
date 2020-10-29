@@ -104,7 +104,6 @@ class FeatureAdder(TransformerMixin):
         if self.clustering_on:
             Logcreator.info("[clustering_on]")
             self.clusterFG = ClusterFeatureGenerator()
-        self.clusterFG = None
 
         if isinstance(custom_on, str):
             custom_on = custom_on == "True"
@@ -112,7 +111,6 @@ class FeatureAdder(TransformerMixin):
         if self.custom_on:
             Logcreator.info("[custom_on]")
             self.customFG = CustomFeatureGenerator()
-        self.customFG = None
 
         if isinstance(auto_encoder_on, str):
             auto_encoder_on = auto_encoder_on == "True"
