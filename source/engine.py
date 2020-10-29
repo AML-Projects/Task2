@@ -40,10 +40,11 @@ class Engine:
 
         data_sampler_par_list = self.get_search_list('search.data_sampler')
         scaler_par_list = self.get_search_list('search.scaler')
+        data_feature_adder_par_list = self.get_search_list('search.feature_adder')
         classifier_par_list = self.get_search_list('search.classifier')
 
-
-        number_of_loops = len(data_sampler_par_list) * len(scaler_par_list) * len(classifier_par_list)
+        number_of_loops = len(data_sampler_par_list) * len(scaler_par_list) * len(data_feature_adder_par_list) * len(
+            classifier_par_list)
 
         Logcreator.h1("Number of loops:", number_of_loops)
         loop_counter = 0
@@ -54,6 +55,7 @@ class Engine:
         # combine all keys
         columns_out.extend(['data_sampler_' + s for s in list(data_sampler_par_list[0].keys())])
         columns_out.extend(['scaler_' + s for s in list(scaler_par_list[0].keys())])
+        columns_out.extend(['feature_adder_' + s for s in list(data_feature_adder_par_list[0].keys())])
         columns_out.extend(['classifier_' + s for s in list(classifier_par_list[0].keys())])
 
         # create output dataframe
@@ -73,54 +75,62 @@ class Engine:
 
                     scaler = Scaler(**scaler_data)
                     x_train_split, y_train_split, x_test_split = scaler.transform_custom(x_train=x_train_split,
-                                                                                          y_train=y_train_split,
-                                                                                          x_test=x_test_split)
+                                                                                         y_train=y_train_split,
+                                                                                         x_test=x_test_split)
 
-                    for classifier_data in classifier_par_list:
-                        Logcreator.info("\n--------------------------------------")
-                        Logcreator.info("Iteration", loop_counter)
-                        Logcreator.info("Data_sampler", data_sampler_data)
-                        Logcreator.info("Scaler", scaler_data)
-                        Logcreator.info("Classifier", classifier_data)
-                        Logcreator.info("\n----------------------------------------")
+                    for feature_adder_data in data_feature_adder_par_list:
 
-                        #Train classifier
-                        clf = Classifier(**classifier_data)
-                        best_model = clf.fit(X=x_train_split, y=y_train_split)
-                        search_results = clf.getFitResults()
+                        feature_adder = FeatureAdder(**feature_adder_data)
+                        feature_adder.fit(x_train_split)
+                        x_train_split = feature_adder.transform(x_train_split)
+                        x_test_split = feature_adder.transform(x_test_split)
 
-                        #Predict test data
-                        y_predict_test = best_model.predict(x_test_split)
-                        score_test = evaluation.evaluation_metrics(y_test_split, y_predict_test, "Test", False)
-                        Logcreator.info("BAS Score achieved on test set: {}".format(score_test))
-                        #visualize_prediction(x_test_split, y_test_split, y_predict_test, "Test")
+                        for classifier_data in classifier_par_list:
+                            Logcreator.info("\n--------------------------------------")
+                            Logcreator.info("Iteration", loop_counter)
+                            Logcreator.info("Data_sampler", data_sampler_data)
+                            Logcreator.info("Scaler", scaler_data)
+                            Logcreator.info("Feature Adder", feature_adder_data)
+                            Logcreator.info("Classifier", classifier_data)
+                            Logcreator.info("\n----------------------------------------")
 
+                            # Train classifier
+                            clf = Classifier(**classifier_data)
+                            best_model = clf.fit(X=x_train_split, y=y_train_split)
+                            search_results = clf.getFitResults()
 
-                        output = pd.DataFrame()
+                            # Predict test data
+                            y_predict_test = best_model.predict(x_test_split)
+                            score_test = evaluation.evaluation_metrics(y_test_split, y_predict_test, "Test", False)
+                            Logcreator.info("BAS Score achieved on test set: {}".format(score_test))
+                            # visualize_prediction(x_test_split, y_test_split, y_predict_test, "Test")
 
-                        nrOfOutputRows = 5 if len(search_results) > 5 else len(search_results)
-                        for i in range(0,
-                                       nrOfOutputRows):  # append multiple rows of the grid search result, not just the best
-                            # update output
-                            output_row = list()
-                            output_row.append(loop_counter)
-                            output_row.append(score_test)
-                            output_row.extend(search_results[
-                                                  ['params', 'mean_test_score', 'std_test_score',
-                                                   'mean_train_score',
-                                                   'std_train_score']].iloc[i])
+                            output = pd.DataFrame()
 
-                            output_row.extend(list(data_sampler_data.values()))
-                            output_row.extend(list(scaler_data.values()))
-                            output_row.extend(list(classifier_data.values()))
-                            output = output.append(pd.DataFrame(output_row, index=results_out.columns).T)
+                            nrOfOutputRows = 5 if len(search_results) > 5 else len(search_results)
+                            for i in range(0,
+                                           nrOfOutputRows):  # append multiple rows of the grid search result, not just the best
+                                # update output
+                                output_row = list()
+                                output_row.append(loop_counter)
+                                output_row.append(score_test)
+                                output_row.extend(search_results[
+                                                      ['params', 'mean_test_score', 'std_test_score',
+                                                       'mean_train_score',
+                                                       'std_train_score']].iloc[i])
 
-                        # Write to csv
-                        pd.DataFrame.to_csv(output,
-                                            os.path.join(Configuration.output_directory, 'search_results.csv'),
-                                            index=False, mode='a', header=False)
-                        # Increase loop counter
-                        loop_counter = loop_counter + 1
+                                output_row.extend(list(data_sampler_data.values()))
+                                output_row.extend(list(scaler_data.values()))
+                                output_row.extend(list(feature_adder_data.values()))
+                                output_row.extend(list(classifier_data.values()))
+                                output = output.append(pd.DataFrame(output_row, index=results_out.columns).T)
+
+                            # Write to csv
+                            pd.DataFrame.to_csv(output,
+                                                os.path.join(Configuration.output_directory, 'search_results.csv'),
+                                                index=False, mode='a', header=False)
+                            # Increase loop counter
+                            loop_counter = loop_counter + 1
             
         finally:
             Logcreator.info("Search finished")

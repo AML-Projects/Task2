@@ -10,10 +10,10 @@
     },
     "feature_adder" : {
         "clustering_on" : "False",
-         "n_clusters" : 16,
-         "custom_on" : "False",
-         "auto_encoder_on" : "False",
-         "n_encoder_features" : 16,
+        "n_clusters" : 16,
+        "custom_on" : "False",
+        "auto_encoder_on" : "False",
+        "n_encoder_features" : 16,
     },
 	"scaler" : {
 		"name" : "robustscaler"
@@ -27,13 +27,21 @@
 	},
 	"search" : {
 		"data_sampler" : {
-			"sampling_method" : ["random", "SMOTE", "ADASYN", "RandomUnderSampler", "ClusterCentroids", "NearMiss", "AllKNN", "SMOTEENN", "SMOTETomek"]
+			"sampling_method" : ["None", "random", "SMOTE", "ADASYN", "RandomUnderSampler", "ClusterCentroids", "NearMiss", "AllKNN", "SMOTEENN", "SMOTETomek"]
 		},
 		"scaler" : {
 			"name" : ["robustscaler"]
 		},
 		"classifier" : {
 			"classifier" : ["SVC"]
-		}
+		},
+		"feature_adder" : {
+            "auto_encoder_on" : ["False", "True"],
+            "clustering_on" : ["False", "True"],
+            "custom_on" : ["False", "True"],
+            "n_clusters" : [8, 16],
+            "n_encoder_features" : [8, 16, 32],
+        },
+
 	}
 }
