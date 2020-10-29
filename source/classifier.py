@@ -80,13 +80,13 @@ def neural_network(x, y, class_weights, nr_features):
 
 
 class Classifier:
-    def __init__(self, classifier, random_search=True):
+    def __init__(self, classifier, random_search=False):
         self.classifier = classifier
         self.results = {}
         if isinstance(random_search, str):
             random_search = random_search == "True"
         self.random_search = random_search
-        Logcreator.info(self.classifier)
+        Logcreator.info("\nClassifier:", self.classifier)
 
     def getModelAndParams(self, y):
         class_weights, class_weights_dict = self.compute_class_weights(y)
@@ -95,7 +95,7 @@ class Classifier:
         fit_params = {}
 
         if self.classifier == "BalancedRandomForestClassifier":
-            model = BalancedRandomForestClassifier(n_estimators=100, random_state=0)
+            model = BalancedRandomForestClassifier(class_weight='balanced', n_estimators=100, random_state=0)
 
         elif self.classifier == "EasyEnsembleClassifier":
             model = EasyEnsembleClassifier(random_state=0)
