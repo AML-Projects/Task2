@@ -4,6 +4,7 @@ from sklearn.cluster import AgglomerativeClustering
 from sklearn.preprocessing import StandardScaler
 
 from logcreator.logcreator import Logcreator
+from source.autoencoder import AutoEncoder
 
 
 class ClusterFeatureGenerator(BaseEstimator):
@@ -91,53 +92,67 @@ class CustomFeatureGenerator:
 
 
 class FeatureAdder(TransformerMixin):
-    def __init__(self, clustering=False, n_clusters=16, custom=False):
+    def __init__(self, clustering_on=False, n_clusters=16,
+                 custom_on=False,
+                 auto_encoder_on=False, n_encoder_features=16):
         Logcreator.info("\nFeature Adder:")
 
-        if isinstance(clustering, str):
-            clustering = clustering == "True"
-        self.clustering = clustering
+        if isinstance(clustering_on, str):
+            clustering_on = clustering_on == "True"
+        self.clustering_on = clustering_on
         self.n_clusters = n_clusters
-        self.clusterer = None
-        if clustering:
-            Logcreator.info("[cluster]")
+        if self.clustering_on:
+            Logcreator.info("[clustering_on]")
+            self.clusterFG = ClusterFeatureGenerator()
         self.clusterFG = None
 
-        if isinstance(custom, str):
-            clustering = custom == "True"
-        self.custom = custom
-        if self.custom:
-            Logcreator.info("[custom]")
+        if isinstance(custom_on, str):
+            custom_on = custom_on == "True"
+        self.custom_on = custom_on
+        if self.custom_on:
+            Logcreator.info("[custom_on]")
+            self.customFG = CustomFeatureGenerator()
         self.customFG = None
+
+        if isinstance(auto_encoder_on, str):
+            auto_encoder_on = auto_encoder_on == "True"
+        self.auto_encoder_on = auto_encoder_on
+        self.n_encoder_features = n_encoder_features
+        if self.auto_encoder_on:
+            Logcreator.info("[auto_encoder_on]")
+            self.ae = AutoEncoder(encoded_size=self.n_encoder_features, scaling_on=True, add_noise=True)
 
         pass
 
     def fit(self, x, y=None):
-        if self.clustering:
-            self.clusterFG = ClusterFeatureGenerator()
+        if self.clustering_on:
             self.clusterFG.fit(x)
 
-        if self.custom:
-            self.customFG = CustomFeatureGenerator()
+        if self.custom_on:
             self.customFG.fit(x)
+
+        if self.auto_encoder_on:
+            self.ae.fit(x, None)
 
         return self
 
     def transform(self, X):
         x_add = np.empty(shape=(X.shape[0], 0))
-        if self.clustering:
-            new_feature = self.clusterFG.predict(X)
-            new_feature = new_feature[np.newaxis].T
+        if self.clustering_on:
+            new_feature_cluster = self.clusterFG.predict(X)
+            new_feature_cluster = new_feature_cluster[np.newaxis].T
 
-            x_add = np.c_[new_feature, x_add]
+            x_add = np.c_[new_feature_cluster, x_add]
 
-        if self.custom:
-            new_features = self.customFG.predict(X)
+        if self.custom_on:
+            new_features_custom = self.customFG.predict(X)
 
-            scaler = StandardScaler()
-            new_features = scaler.fit_transform(new_features)
+            x_add = np.c_[new_features_custom, x_add]
 
-            x_add = np.c_[new_features, x_add]
+        if self.auto_encoder_on:
+            new_features_ae = self.ae.transform(X)
+
+            x_add = np.c_[new_features_ae, x_add]
 
         if x_add.size > 0:
             # scale new features

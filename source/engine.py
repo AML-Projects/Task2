@@ -204,7 +204,7 @@ class Engine:
 
         # --------------------------------------------------------------------------------------------------------------
         # Feature adder
-        fadder = FeatureAdder(clustering=False, custom=False)
+        fadder = FeatureAdder(clustering_on=False, custom_on=False, auto_encoder_on=True)
         fadder.fit(x_train_split)
         x_train_split = fadder.transform(x_train_split)
         x_test_split = fadder.transform(x_test_split)
