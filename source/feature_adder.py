@@ -46,47 +46,49 @@ class CustomFeatureGenerator:
         return np.array(extracted_features).T
 
     def extract_values_from_columns(self, current_columns, extracted_features):
-        # a_min = numpy.amin(current_columns, axis=1)
+        a_min = np.amin(current_columns, axis=1)
+        extracted_features.append(a_min)
+
         a_max = np.amax(current_columns, axis=1)
+        extracted_features.append(a_max)
 
         # max - min
         ptp = np.ptp(current_columns, axis=1)
-
-        # percentile25 = numpy.percentile(current_columns, q=25, axis=1)
-        percentile50 = np.percentile(current_columns, q=50, axis=1)
-        percentile75 = np.percentile(current_columns, q=75, axis=1)
-
-        # median is 50 percentil
-        # median = numpy.median(current_columns, axis=1)
-
-        # average = numpy.average(current_columns, axis=1)
-
-        # mean = numpy.mean(current_columns, axis=1)
-
-        std = np.std(current_columns, axis=1)
-
-        # var = numpy.var(current_columns, axis=1)
-
-        # gradient = numpy.max(numpy.gradient(current_columns, axis=1), axis=1)
-        # trapeze = numpy.trapz(current_columns, axis=1)
-        # diff = numpy.max(numpy.diff(current_columns, axis=1), axis=1)
-
-        # extracted_features.append(a_min)
-        extracted_features.append(a_max)
         extracted_features.append(ptp)
-        # extracted_features.append(percentile25)
+
+        percentile25 = np.percentile(current_columns, q=25, axis=1)
+        extracted_features.append(percentile25)
+
+        percentile50 = np.percentile(current_columns, q=50, axis=1)
         extracted_features.append(percentile50)
+
+        percentile75 = np.percentile(current_columns, q=75, axis=1)
         extracted_features.append(percentile75)
 
+        # median is 50 percentile
+        # median = np.median(current_columns, axis=1)
         # extracted_features.append(median)
-        # extracted_features.append(average)
-        # extracted_features.append(mean)
-        extracted_features.append(std)
-        # extracted_features.append(var)
 
-        # extracted_features.append(gradient)
-        # extracted_features.append(trapeze)
-        # extracted_features.append(diff)
+        average = np.average(current_columns, axis=1)
+        extracted_features.append(average)
+
+        mean = np.mean(current_columns, axis=1)
+        extracted_features.append(mean)
+
+        std = np.std(current_columns, axis=1)
+        extracted_features.append(std)
+
+        var = np.var(current_columns, axis=1)
+        extracted_features.append(var)
+
+        gradient = np.max(np.gradient(current_columns, axis=1), axis=1)
+        extracted_features.append(gradient)
+
+        trapeze = np.trapz(current_columns, axis=1)
+        extracted_features.append(trapeze)
+
+        diff = np.max(np.diff(current_columns, axis=1), axis=1)
+        extracted_features.append(diff)
 
         return extracted_features
 
