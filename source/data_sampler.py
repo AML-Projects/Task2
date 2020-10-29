@@ -7,6 +7,8 @@ from logcreator.logcreator import Logcreator
 
 class DataSampling:
     def __init__(self, sampling_method):
+        if sampling_method == "None":
+            sampling_method = None
         self.sampling_method = sampling_method
         Logcreator.info("\nData Sampling:", self.sampling_method)
 
@@ -42,6 +44,10 @@ class DataSampling:
         if self.sampling_method == "SMOTETomek":
             sampler = SMOTETomek(n_jobs=-1, random_state=41)
 
+        if sampler is None:
+            Logcreator.warn("sampling method not found")
+            return X, y
+
         x_sampled, y_sampled = sampler.fit_resample(X, y)
 
         Logcreator.info("\nResampled shape\n", x_sampled.shape)
@@ -52,4 +58,3 @@ class DataSampling:
         if self.sampling_method is None:
             return X, y
         return self.sampling(X, y)
-
