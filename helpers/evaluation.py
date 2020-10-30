@@ -136,5 +136,5 @@ def evaluation_metrics(y_true, y_predicted, text, showPlot=True):
     Logcreator.info(text, 'report')
     Logcreator.info(classification_report(y_true, y_predicted))
 
-    score = evaluate_bas(text, y_predicted, y_true)
+    score = evaluate_bas(y_true, y_predicted, text)
     return score
