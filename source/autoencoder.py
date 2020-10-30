@@ -120,7 +120,6 @@ class AutoEncoder(BaseEstimator, TransformerMixin):
 
             visualize_prediction(X, y, y_pred, "Auto Encoded")
 
-        exit()
         return self
 
     def transform(self, X, *_):
