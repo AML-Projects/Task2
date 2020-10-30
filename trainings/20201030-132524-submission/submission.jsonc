@@ -1,0 +1,30 @@
+{
+    "environment": {
+        "name" : "describe the run",
+        "output_path": "trainings",
+        "log_file" : "logs.txt"
+    },
+    "feature_selector": {
+		"method" : "None",
+        "n_components" : 200
+    },
+    "feature_adder" : {
+        "clustering_on" : "True",
+        "n_clusters" : 16,
+        "custom_on" : "True",
+        "auto_encoder_on" : "False",
+        "n_encoder_features" : 16,
+        "lda_on" :"True",
+        "lda_shrinkage" : 0.9,
+    },
+	"scaler" : {
+		"name" : "robustscaler"
+	},
+	"data_sampler": {
+		"sampling_method": "None",
+	},
+	"classifier": {
+		"classifier": "SVC",
+		"random_search" : "False"
+	},
+}
