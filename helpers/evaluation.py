@@ -85,6 +85,40 @@ def one_hot_to_class(y, num_classes):
     return y
 
 
+def one_hot_to_class_label(y_true, y_predicted):
+    """
+    Convert from one hot encoding to class labels if needed
+    :param y_true:
+    :param y_predicted:
+    :param classes:
+    :return:
+    """
+    classes = np.unique(y_true)
+    number_classes = len(classes)
+
+    y_true = one_hot_to_class(y_true, num_classes=number_classes)
+    y_predicted = one_hot_to_class(y_predicted, num_classes=number_classes)
+
+    return y_true, y_predicted
+
+
+def evaluate_bas(y_true, y_predicted, text):
+    """
+    Balanced accuracy score
+    :param y_true:
+    :param y_predicted:
+    :param text:
+    :return:
+    """
+
+    y_true, y_predicted = one_hot_to_class_label(y_true, y_predicted)
+
+    score = balanced_accuracy_score(y_true, y_predicted)
+    Logcreator.info("bas_score on", text, "split:", score)
+
+    return score
+
+
 def evaluation_metrics(y_true, y_predicted, text, showPlot=True):
     Logcreator.info("\n---------", text, "---------\n")
     classes = np.unique(y_true)
@@ -94,10 +128,7 @@ def evaluation_metrics(y_true, y_predicted, text, showPlot=True):
     if showPlot:
         plt.show()
 
-    # convert from one hot encoding to class labels if needed
-    number_classes = len(classes)
-    y_true = one_hot_to_class(y_true, num_classes=number_classes)
-    y_predicted = one_hot_to_class(y_predicted, num_classes=number_classes)
+    y_true, y_predicted = one_hot_to_class_label(y_true, y_predicted)
 
     # plot_individual_cm(y_true, y_predicted)
 
@@ -105,7 +136,5 @@ def evaluation_metrics(y_true, y_predicted, text, showPlot=True):
     Logcreator.info(text, 'report')
     Logcreator.info(classification_report(y_true, y_predicted))
 
-    # balanced accuracy score
-    score = balanced_accuracy_score(y_true, y_predicted)
-    Logcreator.info("bas_score on", text, "split:", score)
+    score = evaluate_bas(text, y_predicted, y_true)
     return score

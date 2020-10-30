@@ -154,7 +154,7 @@ class FeatureAdder(TransformerMixin):
             self.customFG.fit(x)
 
         if self.auto_encoder_on:
-            self.ae.fit(x, None)
+            self.ae.fit(x, y)
 
         if self.lda_on:
             self.lda.fit(x, y)
