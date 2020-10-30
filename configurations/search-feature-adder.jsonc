@@ -14,6 +14,8 @@
         "custom_on" : "False",
         "auto_encoder_on" : "False",
         "n_encoder_features" : 16,
+        "lda_on" :"False",
+        "lda_shrinkage" : 0.5,
     },
 	"scaler" : {
 		"name" : "robustscaler"
@@ -33,14 +35,16 @@
 			"name" : ["robustscaler"]
 		},
 		"classifier" : {
-			"classifier" : ["BalancedRandomForestClassifier"]
+			"classifier" : ["SVC"]
 		},
 		"feature_adder" : {
             "auto_encoder_on" : ["False", "True"],
             "clustering_on" : ["False", "True"],
             "custom_on" : ["False", "True"],
+            "lda_on" : ["True", "False"],
+            "lda_shrinkage" : ["None", "auto", 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
             "n_clusters" : [16],
-            "n_encoder_features" : [32, 64],
+            "n_encoder_features" : [32],
         },
 
 	}

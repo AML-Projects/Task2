@@ -14,6 +14,8 @@
         "custom_on" : "False",
         "auto_encoder_on" : "False",
         "n_encoder_features" : 16,
+        "lda_on" :"False",
+        "lda_shrinkage" : 0.5,
     },
 	"scaler" : {
 		"name" : "robustscaler"
@@ -41,6 +43,8 @@
             "custom_on" : ["False", "True"],
             "n_clusters" : [8, 16],
             "n_encoder_features" : [8, 16, 32],
+            "lda_on" : ["False", "True"],
+            "lda_shrinkage" : ["auto", 0.7],
         },
 
 	}

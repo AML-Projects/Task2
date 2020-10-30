@@ -1,6 +1,7 @@
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.cluster import AgglomerativeClustering
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.preprocessing import StandardScaler
 
 from logcreator.logcreator import Logcreator
@@ -96,7 +97,9 @@ class CustomFeatureGenerator:
 class FeatureAdder(TransformerMixin):
     def __init__(self, clustering_on=False, n_clusters=16,
                  custom_on=False,
-                 auto_encoder_on=False, n_encoder_features=16):
+                 auto_encoder_on=False, n_encoder_features=16,
+                 lda_on=False,
+                 lda_shrinkage=None):
         Logcreator.info("\nFeature Adder:")
 
         if isinstance(clustering_on, str):
@@ -104,7 +107,7 @@ class FeatureAdder(TransformerMixin):
         self.clustering_on = clustering_on
         self.n_clusters = n_clusters
         if self.clustering_on:
-            Logcreator.info("[clustering_on]")
+            Logcreator.info("[clustering_on], n_clusters:", self.n_clusters)
             self.clusterFG = ClusterFeatureGenerator()
 
         if isinstance(custom_on, str):
@@ -119,8 +122,27 @@ class FeatureAdder(TransformerMixin):
         self.auto_encoder_on = auto_encoder_on
         self.n_encoder_features = n_encoder_features
         if self.auto_encoder_on:
-            Logcreator.info("[auto_encoder_on]")
-            self.ae = AutoEncoder(encoded_size=self.n_encoder_features, scaling_on=True, add_noise=True)
+            Logcreator.info("[auto_encoder_on], n_encoder_features:", self.n_encoder_features)
+            self.ae = AutoEncoder(encoded_size=self.n_encoder_features, scaling_on=True, add_noise=False)
+
+        if isinstance(lda_on, str):
+            lda_on = lda_on == "True"
+        self.lda_on = lda_on
+        if isinstance(lda_shrinkage, str):
+            if lda_shrinkage == "None":
+                lda_shrinkage = None
+            elif lda_shrinkage != "auto":
+                ValueError("lda_shrinkage can't have value", lda_shrinkage)
+        if self.lda_on:
+            Logcreator.info("[lda_on], shrinkage:", lda_shrinkage)
+            """
+            LDA can add  a lot of bias on the data, because it uses y in the fit!
+            The shrinking parameter can regularize overfitting!
+            So if the cross validation score mean_test_score on the training data goes up
+            but on the test split does go down, we are likely overfitting.
+            https://scikit-learn.org/stable/modules/lda_qda.html#shrinkage
+            """
+            self.lda = LinearDiscriminantAnalysis(solver='eigen', shrinkage=lda_shrinkage)
 
         pass
 
@@ -133,6 +155,9 @@ class FeatureAdder(TransformerMixin):
 
         if self.auto_encoder_on:
             self.ae.fit(x, None)
+
+        if self.lda_on:
+            self.lda.fit(x, y)
 
         return self
 
@@ -154,6 +179,11 @@ class FeatureAdder(TransformerMixin):
 
             x_add = np.c_[new_features_ae, x_add]
 
+        if self.lda_on:
+            new_features_lda = self.lda.transform(X)
+
+            x_add = np.c_[new_features_lda, x_add]
+
         if x_add.size > 0:
             # scale new features
             scaler = StandardScaler()
@@ -161,5 +191,7 @@ class FeatureAdder(TransformerMixin):
 
             # add features to X
             X = np.c_[X, x_add]
+
+        Logcreator.info("X shape after feature addition", X.shape)
 
         return X

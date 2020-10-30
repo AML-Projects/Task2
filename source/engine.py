@@ -63,7 +63,6 @@ class Engine:
         pd.DataFrame.to_csv(results_out, os.path.join(Configuration.output_directory, 'search_results.csv'),
                             index=False)
 
-
         try:
             for data_sampler_data in data_sampler_par_list:
 
@@ -81,7 +80,7 @@ class Engine:
                     for feature_adder_data in data_feature_adder_par_list:
 
                         feature_adder = FeatureAdder(**feature_adder_data)
-                        feature_adder.fit(x_train_split)
+                        feature_adder.fit(x_train_split, y_train_split)
                         x_train_split = feature_adder.transform(x_train_split)
                         x_test_split = feature_adder.transform(x_test_split)
 
@@ -131,10 +130,9 @@ class Engine:
                                                 index=False, mode='a', header=False)
                             # Increase loop counter
                             loop_counter = loop_counter + 1
-            
+
         finally:
             Logcreator.info("Search finished")
-
 
     def get_search_list(self, config_name):
         param_dict = self.get_search_params(config_name)
@@ -176,12 +174,11 @@ class Engine:
         pd.set_option('display.width', None)
         pd.set_option('display.max_colwidth', None)
 
-
         # --------------------------------------------------------------------------------------------------------------
         # Sampling
         ds = DataSampling(sampling_method=Configuration.get('data_sampler.sampling_method'))
-        #ds_dict = self.get_serach_params('data_sampler')
-        #ds = DataSampling(ds)
+        # ds_dict = self.get_serach_params('data_sampler')
+        # ds = DataSampling(ds)
         x_train_split, y_train_split = ds.fit_resample(x_train_split, y_train_split)
         Logcreator.info("\n Trainset samples per group\n", y_train_split.groupby("y")["y"].count().values)
 
@@ -189,8 +186,8 @@ class Engine:
         # Scaling
         scaler = Scaler(name=Configuration.get('scaler.name'))
         x_train_split, y_train_split, x_test_split = scaler.transform_custom(x_train=x_train_split,
-                                                                                           y_train=y_train_split,
-                                                                                           x_test=x_test_split)
+                                                                             y_train=y_train_split,
+                                                                             x_test=x_test_split)
 
         # --------------------------------------------------------------------------------------------------------------
         # Feature Selection
@@ -218,8 +215,10 @@ class Engine:
                               n_clusters=Configuration.get('feature_adder.n_clusters'),
                               custom_on=Configuration.get('feature_adder.custom_on'),
                               auto_encoder_on=Configuration.get('feature_adder.auto_encoder_on'),
-                              n_encoder_features=Configuration.get('feature_adder.n_encoder_features'))
-        fadder.fit(x_train_split)
+                              n_encoder_features=Configuration.get('feature_adder.n_encoder_features'),
+                              lda_on=Configuration.get('feature_adder.lda_on'),
+                              lda_shrinkage=Configuration.get('feature_adder.lda_shrinkage'))
+        fadder.fit(x_train_split, y_train_split)
         x_train_split = fadder.transform(x_train_split)
         x_test_split = fadder.transform(x_test_split)
 
