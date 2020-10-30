@@ -67,22 +67,25 @@ class Engine:
             for data_sampler_data in data_sampler_par_list:
 
                 ds = DataSampling(**data_sampler_data)
-                x_train_split, y_train_split = ds.fit_resample(x_train_split, y_train_split)
-                Logcreator.info("\n Trainset samples per group\n", y_train_split.groupby("y")["y"].count().values)
+                x_train_split_ds, y_train_split_ds = ds.fit_resample(x_train_split, y_train_split)
+                x_test_split_ds = x_test_split
+                Logcreator.info("\n Trainset samples per group\n", y_train_split_ds.groupby("y")["y"].count().values)
 
                 for scaler_data in scaler_par_list:
 
                     scaler = Scaler(**scaler_data)
-                    x_train_split, y_train_split, x_test_split = scaler.transform_custom(x_train=x_train_split,
-                                                                                         y_train=y_train_split,
-                                                                                         x_test=x_test_split)
+                    x_train_split_sc, y_train_split_sc, x_test_split_sc = scaler.transform_custom(
+                        x_train=x_train_split_ds,
+                        y_train=y_train_split_ds,
+                        x_test=x_test_split_ds)
 
                     for feature_adder_data in data_feature_adder_par_list:
 
                         feature_adder = FeatureAdder(**feature_adder_data)
-                        feature_adder.fit(x_train_split, y_train_split)
-                        x_train_split = feature_adder.transform(x_train_split)
-                        x_test_split = feature_adder.transform(x_test_split)
+                        feature_adder.fit(x_train_split_sc, y_train_split_sc)
+                        x_train_split_adder = feature_adder.transform(x_train_split_sc)
+                        x_test_split_adder = feature_adder.transform(x_test_split_sc)
+                        y_train_split_adder = y_train_split_sc
 
                         for classifier_data in classifier_par_list:
                             Logcreator.info("\n--------------------------------------")
@@ -95,11 +98,11 @@ class Engine:
 
                             # Train classifier
                             clf = Classifier(**classifier_data)
-                            best_model = clf.fit(X=x_train_split, y=y_train_split)
+                            best_model = clf.fit(X=x_train_split_adder, y=y_train_split_adder)
                             search_results = clf.getFitResults()
 
                             # Predict test data
-                            y_predict_test = best_model.predict(x_test_split)
+                            y_predict_test = best_model.predict(x_test_split_adder)
                             score_test = evaluation.evaluation_metrics(y_test_split, y_predict_test, "Test", False)
                             Logcreator.info("BAS Score achieved on test set: {}".format(score_test))
                             # visualize_prediction(x_test_split, y_test_split, y_predict_test, "Test")
