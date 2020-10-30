@@ -1,0 +1,2501 @@
+20201030-121246	Task 02 - MRI Desease classification
+20201030-121246	Info: Environment: describe the run
+20201030-121247	Info: Shape of training_samples: (4800, 1000)
+20201030-121247	Info:            x0        x1        x2  ...      x997      x998      x999
+id                                 ...                              
+0.0 -1.498973  1.448201  2.784979  ... -0.004883  3.173465  2.179183
+1.0 -0.521470 -0.493049  0.891382  ...  0.971394  0.604963  0.355499
+2.0 -0.417724 -0.019106  0.938377  ...  0.842709  2.086818  0.512741
+3.0 -0.471972  0.000398  0.784836  ...  0.426496  0.336746  1.304973
+4.0  0.201026 -0.579901  0.638809  ...  0.825237  1.044778  0.071464
+
+[5 rows x 1000 columns]
+20201030-121247	Info: Shape of training labels: (4800, 1)
+20201030-121247	Info:     y
+id   
+0   1
+1   0
+2   1
+3   1
+4   1
+20201030-121248	Info: Shape of test samples: (4100, 1000)
+20201030-121248	Info:            x0        x1        x2  ...      x997      x998      x999
+id                                 ...                              
+0.0 -1.079476  1.026788  2.025148  ...  0.597379  1.127784  2.924234
+1.0 -1.104064  2.587608  0.870833  ... -0.325131  2.295994  3.219922
+2.0  0.162656 -0.869909  0.502366  ...  0.264860  0.742492 -0.105276
+3.0 -0.224210 -0.226734  0.940147  ...  0.802260  0.397065  0.596587
+4.0 -0.571950  0.946702  1.021095  ...  0.952334  0.986242  2.301550
+
+[5 rows x 1000 columns]
+20201030-121248	Info: Train-Data Shpae: (4800, 1000)
+20201030-121248	Info: Test-Data Shape: (4100, 1000)
+20201030-121248	Info: 
+Validation samples per group
+ [ 600 3600  600]
+20201030-121248	Info: 
+Train samples per group
+ [ 480 2880  480]
+20201030-121248	Info: 
+Test samples per group
+ [120 720 120]
+20201030-121248	Info: Training initialized
+20201030-121248	Number of loops: 32
+20201030-121248	Info: 
+Data Sampling: None
+20201030-121248	Info: 
+ Trainset samples per group
+ [ 480 2880  480]
+20201030-121248	Info: Start normalizer
+20201030-121249	Info: 
+train shape (3840, 1000)
+20201030-121249	Info: 
+Feature Adder:
+20201030-121249	Info: [lda_on], shrinkage: 0.9
+20201030-121249	Info: X shape after feature addition (3840, 1002)
+20201030-121249	Info: X shape after feature addition (960, 1002)
+20201030-121249	Info: 
+--------------------------------------
+20201030-121249	Info: Iteration 0
+20201030-121249	Info: Data_sampler {'sampling_method': 'None'}
+20201030-121249	Info: Scaler {'name': 'robustscaler'}
+20201030-121249	Info: Feature Adder {'auto_encoder_on': 'False', 'clustering_on': 'False', 'custom_on': 'False', 'lda_on': 'True', 'lda_shrinkage': 0.9, 'n_clusters': 16, 'n_encoder_features': 16}
+20201030-121249	Info: Classifier {'classifier': 'SVC'}
+20201030-121249	Info: 
+----------------------------------------
+20201030-121249	Info: 
+Classifier: SVC
+20201030-121249	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-121249	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-121249	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-121249	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-121249	Info: 
+Starting Parameter Search
+20201030-121249	Info: -> grid search
+20201030-121334	Info: Best estimator from GridSearch: SVC(C=1.1,
+    class_weight={0: 2.6666666666666665, 1: 0.4444444444444444,
+                  2: 2.6666666666666665},
+    decision_function_shape='ovo', random_state=41)
+20201030-121334	Info: Best alpha found: {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}
+20201030-121334	Info: Best training-score with mse loss: 0.7006944444444445
+20201030-121334	Info:                                                                 params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0  {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}         0.700694        0.021046           0.92581         0.002463
+20201030-121336	Info: 
+--------- Test ---------
+
+20201030-121336	Info: Normalized confusion matrix
+20201030-121336	Info: [[0.55       0.225      0.225     ]
+ [0.12083333 0.7875     0.09166667]
+ [0.15       0.13333333 0.71666667]]
+20201030-121336	Info: Test report
+20201030-121336	Info:               precision    recall  f1-score   support
+
+           0       0.39      0.55      0.45       120
+           1       0.93      0.79      0.85       720
+           2       0.48      0.72      0.58       120
+
+    accuracy                           0.75       960
+   macro avg       0.60      0.68      0.63       960
+weighted avg       0.81      0.75      0.77       960
+
+20201030-121336	Info: bas_score on Test split: 0.6847222222222222
+20201030-121336	Info: BAS Score achieved on test set: 0.6847222222222222
+20201030-121336	Info: 
+Feature Adder:
+20201030-121336	Info: [lda_on], shrinkage: 0.9
+20201030-121337	Info: X shape after feature addition (3840, 1002)
+20201030-121337	Info: X shape after feature addition (960, 1002)
+20201030-121337	Info: 
+--------------------------------------
+20201030-121337	Info: Iteration 1
+20201030-121337	Info: Data_sampler {'sampling_method': 'None'}
+20201030-121337	Info: Scaler {'name': 'robustscaler'}
+20201030-121337	Info: Feature Adder {'auto_encoder_on': 'False', 'clustering_on': 'False', 'custom_on': 'False', 'lda_on': 'True', 'lda_shrinkage': 0.9, 'n_clusters': 16, 'n_encoder_features': 32}
+20201030-121337	Info: Classifier {'classifier': 'SVC'}
+20201030-121337	Info: 
+----------------------------------------
+20201030-121337	Info: 
+Classifier: SVC
+20201030-121337	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-121337	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-121337	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-121337	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-121337	Info: 
+Starting Parameter Search
+20201030-121337	Info: -> grid search
+20201030-121420	Info: Best estimator from GridSearch: SVC(C=1.1,
+    class_weight={0: 2.6666666666666665, 1: 0.4444444444444444,
+                  2: 2.6666666666666665},
+    decision_function_shape='ovo', random_state=41)
+20201030-121420	Info: Best alpha found: {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}
+20201030-121420	Info: Best training-score with mse loss: 0.7006944444444445
+20201030-121420	Info:                                                                 params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0  {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}         0.700694        0.021046           0.92581         0.002463
+20201030-121422	Info: 
+--------- Test ---------
+
+20201030-121422	Info: Normalized confusion matrix
+20201030-121422	Info: [[0.55       0.225      0.225     ]
+ [0.12083333 0.7875     0.09166667]
+ [0.15       0.13333333 0.71666667]]
+20201030-121422	Info: Test report
+20201030-121422	Info:               precision    recall  f1-score   support
+
+           0       0.39      0.55      0.45       120
+           1       0.93      0.79      0.85       720
+           2       0.48      0.72      0.58       120
+
+    accuracy                           0.75       960
+   macro avg       0.60      0.68      0.63       960
+weighted avg       0.81      0.75      0.77       960
+
+20201030-121422	Info: bas_score on Test split: 0.6847222222222222
+20201030-121422	Info: BAS Score achieved on test set: 0.6847222222222222
+20201030-121422	Info: 
+Feature Adder:
+20201030-121422	Info: X shape after feature addition (3840, 1000)
+20201030-121422	Info: X shape after feature addition (960, 1000)
+20201030-121422	Info: 
+--------------------------------------
+20201030-121422	Info: Iteration 2
+20201030-121422	Info: Data_sampler {'sampling_method': 'None'}
+20201030-121422	Info: Scaler {'name': 'robustscaler'}
+20201030-121422	Info: Feature Adder {'auto_encoder_on': 'False', 'clustering_on': 'False', 'custom_on': 'False', 'lda_on': 'False', 'lda_shrinkage': 0.9, 'n_clusters': 16, 'n_encoder_features': 16}
+20201030-121422	Info: Classifier {'classifier': 'SVC'}
+20201030-121422	Info: 
+----------------------------------------
+20201030-121422	Info: 
+Classifier: SVC
+20201030-121422	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-121422	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-121422	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-121422	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-121422	Info: 
+Starting Parameter Search
+20201030-121422	Info: -> grid search
+20201030-121505	Info: Best estimator from GridSearch: SVC(C=1.1,
+    class_weight={0: 2.6666666666666665, 1: 0.4444444444444444,
+                  2: 2.6666666666666665},
+    decision_function_shape='ovo', random_state=41)
+20201030-121505	Info: Best alpha found: {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}
+20201030-121505	Info: Best training-score with mse loss: 0.6929398148148148
+20201030-121505	Info:                                                                 params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0  {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}          0.69294        0.024405          0.923624         0.002894
+20201030-121507	Info: 
+--------- Test ---------
+
+20201030-121507	Info: Normalized confusion matrix
+20201030-121507	Info: [[0.53333333 0.225      0.24166667]
+ [0.125      0.78194444 0.09305556]
+ [0.15       0.13333333 0.71666667]]
+20201030-121508	Info: Test report
+20201030-121508	Info:               precision    recall  f1-score   support
+
+           0       0.37      0.53      0.44       120
+           1       0.93      0.78      0.85       720
+           2       0.47      0.72      0.57       120
+
+    accuracy                           0.74       960
+   macro avg       0.59      0.68      0.62       960
+weighted avg       0.80      0.74      0.76       960
+
+20201030-121508	Info: bas_score on Test split: 0.6773148148148148
+20201030-121508	Info: BAS Score achieved on test set: 0.6773148148148148
+20201030-121508	Info: 
+Feature Adder:
+20201030-121508	Info: X shape after feature addition (3840, 1000)
+20201030-121508	Info: X shape after feature addition (960, 1000)
+20201030-121508	Info: 
+--------------------------------------
+20201030-121508	Info: Iteration 3
+20201030-121508	Info: Data_sampler {'sampling_method': 'None'}
+20201030-121508	Info: Scaler {'name': 'robustscaler'}
+20201030-121508	Info: Feature Adder {'auto_encoder_on': 'False', 'clustering_on': 'False', 'custom_on': 'False', 'lda_on': 'False', 'lda_shrinkage': 0.9, 'n_clusters': 16, 'n_encoder_features': 32}
+20201030-121508	Info: Classifier {'classifier': 'SVC'}
+20201030-121508	Info: 
+----------------------------------------
+20201030-121508	Info: 
+Classifier: SVC
+20201030-121508	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-121508	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-121508	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-121508	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-121508	Info: 
+Starting Parameter Search
+20201030-121508	Info: -> grid search
+20201030-121551	Info: Best estimator from GridSearch: SVC(C=1.1,
+    class_weight={0: 2.6666666666666665, 1: 0.4444444444444444,
+                  2: 2.6666666666666665},
+    decision_function_shape='ovo', random_state=41)
+20201030-121551	Info: Best alpha found: {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}
+20201030-121551	Info: Best training-score with mse loss: 0.6929398148148148
+20201030-121551	Info:                                                                 params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0  {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}          0.69294        0.024405          0.923624         0.002894
+20201030-121553	Info: 
+--------- Test ---------
+
+20201030-121553	Info: Normalized confusion matrix
+20201030-121553	Info: [[0.53333333 0.225      0.24166667]
+ [0.125      0.78194444 0.09305556]
+ [0.15       0.13333333 0.71666667]]
+20201030-121553	Info: Test report
+20201030-121553	Info:               precision    recall  f1-score   support
+
+           0       0.37      0.53      0.44       120
+           1       0.93      0.78      0.85       720
+           2       0.47      0.72      0.57       120
+
+    accuracy                           0.74       960
+   macro avg       0.59      0.68      0.62       960
+weighted avg       0.80      0.74      0.76       960
+
+20201030-121553	Info: bas_score on Test split: 0.6773148148148148
+20201030-121553	Info: BAS Score achieved on test set: 0.6773148148148148
+20201030-121553	Info: 
+Feature Adder:
+20201030-121553	Info: [custom_on]
+20201030-121553	Info: [lda_on], shrinkage: 0.9
+20201030-121555	Info: X shape after feature addition (3840, 1015)
+20201030-121555	Info: X shape after feature addition (960, 1015)
+20201030-121555	Info: 
+--------------------------------------
+20201030-121555	Info: Iteration 4
+20201030-121555	Info: Data_sampler {'sampling_method': 'None'}
+20201030-121555	Info: Scaler {'name': 'robustscaler'}
+20201030-121555	Info: Feature Adder {'auto_encoder_on': 'False', 'clustering_on': 'False', 'custom_on': 'True', 'lda_on': 'True', 'lda_shrinkage': 0.9, 'n_clusters': 16, 'n_encoder_features': 16}
+20201030-121555	Info: Classifier {'classifier': 'SVC'}
+20201030-121555	Info: 
+----------------------------------------
+20201030-121555	Info: 
+Classifier: SVC
+20201030-121555	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-121555	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-121555	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-121555	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-121555	Info: 
+Starting Parameter Search
+20201030-121555	Info: -> grid search
+20201030-121638	Info: Best estimator from GridSearch: SVC(C=1.1,
+    class_weight={0: 2.6666666666666665, 1: 0.4444444444444444,
+                  2: 2.6666666666666665},
+    decision_function_shape='ovo', random_state=41)
+20201030-121638	Info: Best alpha found: {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}
+20201030-121638	Info: Best training-score with mse loss: 0.6953703703703703
+20201030-121638	Info:                                                                 params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0  {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}          0.69537        0.020258          0.924601         0.002853
+20201030-121640	Info: 
+--------- Test ---------
+
+20201030-121640	Info: Normalized confusion matrix
+20201030-121640	Info: [[0.55       0.21666667 0.23333333]
+ [0.12361111 0.78472222 0.09166667]
+ [0.15833333 0.11666667 0.725     ]]
+20201030-121640	Info: Test report
+20201030-121640	Info:               precision    recall  f1-score   support
+
+           0       0.38      0.55      0.45       120
+           1       0.93      0.78      0.85       720
+           2       0.48      0.72      0.58       120
+
+    accuracy                           0.75       960
+   macro avg       0.60      0.69      0.63       960
+weighted avg       0.81      0.75      0.77       960
+
+20201030-121640	Info: bas_score on Test split: 0.6865740740740741
+20201030-121640	Info: BAS Score achieved on test set: 0.6865740740740741
+20201030-121640	Info: 
+Feature Adder:
+20201030-121640	Info: [custom_on]
+20201030-121640	Info: [lda_on], shrinkage: 0.9
+20201030-121641	Info: X shape after feature addition (3840, 1015)
+20201030-121642	Info: X shape after feature addition (960, 1015)
+20201030-121642	Info: 
+--------------------------------------
+20201030-121642	Info: Iteration 5
+20201030-121642	Info: Data_sampler {'sampling_method': 'None'}
+20201030-121642	Info: Scaler {'name': 'robustscaler'}
+20201030-121642	Info: Feature Adder {'auto_encoder_on': 'False', 'clustering_on': 'False', 'custom_on': 'True', 'lda_on': 'True', 'lda_shrinkage': 0.9, 'n_clusters': 16, 'n_encoder_features': 32}
+20201030-121642	Info: Classifier {'classifier': 'SVC'}
+20201030-121642	Info: 
+----------------------------------------
+20201030-121642	Info: 
+Classifier: SVC
+20201030-121642	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-121642	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-121642	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-121642	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-121642	Info: 
+Starting Parameter Search
+20201030-121642	Info: -> grid search
+20201030-121725	Info: Best estimator from GridSearch: SVC(C=1.1,
+    class_weight={0: 2.6666666666666665, 1: 0.4444444444444444,
+                  2: 2.6666666666666665},
+    decision_function_shape='ovo', random_state=41)
+20201030-121725	Info: Best alpha found: {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}
+20201030-121725	Info: Best training-score with mse loss: 0.6953703703703703
+20201030-121725	Info:                                                                 params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0  {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}          0.69537        0.020258          0.924601         0.002853
+20201030-121727	Info: 
+--------- Test ---------
+
+20201030-121727	Info: Normalized confusion matrix
+20201030-121727	Info: [[0.55       0.21666667 0.23333333]
+ [0.12361111 0.78472222 0.09166667]
+ [0.15833333 0.11666667 0.725     ]]
+20201030-121727	Info: Test report
+20201030-121727	Info:               precision    recall  f1-score   support
+
+           0       0.38      0.55      0.45       120
+           1       0.93      0.78      0.85       720
+           2       0.48      0.72      0.58       120
+
+    accuracy                           0.75       960
+   macro avg       0.60      0.69      0.63       960
+weighted avg       0.81      0.75      0.77       960
+
+20201030-121727	Info: bas_score on Test split: 0.6865740740740741
+20201030-121727	Info: BAS Score achieved on test set: 0.6865740740740741
+20201030-121727	Info: 
+Feature Adder:
+20201030-121727	Info: [custom_on]
+20201030-121728	Info: X shape after feature addition (3840, 1013)
+20201030-121728	Info: X shape after feature addition (960, 1013)
+20201030-121728	Info: 
+--------------------------------------
+20201030-121728	Info: Iteration 6
+20201030-121728	Info: Data_sampler {'sampling_method': 'None'}
+20201030-121728	Info: Scaler {'name': 'robustscaler'}
+20201030-121728	Info: Feature Adder {'auto_encoder_on': 'False', 'clustering_on': 'False', 'custom_on': 'True', 'lda_on': 'False', 'lda_shrinkage': 0.9, 'n_clusters': 16, 'n_encoder_features': 16}
+20201030-121728	Info: Classifier {'classifier': 'SVC'}
+20201030-121728	Info: 
+----------------------------------------
+20201030-121728	Info: 
+Classifier: SVC
+20201030-121728	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-121728	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-121728	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-121728	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-121728	Info: 
+Starting Parameter Search
+20201030-121728	Info: -> grid search
+20201030-121812	Info: Best estimator from GridSearch: SVC(C=1.1,
+    class_weight={0: 2.6666666666666665, 1: 0.4444444444444444,
+                  2: 2.6666666666666665},
+    decision_function_shape='ovo', random_state=41)
+20201030-121812	Info: Best alpha found: {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}
+20201030-121812	Info: Best training-score with mse loss: 0.694212962962963
+20201030-121812	Info:                                                                 params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0  {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}         0.694213        0.022579          0.922968         0.002632
+20201030-121814	Info: 
+--------- Test ---------
+
+20201030-121814	Info: Normalized confusion matrix
+20201030-121814	Info: [[0.54166667 0.21666667 0.24166667]
+ [0.12361111 0.78333333 0.09305556]
+ [0.15       0.11666667 0.73333333]]
+20201030-121814	Info: Test report
+20201030-121814	Info:               precision    recall  f1-score   support
+
+           0       0.38      0.54      0.45       120
+           1       0.93      0.78      0.85       720
+           2       0.48      0.73      0.58       120
+
+    accuracy                           0.75       960
+   macro avg       0.60      0.69      0.63       960
+weighted avg       0.81      0.75      0.77       960
+
+20201030-121814	Info: bas_score on Test split: 0.686111111111111
+20201030-121814	Info: BAS Score achieved on test set: 0.686111111111111
+20201030-121814	Info: 
+Feature Adder:
+20201030-121814	Info: [custom_on]
+20201030-121814	Info: X shape after feature addition (3840, 1013)
+20201030-121814	Info: X shape after feature addition (960, 1013)
+20201030-121814	Info: 
+--------------------------------------
+20201030-121814	Info: Iteration 7
+20201030-121814	Info: Data_sampler {'sampling_method': 'None'}
+20201030-121814	Info: Scaler {'name': 'robustscaler'}
+20201030-121814	Info: Feature Adder {'auto_encoder_on': 'False', 'clustering_on': 'False', 'custom_on': 'True', 'lda_on': 'False', 'lda_shrinkage': 0.9, 'n_clusters': 16, 'n_encoder_features': 32}
+20201030-121814	Info: Classifier {'classifier': 'SVC'}
+20201030-121814	Info: 
+----------------------------------------
+20201030-121814	Info: 
+Classifier: SVC
+20201030-121814	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-121814	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-121814	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-121814	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-121814	Info: 
+Starting Parameter Search
+20201030-121814	Info: -> grid search
+20201030-121858	Info: Best estimator from GridSearch: SVC(C=1.1,
+    class_weight={0: 2.6666666666666665, 1: 0.4444444444444444,
+                  2: 2.6666666666666665},
+    decision_function_shape='ovo', random_state=41)
+20201030-121858	Info: Best alpha found: {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}
+20201030-121858	Info: Best training-score with mse loss: 0.694212962962963
+20201030-121858	Info:                                                                 params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0  {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}         0.694213        0.022579          0.922968         0.002632
+20201030-121900	Info: 
+--------- Test ---------
+
+20201030-121900	Info: Normalized confusion matrix
+20201030-121900	Info: [[0.54166667 0.21666667 0.24166667]
+ [0.12361111 0.78333333 0.09305556]
+ [0.15       0.11666667 0.73333333]]
+20201030-121900	Info: Test report
+20201030-121900	Info:               precision    recall  f1-score   support
+
+           0       0.38      0.54      0.45       120
+           1       0.93      0.78      0.85       720
+           2       0.48      0.73      0.58       120
+
+    accuracy                           0.75       960
+   macro avg       0.60      0.69      0.63       960
+weighted avg       0.81      0.75      0.77       960
+
+20201030-121900	Info: bas_score on Test split: 0.686111111111111
+20201030-121900	Info: BAS Score achieved on test set: 0.686111111111111
+20201030-121900	Info: 
+Feature Adder:
+20201030-121900	Info: [clustering_on], n_clusters: 16
+20201030-121900	Info: [lda_on], shrinkage: 0.9
+20201030-121905	Info: X shape after feature addition (3840, 1003)
+20201030-121906	Info: X shape after feature addition (960, 1003)
+20201030-121906	Info: 
+--------------------------------------
+20201030-121906	Info: Iteration 8
+20201030-121906	Info: Data_sampler {'sampling_method': 'None'}
+20201030-121906	Info: Scaler {'name': 'robustscaler'}
+20201030-121906	Info: Feature Adder {'auto_encoder_on': 'False', 'clustering_on': 'True', 'custom_on': 'False', 'lda_on': 'True', 'lda_shrinkage': 0.9, 'n_clusters': 16, 'n_encoder_features': 16}
+20201030-121906	Info: Classifier {'classifier': 'SVC'}
+20201030-121906	Info: 
+----------------------------------------
+20201030-121906	Info: 
+Classifier: SVC
+20201030-121906	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-121906	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-121906	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-121906	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-121906	Info: 
+Starting Parameter Search
+20201030-121906	Info: -> grid search
+20201030-121949	Info: Best estimator from GridSearch: SVC(C=1.1,
+    class_weight={0: 2.6666666666666665, 1: 0.4444444444444444,
+                  2: 2.6666666666666665},
+    decision_function_shape='ovo', random_state=41)
+20201030-121949	Info: Best alpha found: {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}
+20201030-121949	Info: Best training-score with mse loss: 0.7006944444444444
+20201030-121949	Info:                                                                 params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0  {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}         0.700694        0.020667          0.925682          0.00258
+20201030-121951	Info: 
+--------- Test ---------
+
+20201030-121951	Info: Normalized confusion matrix
+20201030-121951	Info: [[0.56666667 0.225      0.20833333]
+ [0.12222222 0.78888889 0.08888889]
+ [0.15       0.13333333 0.71666667]]
+20201030-121951	Info: Test report
+20201030-121951	Info:               precision    recall  f1-score   support
+
+           0       0.39      0.57      0.46       120
+           1       0.93      0.79      0.85       720
+           2       0.49      0.72      0.58       120
+
+    accuracy                           0.75       960
+   macro avg       0.60      0.69      0.63       960
+weighted avg       0.81      0.75      0.77       960
+
+20201030-121951	Info: bas_score on Test split: 0.6907407407407408
+20201030-121951	Info: BAS Score achieved on test set: 0.6907407407407408
+20201030-121951	Info: 
+Feature Adder:
+20201030-121951	Info: [clustering_on], n_clusters: 16
+20201030-121951	Info: [lda_on], shrinkage: 0.9
+20201030-121956	Info: X shape after feature addition (3840, 1003)
+20201030-121956	Info: X shape after feature addition (960, 1003)
+20201030-121956	Info: 
+--------------------------------------
+20201030-121956	Info: Iteration 9
+20201030-121956	Info: Data_sampler {'sampling_method': 'None'}
+20201030-121956	Info: Scaler {'name': 'robustscaler'}
+20201030-121956	Info: Feature Adder {'auto_encoder_on': 'False', 'clustering_on': 'True', 'custom_on': 'False', 'lda_on': 'True', 'lda_shrinkage': 0.9, 'n_clusters': 16, 'n_encoder_features': 32}
+20201030-121956	Info: Classifier {'classifier': 'SVC'}
+20201030-121956	Info: 
+----------------------------------------
+20201030-121956	Info: 
+Classifier: SVC
+20201030-121956	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-121956	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-121956	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-121956	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-121956	Info: 
+Starting Parameter Search
+20201030-121956	Info: -> grid search
+20201030-122040	Info: Best estimator from GridSearch: SVC(C=1.1,
+    class_weight={0: 2.6666666666666665, 1: 0.4444444444444444,
+                  2: 2.6666666666666665},
+    decision_function_shape='ovo', random_state=41)
+20201030-122040	Info: Best alpha found: {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}
+20201030-122040	Info: Best training-score with mse loss: 0.7006944444444444
+20201030-122040	Info:                                                                 params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0  {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}         0.700694        0.020667          0.925682          0.00258
+20201030-122042	Info: 
+--------- Test ---------
+
+20201030-122042	Info: Normalized confusion matrix
+20201030-122042	Info: [[0.56666667 0.225      0.20833333]
+ [0.12222222 0.78888889 0.08888889]
+ [0.15       0.13333333 0.71666667]]
+20201030-122042	Info: Test report
+20201030-122042	Info:               precision    recall  f1-score   support
+
+           0       0.39      0.57      0.46       120
+           1       0.93      0.79      0.85       720
+           2       0.49      0.72      0.58       120
+
+    accuracy                           0.75       960
+   macro avg       0.60      0.69      0.63       960
+weighted avg       0.81      0.75      0.77       960
+
+20201030-122042	Info: bas_score on Test split: 0.6907407407407408
+20201030-122042	Info: BAS Score achieved on test set: 0.6907407407407408
+20201030-122042	Info: 
+Feature Adder:
+20201030-122042	Info: [clustering_on], n_clusters: 16
+20201030-122046	Info: X shape after feature addition (3840, 1001)
+20201030-122047	Info: X shape after feature addition (960, 1001)
+20201030-122047	Info: 
+--------------------------------------
+20201030-122047	Info: Iteration 10
+20201030-122047	Info: Data_sampler {'sampling_method': 'None'}
+20201030-122047	Info: Scaler {'name': 'robustscaler'}
+20201030-122047	Info: Feature Adder {'auto_encoder_on': 'False', 'clustering_on': 'True', 'custom_on': 'False', 'lda_on': 'False', 'lda_shrinkage': 0.9, 'n_clusters': 16, 'n_encoder_features': 16}
+20201030-122047	Info: Classifier {'classifier': 'SVC'}
+20201030-122047	Info: 
+----------------------------------------
+20201030-122047	Info: 
+Classifier: SVC
+20201030-122047	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-122047	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-122047	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-122047	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-122047	Info: 
+Starting Parameter Search
+20201030-122047	Info: -> grid search
+20201030-122130	Info: Best estimator from GridSearch: SVC(C=1.1,
+    class_weight={0: 2.6666666666666665, 1: 0.4444444444444444,
+                  2: 2.6666666666666665},
+    decision_function_shape='ovo', random_state=41)
+20201030-122130	Info: Best alpha found: {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}
+20201030-122130	Info: Best training-score with mse loss: 0.6935185185185185
+20201030-122130	Info:                                                                 params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0  {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}         0.693519        0.024282          0.923663         0.002591
+20201030-122132	Info: 
+--------- Test ---------
+
+20201030-122132	Info: Normalized confusion matrix
+20201030-122132	Info: [[0.54166667 0.23333333 0.225     ]
+ [0.12638889 0.78472222 0.08888889]
+ [0.15       0.13333333 0.71666667]]
+20201030-122132	Info: Test report
+20201030-122132	Info:               precision    recall  f1-score   support
+
+           0       0.37      0.54      0.44       120
+           1       0.93      0.78      0.85       720
+           2       0.49      0.72      0.58       120
+
+    accuracy                           0.75       960
+   macro avg       0.60      0.68      0.62       960
+weighted avg       0.80      0.75      0.77       960
+
+20201030-122132	Info: bas_score on Test split: 0.6810185185185186
+20201030-122132	Info: BAS Score achieved on test set: 0.6810185185185186
+20201030-122132	Info: 
+Feature Adder:
+20201030-122132	Info: [clustering_on], n_clusters: 16
+20201030-122137	Info: X shape after feature addition (3840, 1001)
+20201030-122137	Info: X shape after feature addition (960, 1001)
+20201030-122137	Info: 
+--------------------------------------
+20201030-122137	Info: Iteration 11
+20201030-122137	Info: Data_sampler {'sampling_method': 'None'}
+20201030-122137	Info: Scaler {'name': 'robustscaler'}
+20201030-122137	Info: Feature Adder {'auto_encoder_on': 'False', 'clustering_on': 'True', 'custom_on': 'False', 'lda_on': 'False', 'lda_shrinkage': 0.9, 'n_clusters': 16, 'n_encoder_features': 32}
+20201030-122137	Info: Classifier {'classifier': 'SVC'}
+20201030-122137	Info: 
+----------------------------------------
+20201030-122137	Info: 
+Classifier: SVC
+20201030-122137	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-122137	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-122137	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-122137	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-122137	Info: 
+Starting Parameter Search
+20201030-122137	Info: -> grid search
+20201030-122221	Info: Best estimator from GridSearch: SVC(C=1.1,
+    class_weight={0: 2.6666666666666665, 1: 0.4444444444444444,
+                  2: 2.6666666666666665},
+    decision_function_shape='ovo', random_state=41)
+20201030-122221	Info: Best alpha found: {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}
+20201030-122221	Info: Best training-score with mse loss: 0.6935185185185185
+20201030-122221	Info:                                                                 params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0  {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}         0.693519        0.024282          0.923663         0.002591
+20201030-122223	Info: 
+--------- Test ---------
+
+20201030-122223	Info: Normalized confusion matrix
+20201030-122223	Info: [[0.54166667 0.23333333 0.225     ]
+ [0.12638889 0.78472222 0.08888889]
+ [0.15       0.13333333 0.71666667]]
+20201030-122223	Info: Test report
+20201030-122223	Info:               precision    recall  f1-score   support
+
+           0       0.37      0.54      0.44       120
+           1       0.93      0.78      0.85       720
+           2       0.49      0.72      0.58       120
+
+    accuracy                           0.75       960
+   macro avg       0.60      0.68      0.62       960
+weighted avg       0.80      0.75      0.77       960
+
+20201030-122223	Info: bas_score on Test split: 0.6810185185185186
+20201030-122223	Info: BAS Score achieved on test set: 0.6810185185185186
+20201030-122223	Info: 
+Feature Adder:
+20201030-122223	Info: [clustering_on], n_clusters: 16
+20201030-122223	Info: [custom_on]
+20201030-122223	Info: [lda_on], shrinkage: 0.9
+20201030-122228	Info: X shape after feature addition (3840, 1016)
+20201030-122229	Info: X shape after feature addition (960, 1016)
+20201030-122229	Info: 
+--------------------------------------
+20201030-122229	Info: Iteration 12
+20201030-122229	Info: Data_sampler {'sampling_method': 'None'}
+20201030-122229	Info: Scaler {'name': 'robustscaler'}
+20201030-122229	Info: Feature Adder {'auto_encoder_on': 'False', 'clustering_on': 'True', 'custom_on': 'True', 'lda_on': 'True', 'lda_shrinkage': 0.9, 'n_clusters': 16, 'n_encoder_features': 16}
+20201030-122229	Info: Classifier {'classifier': 'SVC'}
+20201030-122229	Info: 
+----------------------------------------
+20201030-122229	Info: 
+Classifier: SVC
+20201030-122229	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-122229	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-122229	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-122229	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-122229	Info: 
+Starting Parameter Search
+20201030-122229	Info: -> grid search
+20201030-122312	Info: Best estimator from GridSearch: SVC(C=1.1,
+    class_weight={0: 2.6666666666666665, 1: 0.4444444444444444,
+                  2: 2.6666666666666665},
+    decision_function_shape='ovo', random_state=41)
+20201030-122312	Info: Best alpha found: {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}
+20201030-122312	Info: Best training-score with mse loss: 0.6980324074074074
+20201030-122312	Info:                                                                 params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0  {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}         0.698032        0.023324          0.924537         0.002793
+20201030-122314	Info: 
+--------- Test ---------
+
+20201030-122314	Info: Normalized confusion matrix
+20201030-122314	Info: [[0.575      0.21666667 0.20833333]
+ [0.125      0.78888889 0.08611111]
+ [0.15833333 0.125      0.71666667]]
+20201030-122314	Info: Test report
+20201030-122314	Info:               precision    recall  f1-score   support
+
+           0       0.39      0.57      0.46       120
+           1       0.93      0.79      0.85       720
+           2       0.50      0.72      0.59       120
+
+    accuracy                           0.75       960
+   macro avg       0.61      0.69      0.63       960
+weighted avg       0.81      0.75      0.77       960
+
+20201030-122314	Info: bas_score on Test split: 0.6935185185185185
+20201030-122314	Info: BAS Score achieved on test set: 0.6935185185185185
+20201030-122315	Info: 
+Feature Adder:
+20201030-122315	Info: [clustering_on], n_clusters: 16
+20201030-122315	Info: [custom_on]
+20201030-122315	Info: [lda_on], shrinkage: 0.9
+20201030-122320	Info: X shape after feature addition (3840, 1016)
+20201030-122321	Info: X shape after feature addition (960, 1016)
+20201030-122321	Info: 
+--------------------------------------
+20201030-122321	Info: Iteration 13
+20201030-122321	Info: Data_sampler {'sampling_method': 'None'}
+20201030-122321	Info: Scaler {'name': 'robustscaler'}
+20201030-122321	Info: Feature Adder {'auto_encoder_on': 'False', 'clustering_on': 'True', 'custom_on': 'True', 'lda_on': 'True', 'lda_shrinkage': 0.9, 'n_clusters': 16, 'n_encoder_features': 32}
+20201030-122321	Info: Classifier {'classifier': 'SVC'}
+20201030-122321	Info: 
+----------------------------------------
+20201030-122321	Info: 
+Classifier: SVC
+20201030-122321	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-122321	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-122321	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-122321	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-122321	Info: 
+Starting Parameter Search
+20201030-122321	Info: -> grid search
+20201030-122404	Info: Best estimator from GridSearch: SVC(C=1.1,
+    class_weight={0: 2.6666666666666665, 1: 0.4444444444444444,
+                  2: 2.6666666666666665},
+    decision_function_shape='ovo', random_state=41)
+20201030-122404	Info: Best alpha found: {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}
+20201030-122404	Info: Best training-score with mse loss: 0.6980324074074074
+20201030-122404	Info:                                                                 params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0  {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}         0.698032        0.023324          0.924537         0.002793
+20201030-122406	Info: 
+--------- Test ---------
+
+20201030-122406	Info: Normalized confusion matrix
+20201030-122406	Info: [[0.575      0.21666667 0.20833333]
+ [0.125      0.78888889 0.08611111]
+ [0.15833333 0.125      0.71666667]]
+20201030-122406	Info: Test report
+20201030-122406	Info:               precision    recall  f1-score   support
+
+           0       0.39      0.57      0.46       120
+           1       0.93      0.79      0.85       720
+           2       0.50      0.72      0.59       120
+
+    accuracy                           0.75       960
+   macro avg       0.61      0.69      0.63       960
+weighted avg       0.81      0.75      0.77       960
+
+20201030-122406	Info: bas_score on Test split: 0.6935185185185185
+20201030-122406	Info: BAS Score achieved on test set: 0.6935185185185185
+20201030-122406	Info: 
+Feature Adder:
+20201030-122406	Info: [clustering_on], n_clusters: 16
+20201030-122406	Info: [custom_on]
+20201030-122411	Info: X shape after feature addition (3840, 1014)
+20201030-122411	Info: X shape after feature addition (960, 1014)
+20201030-122411	Info: 
+--------------------------------------
+20201030-122411	Info: Iteration 14
+20201030-122411	Info: Data_sampler {'sampling_method': 'None'}
+20201030-122411	Info: Scaler {'name': 'robustscaler'}
+20201030-122411	Info: Feature Adder {'auto_encoder_on': 'False', 'clustering_on': 'True', 'custom_on': 'True', 'lda_on': 'False', 'lda_shrinkage': 0.9, 'n_clusters': 16, 'n_encoder_features': 16}
+20201030-122411	Info: Classifier {'classifier': 'SVC'}
+20201030-122411	Info: 
+----------------------------------------
+20201030-122411	Info: 
+Classifier: SVC
+20201030-122411	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-122411	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-122411	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-122411	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-122411	Info: 
+Starting Parameter Search
+20201030-122411	Info: -> grid search
+20201030-122455	Info: Best estimator from GridSearch: SVC(C=1.1,
+    class_weight={0: 2.6666666666666665, 1: 0.4444444444444444,
+                  2: 2.6666666666666665},
+    decision_function_shape='ovo', random_state=41)
+20201030-122455	Info: Best alpha found: {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}
+20201030-122455	Info: Best training-score with mse loss: 0.693287037037037
+20201030-122455	Info:                                                                 params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0  {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}         0.693287        0.022233           0.92293         0.002792
+20201030-122457	Info: 
+--------- Test ---------
+
+20201030-122457	Info: Normalized confusion matrix
+20201030-122457	Info: [[0.55       0.21666667 0.23333333]
+ [0.125      0.78611111 0.08888889]
+ [0.15833333 0.11666667 0.725     ]]
+20201030-122457	Info: Test report
+20201030-122457	Info:               precision    recall  f1-score   support
+
+           0       0.38      0.55      0.45       120
+           1       0.93      0.79      0.85       720
+           2       0.49      0.72      0.58       120
+
+    accuracy                           0.75       960
+   macro avg       0.60      0.69      0.63       960
+weighted avg       0.81      0.75      0.77       960
+
+20201030-122457	Info: bas_score on Test split: 0.6870370370370371
+20201030-122457	Info: BAS Score achieved on test set: 0.6870370370370371
+20201030-122457	Info: 
+Feature Adder:
+20201030-122457	Info: [clustering_on], n_clusters: 16
+20201030-122457	Info: [custom_on]
+20201030-122502	Info: X shape after feature addition (3840, 1014)
+20201030-122502	Info: X shape after feature addition (960, 1014)
+20201030-122502	Info: 
+--------------------------------------
+20201030-122502	Info: Iteration 15
+20201030-122502	Info: Data_sampler {'sampling_method': 'None'}
+20201030-122502	Info: Scaler {'name': 'robustscaler'}
+20201030-122502	Info: Feature Adder {'auto_encoder_on': 'False', 'clustering_on': 'True', 'custom_on': 'True', 'lda_on': 'False', 'lda_shrinkage': 0.9, 'n_clusters': 16, 'n_encoder_features': 32}
+20201030-122502	Info: Classifier {'classifier': 'SVC'}
+20201030-122502	Info: 
+----------------------------------------
+20201030-122502	Info: 
+Classifier: SVC
+20201030-122502	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-122502	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-122502	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-122502	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-122502	Info: 
+Starting Parameter Search
+20201030-122502	Info: -> grid search
+20201030-122546	Info: Best estimator from GridSearch: SVC(C=1.1,
+    class_weight={0: 2.6666666666666665, 1: 0.4444444444444444,
+                  2: 2.6666666666666665},
+    decision_function_shape='ovo', random_state=41)
+20201030-122546	Info: Best alpha found: {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}
+20201030-122546	Info: Best training-score with mse loss: 0.693287037037037
+20201030-122546	Info:                                                                 params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0  {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}         0.693287        0.022233           0.92293         0.002792
+20201030-122548	Info: 
+--------- Test ---------
+
+20201030-122548	Info: Normalized confusion matrix
+20201030-122548	Info: [[0.55       0.21666667 0.23333333]
+ [0.125      0.78611111 0.08888889]
+ [0.15833333 0.11666667 0.725     ]]
+20201030-122548	Info: Test report
+20201030-122548	Info:               precision    recall  f1-score   support
+
+           0       0.38      0.55      0.45       120
+           1       0.93      0.79      0.85       720
+           2       0.49      0.72      0.58       120
+
+    accuracy                           0.75       960
+   macro avg       0.60      0.69      0.63       960
+weighted avg       0.81      0.75      0.77       960
+
+20201030-122548	Info: bas_score on Test split: 0.6870370370370371
+20201030-122548	Info: BAS Score achieved on test set: 0.6870370370370371
+20201030-122548	Info: 
+Feature Adder:
+20201030-122548	Info: [auto_encoder_on], n_encoder_features: 16
+20201030-122548	Info: 
+Auto encoder:
+20201030-122548	Info: add_noise = False
+20201030-122548	Info: encoded size = 16
+20201030-122548	Info: scaling_on = True
+20201030-122548	Info: [lda_on], shrinkage: 0.9
+20201030-122623	Info: X shape after feature addition (3840, 1018)
+20201030-122623	Info: X shape after feature addition (960, 1018)
+20201030-122623	Info: 
+--------------------------------------
+20201030-122623	Info: Iteration 16
+20201030-122623	Info: Data_sampler {'sampling_method': 'None'}
+20201030-122623	Info: Scaler {'name': 'robustscaler'}
+20201030-122623	Info: Feature Adder {'auto_encoder_on': 'True', 'clustering_on': 'False', 'custom_on': 'False', 'lda_on': 'True', 'lda_shrinkage': 0.9, 'n_clusters': 16, 'n_encoder_features': 16}
+20201030-122623	Info: Classifier {'classifier': 'SVC'}
+20201030-122623	Info: 
+----------------------------------------
+20201030-122623	Info: 
+Classifier: SVC
+20201030-122623	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-122623	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-122623	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-122623	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-122623	Info: 
+Starting Parameter Search
+20201030-122623	Info: -> grid search
+20201030-122706	Info: Best estimator from GridSearch: SVC(C=1.1,
+    class_weight={0: 2.6666666666666665, 1: 0.4444444444444444,
+                  2: 2.6666666666666665},
+    decision_function_shape='ovo', random_state=41)
+20201030-122706	Info: Best alpha found: {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}
+20201030-122706	Info: Best training-score with mse loss: 0.701388888888889
+20201030-122706	Info:                                                                 params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0  {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}         0.701389        0.022293          0.925244         0.002612
+20201030-122709	Info: 
+--------- Test ---------
+
+20201030-122709	Info: Normalized confusion matrix
+20201030-122709	Info: [[0.55       0.225      0.225     ]
+ [0.12361111 0.78472222 0.09166667]
+ [0.15       0.13333333 0.71666667]]
+20201030-122709	Info: Test report
+20201030-122709	Info:               precision    recall  f1-score   support
+
+           0       0.38      0.55      0.45       120
+           1       0.93      0.78      0.85       720
+           2       0.48      0.72      0.58       120
+
+    accuracy                           0.75       960
+   macro avg       0.60      0.68      0.63       960
+weighted avg       0.80      0.75      0.77       960
+
+20201030-122709	Info: bas_score on Test split: 0.6837962962962963
+20201030-122709	Info: BAS Score achieved on test set: 0.6837962962962963
+20201030-122709	Info: 
+Feature Adder:
+20201030-122709	Info: [auto_encoder_on], n_encoder_features: 32
+20201030-122709	Info: 
+Auto encoder:
+20201030-122709	Info: add_noise = False
+20201030-122709	Info: encoded size = 32
+20201030-122709	Info: scaling_on = True
+20201030-122709	Info: [lda_on], shrinkage: 0.9
+20201030-122742	Info: X shape after feature addition (3840, 1034)
+20201030-122742	Info: X shape after feature addition (960, 1034)
+20201030-122742	Info: 
+--------------------------------------
+20201030-122742	Info: Iteration 17
+20201030-122742	Info: Data_sampler {'sampling_method': 'None'}
+20201030-122742	Info: Scaler {'name': 'robustscaler'}
+20201030-122742	Info: Feature Adder {'auto_encoder_on': 'True', 'clustering_on': 'False', 'custom_on': 'False', 'lda_on': 'True', 'lda_shrinkage': 0.9, 'n_clusters': 16, 'n_encoder_features': 32}
+20201030-122742	Info: Classifier {'classifier': 'SVC'}
+20201030-122742	Info: 
+----------------------------------------
+20201030-122742	Info: 
+Classifier: SVC
+20201030-122742	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-122742	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-122742	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-122742	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-122742	Info: 
+Starting Parameter Search
+20201030-122742	Info: -> grid search
+20201030-122826	Info: Best estimator from GridSearch: SVC(C=1.1,
+    class_weight={0: 2.6666666666666665, 1: 0.4444444444444444,
+                  2: 2.6666666666666665},
+    decision_function_shape='ovo', random_state=41)
+20201030-122826	Info: Best alpha found: {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}
+20201030-122826	Info: Best training-score with mse loss: 0.7
+20201030-122826	Info:                                                                 params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0  {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}              0.7        0.020364          0.924537         0.002809
+20201030-122828	Info: 
+--------- Test ---------
+
+20201030-122828	Info: Normalized confusion matrix
+20201030-122828	Info: [[0.55833333 0.21666667 0.225     ]
+ [0.12638889 0.78194444 0.09166667]
+ [0.15833333 0.125      0.71666667]]
+20201030-122828	Info: Test report
+20201030-122828	Info:               precision    recall  f1-score   support
+
+           0       0.38      0.56      0.45       120
+           1       0.93      0.78      0.85       720
+           2       0.48      0.72      0.58       120
+
+    accuracy                           0.75       960
+   macro avg       0.60      0.69      0.63       960
+weighted avg       0.81      0.75      0.77       960
+
+20201030-122828	Info: bas_score on Test split: 0.6856481481481481
+20201030-122828	Info: BAS Score achieved on test set: 0.6856481481481481
+20201030-122828	Info: 
+Feature Adder:
+20201030-122828	Info: [auto_encoder_on], n_encoder_features: 16
+20201030-122828	Info: 
+Auto encoder:
+20201030-122828	Info: add_noise = False
+20201030-122828	Info: encoded size = 16
+20201030-122828	Info: scaling_on = True
+20201030-122900	Info: X shape after feature addition (3840, 1016)
+20201030-122901	Info: X shape after feature addition (960, 1016)
+20201030-122901	Info: 
+--------------------------------------
+20201030-122901	Info: Iteration 18
+20201030-122901	Info: Data_sampler {'sampling_method': 'None'}
+20201030-122901	Info: Scaler {'name': 'robustscaler'}
+20201030-122901	Info: Feature Adder {'auto_encoder_on': 'True', 'clustering_on': 'False', 'custom_on': 'False', 'lda_on': 'False', 'lda_shrinkage': 0.9, 'n_clusters': 16, 'n_encoder_features': 16}
+20201030-122901	Info: Classifier {'classifier': 'SVC'}
+20201030-122901	Info: 
+----------------------------------------
+20201030-122901	Info: 
+Classifier: SVC
+20201030-122901	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-122901	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-122901	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-122901	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-122901	Info: 
+Starting Parameter Search
+20201030-122901	Info: -> grid search
+20201030-122944	Info: Best estimator from GridSearch: SVC(C=1.1,
+    class_weight={0: 2.6666666666666665, 1: 0.4444444444444444,
+                  2: 2.6666666666666665},
+    decision_function_shape='ovo', random_state=41)
+20201030-122944	Info: Best alpha found: {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}
+20201030-122944	Info: Best training-score with mse loss: 0.6925925925925926
+20201030-122944	Info:                                                                 params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0  {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}         0.692593         0.02394          0.922942         0.002845
+20201030-122946	Info: 
+--------- Test ---------
+
+20201030-122946	Info: Normalized confusion matrix
+20201030-122946	Info: [[0.53333333 0.225      0.24166667]
+ [0.12361111 0.78333333 0.09305556]
+ [0.15       0.125      0.725     ]]
+20201030-122947	Info: Test report
+20201030-122947	Info:               precision    recall  f1-score   support
+
+           0       0.37      0.53      0.44       120
+           1       0.93      0.78      0.85       720
+           2       0.48      0.72      0.57       120
+
+    accuracy                           0.74       960
+   macro avg       0.59      0.68      0.62       960
+weighted avg       0.80      0.74      0.76       960
+
+20201030-122947	Info: bas_score on Test split: 0.6805555555555555
+20201030-122947	Info: BAS Score achieved on test set: 0.6805555555555555
+20201030-122947	Info: 
+Feature Adder:
+20201030-122947	Info: [auto_encoder_on], n_encoder_features: 32
+20201030-122947	Info: 
+Auto encoder:
+20201030-122947	Info: add_noise = False
+20201030-122947	Info: encoded size = 32
+20201030-122947	Info: scaling_on = True
+20201030-123019	Info: X shape after feature addition (3840, 1032)
+20201030-123019	Info: X shape after feature addition (960, 1032)
+20201030-123019	Info: 
+--------------------------------------
+20201030-123019	Info: Iteration 19
+20201030-123019	Info: Data_sampler {'sampling_method': 'None'}
+20201030-123019	Info: Scaler {'name': 'robustscaler'}
+20201030-123019	Info: Feature Adder {'auto_encoder_on': 'True', 'clustering_on': 'False', 'custom_on': 'False', 'lda_on': 'False', 'lda_shrinkage': 0.9, 'n_clusters': 16, 'n_encoder_features': 32}
+20201030-123019	Info: Classifier {'classifier': 'SVC'}
+20201030-123019	Info: 
+----------------------------------------
+20201030-123019	Info: 
+Classifier: SVC
+20201030-123019	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-123019	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-123019	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-123019	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-123019	Info: 
+Starting Parameter Search
+20201030-123019	Info: -> grid search
+20201030-123103	Info: Best estimator from GridSearch: SVC(C=1.1,
+    class_weight={0: 2.6666666666666665, 1: 0.4444444444444444,
+                  2: 2.6666666666666665},
+    decision_function_shape='ovo', random_state=41)
+20201030-123103	Info: Best alpha found: {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}
+20201030-123103	Info: Best training-score with mse loss: 0.6936342592592593
+20201030-123103	Info:                                                                 params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0  {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}         0.693634        0.026297          0.922145         0.002747
+20201030-123105	Info: 
+--------- Test ---------
+
+20201030-123105	Info: Normalized confusion matrix
+20201030-123105	Info: [[0.53333333 0.225      0.24166667]
+ [0.12361111 0.78333333 0.09305556]
+ [0.15833333 0.11666667 0.725     ]]
+20201030-123105	Info: Test report
+20201030-123105	Info:               precision    recall  f1-score   support
+
+           0       0.37      0.53      0.44       120
+           1       0.93      0.78      0.85       720
+           2       0.48      0.72      0.57       120
+
+    accuracy                           0.74       960
+   macro avg       0.59      0.68      0.62       960
+weighted avg       0.81      0.74      0.77       960
+
+20201030-123105	Info: bas_score on Test split: 0.6805555555555555
+20201030-123105	Info: BAS Score achieved on test set: 0.6805555555555555
+20201030-123105	Info: 
+Feature Adder:
+20201030-123105	Info: [custom_on]
+20201030-123105	Info: [auto_encoder_on], n_encoder_features: 16
+20201030-123105	Info: 
+Auto encoder:
+20201030-123105	Info: add_noise = False
+20201030-123105	Info: encoded size = 16
+20201030-123105	Info: scaling_on = True
+20201030-123105	Info: [lda_on], shrinkage: 0.9
+20201030-123139	Info: X shape after feature addition (3840, 1031)
+20201030-123139	Info: X shape after feature addition (960, 1031)
+20201030-123139	Info: 
+--------------------------------------
+20201030-123139	Info: Iteration 20
+20201030-123139	Info: Data_sampler {'sampling_method': 'None'}
+20201030-123139	Info: Scaler {'name': 'robustscaler'}
+20201030-123139	Info: Feature Adder {'auto_encoder_on': 'True', 'clustering_on': 'False', 'custom_on': 'True', 'lda_on': 'True', 'lda_shrinkage': 0.9, 'n_clusters': 16, 'n_encoder_features': 16}
+20201030-123139	Info: Classifier {'classifier': 'SVC'}
+20201030-123139	Info: 
+----------------------------------------
+20201030-123139	Info: 
+Classifier: SVC
+20201030-123139	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-123139	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-123139	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-123139	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-123139	Info: 
+Starting Parameter Search
+20201030-123139	Info: -> grid search
+20201030-123223	Info: Best estimator from GridSearch: SVC(C=1.1,
+    class_weight={0: 2.6666666666666665, 1: 0.4444444444444444,
+                  2: 2.6666666666666665},
+    decision_function_shape='ovo', random_state=41)
+20201030-123223	Info: Best alpha found: {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}
+20201030-123223	Info: Best training-score with mse loss: 0.6973379629629629
+20201030-123223	Info:                                                                 params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0  {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}         0.697338        0.023179          0.923907         0.002963
+20201030-123225	Info: 
+--------- Test ---------
+
+20201030-123225	Info: Normalized confusion matrix
+20201030-123225	Info: [[0.55       0.21666667 0.23333333]
+ [0.12361111 0.78472222 0.09166667]
+ [0.15833333 0.11666667 0.725     ]]
+20201030-123225	Info: Test report
+20201030-123225	Info:               precision    recall  f1-score   support
+
+           0       0.38      0.55      0.45       120
+           1       0.93      0.78      0.85       720
+           2       0.48      0.72      0.58       120
+
+    accuracy                           0.75       960
+   macro avg       0.60      0.69      0.63       960
+weighted avg       0.81      0.75      0.77       960
+
+20201030-123225	Info: bas_score on Test split: 0.6865740740740741
+20201030-123225	Info: BAS Score achieved on test set: 0.6865740740740741
+20201030-123225	Info: 
+Feature Adder:
+20201030-123225	Info: [custom_on]
+20201030-123225	Info: [auto_encoder_on], n_encoder_features: 32
+20201030-123225	Info: 
+Auto encoder:
+20201030-123225	Info: add_noise = False
+20201030-123225	Info: encoded size = 32
+20201030-123225	Info: scaling_on = True
+20201030-123225	Info: [lda_on], shrinkage: 0.9
+20201030-123259	Info: X shape after feature addition (3840, 1047)
+20201030-123259	Info: X shape after feature addition (960, 1047)
+20201030-123259	Info: 
+--------------------------------------
+20201030-123259	Info: Iteration 21
+20201030-123259	Info: Data_sampler {'sampling_method': 'None'}
+20201030-123259	Info: Scaler {'name': 'robustscaler'}
+20201030-123259	Info: Feature Adder {'auto_encoder_on': 'True', 'clustering_on': 'False', 'custom_on': 'True', 'lda_on': 'True', 'lda_shrinkage': 0.9, 'n_clusters': 16, 'n_encoder_features': 32}
+20201030-123259	Info: Classifier {'classifier': 'SVC'}
+20201030-123259	Info: 
+----------------------------------------
+20201030-123259	Info: 
+Classifier: SVC
+20201030-123259	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-123259	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-123259	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-123259	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-123259	Info: 
+Starting Parameter Search
+20201030-123259	Info: -> grid search
+20201030-123344	Info: Best estimator from GridSearch: SVC(C=1.1,
+    class_weight={0: 2.6666666666666665, 1: 0.4444444444444444,
+                  2: 2.6666666666666665},
+    decision_function_shape='ovo', random_state=41)
+20201030-123344	Info: Best alpha found: {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}
+20201030-123344	Info: Best training-score with mse loss: 0.6994212962962962
+20201030-123344	Info:                                                                 params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0  {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}         0.699421        0.020955          0.923573         0.002628
+20201030-123346	Info: 
+--------- Test ---------
+
+20201030-123346	Info: Normalized confusion matrix
+20201030-123346	Info: [[0.56666667 0.21666667 0.21666667]
+ [0.12083333 0.7875     0.09166667]
+ [0.15833333 0.11666667 0.725     ]]
+20201030-123346	Info: Test report
+20201030-123346	Info:               precision    recall  f1-score   support
+
+           0       0.39      0.57      0.46       120
+           1       0.93      0.79      0.85       720
+           2       0.49      0.72      0.58       120
+
+    accuracy                           0.75       960
+   macro avg       0.60      0.69      0.63       960
+weighted avg       0.81      0.75      0.77       960
+
+20201030-123346	Info: bas_score on Test split: 0.6930555555555555
+20201030-123346	Info: BAS Score achieved on test set: 0.6930555555555555
+20201030-123346	Info: 
+Feature Adder:
+20201030-123346	Info: [custom_on]
+20201030-123346	Info: [auto_encoder_on], n_encoder_features: 16
+20201030-123346	Info: 
+Auto encoder:
+20201030-123346	Info: add_noise = False
+20201030-123346	Info: encoded size = 16
+20201030-123346	Info: scaling_on = True
+20201030-123419	Info: X shape after feature addition (3840, 1029)
+20201030-123419	Info: X shape after feature addition (960, 1029)
+20201030-123419	Info: 
+--------------------------------------
+20201030-123419	Info: Iteration 22
+20201030-123419	Info: Data_sampler {'sampling_method': 'None'}
+20201030-123419	Info: Scaler {'name': 'robustscaler'}
+20201030-123419	Info: Feature Adder {'auto_encoder_on': 'True', 'clustering_on': 'False', 'custom_on': 'True', 'lda_on': 'False', 'lda_shrinkage': 0.9, 'n_clusters': 16, 'n_encoder_features': 16}
+20201030-123419	Info: Classifier {'classifier': 'SVC'}
+20201030-123419	Info: 
+----------------------------------------
+20201030-123419	Info: 
+Classifier: SVC
+20201030-123419	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-123419	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-123419	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-123419	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-123419	Info: 
+Starting Parameter Search
+20201030-123419	Info: -> grid search
+20201030-123503	Info: Best estimator from GridSearch: SVC(C=1.1,
+    class_weight={0: 2.6666666666666665, 1: 0.4444444444444444,
+                  2: 2.6666666666666665},
+    decision_function_shape='ovo', random_state=41)
+20201030-123503	Info: Best alpha found: {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}
+20201030-123503	Info: Best training-score with mse loss: 0.6918981481481481
+20201030-123503	Info:                                                                 params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0  {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}         0.691898          0.0234          0.922338         0.002737
+20201030-123505	Info: 
+--------- Test ---------
+
+20201030-123505	Info: Normalized confusion matrix
+20201030-123505	Info: [[0.53333333 0.225      0.24166667]
+ [0.12222222 0.78611111 0.09166667]
+ [0.15       0.11666667 0.73333333]]
+20201030-123506	Info: Test report
+20201030-123506	Info:               precision    recall  f1-score   support
+
+           0       0.38      0.53      0.44       120
+           1       0.93      0.79      0.85       720
+           2       0.48      0.73      0.58       120
+
+    accuracy                           0.75       960
+   macro avg       0.60      0.68      0.63       960
+weighted avg       0.81      0.75      0.77       960
+
+20201030-123506	Info: bas_score on Test split: 0.6842592592592592
+20201030-123506	Info: BAS Score achieved on test set: 0.6842592592592592
+20201030-123506	Info: 
+Feature Adder:
+20201030-123506	Info: [custom_on]
+20201030-123506	Info: [auto_encoder_on], n_encoder_features: 32
+20201030-123506	Info: 
+Auto encoder:
+20201030-123506	Info: add_noise = False
+20201030-123506	Info: encoded size = 32
+20201030-123506	Info: scaling_on = True
+20201030-123538	Info: X shape after feature addition (3840, 1045)
+20201030-123538	Info: X shape after feature addition (960, 1045)
+20201030-123538	Info: 
+--------------------------------------
+20201030-123538	Info: Iteration 23
+20201030-123538	Info: Data_sampler {'sampling_method': 'None'}
+20201030-123538	Info: Scaler {'name': 'robustscaler'}
+20201030-123538	Info: Feature Adder {'auto_encoder_on': 'True', 'clustering_on': 'False', 'custom_on': 'True', 'lda_on': 'False', 'lda_shrinkage': 0.9, 'n_clusters': 16, 'n_encoder_features': 32}
+20201030-123538	Info: Classifier {'classifier': 'SVC'}
+20201030-123538	Info: 
+----------------------------------------
+20201030-123538	Info: 
+Classifier: SVC
+20201030-123538	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-123538	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-123538	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-123538	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-123538	Info: 
+Starting Parameter Search
+20201030-123538	Info: -> grid search
+20201030-123623	Info: Best estimator from GridSearch: SVC(C=1.1,
+    class_weight={0: 2.6666666666666665, 1: 0.4444444444444444,
+                  2: 2.6666666666666665},
+    decision_function_shape='ovo', random_state=41)
+20201030-123623	Info: Best alpha found: {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}
+20201030-123623	Info: Best training-score with mse loss: 0.6914351851851852
+20201030-123623	Info:                                                                 params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0  {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}         0.691435        0.026134          0.921528         0.002873
+20201030-123626	Info: 
+--------- Test ---------
+
+20201030-123626	Info: Normalized confusion matrix
+20201030-123626	Info: [[0.55       0.21666667 0.23333333]
+ [0.11944444 0.78888889 0.09166667]
+ [0.14166667 0.11666667 0.74166667]]
+20201030-123626	Info: Test report
+20201030-123626	Info:               precision    recall  f1-score   support
+
+           0       0.39      0.55      0.46       120
+           1       0.93      0.79      0.86       720
+           2       0.49      0.74      0.59       120
+
+    accuracy                           0.75       960
+   macro avg       0.60      0.69      0.63       960
+weighted avg       0.81      0.75      0.77       960
+
+20201030-123626	Info: bas_score on Test split: 0.6935185185185185
+20201030-123626	Info: BAS Score achieved on test set: 0.6935185185185185
+20201030-123626	Info: 
+Feature Adder:
+20201030-123626	Info: [clustering_on], n_clusters: 16
+20201030-123626	Info: [auto_encoder_on], n_encoder_features: 16
+20201030-123626	Info: 
+Auto encoder:
+20201030-123626	Info: add_noise = False
+20201030-123626	Info: encoded size = 16
+20201030-123626	Info: scaling_on = True
+20201030-123626	Info: [lda_on], shrinkage: 0.9
+20201030-123703	Info: X shape after feature addition (3840, 1019)
+20201030-123703	Info: X shape after feature addition (960, 1019)
+20201030-123703	Info: 
+--------------------------------------
+20201030-123703	Info: Iteration 24
+20201030-123703	Info: Data_sampler {'sampling_method': 'None'}
+20201030-123703	Info: Scaler {'name': 'robustscaler'}
+20201030-123703	Info: Feature Adder {'auto_encoder_on': 'True', 'clustering_on': 'True', 'custom_on': 'False', 'lda_on': 'True', 'lda_shrinkage': 0.9, 'n_clusters': 16, 'n_encoder_features': 16}
+20201030-123703	Info: Classifier {'classifier': 'SVC'}
+20201030-123703	Info: 
+----------------------------------------
+20201030-123703	Info: 
+Classifier: SVC
+20201030-123703	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-123703	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-123703	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-123703	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-123703	Info: 
+Starting Parameter Search
+20201030-123703	Info: -> grid search
+20201030-123746	Info: Best estimator from GridSearch: SVC(C=1.1,
+    class_weight={0: 2.6666666666666665, 1: 0.4444444444444444,
+                  2: 2.6666666666666665},
+    decision_function_shape='ovo', random_state=41)
+20201030-123746	Info: Best alpha found: {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}
+20201030-123746	Info: Best training-score with mse loss: 0.7041666666666667
+20201030-123746	Info:                                                                 params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0  {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}         0.704167        0.021355           0.92509         0.002693
+20201030-123748	Info: 
+--------- Test ---------
+
+20201030-123748	Info: Normalized confusion matrix
+20201030-123748	Info: [[0.55       0.23333333 0.21666667]
+ [0.12361111 0.78888889 0.0875    ]
+ [0.15833333 0.13333333 0.70833333]]
+20201030-123748	Info: Test report
+20201030-123748	Info:               precision    recall  f1-score   support
+
+           0       0.38      0.55      0.45       120
+           1       0.93      0.79      0.85       720
+           2       0.49      0.71      0.58       120
+
+    accuracy                           0.75       960
+   macro avg       0.60      0.68      0.63       960
+weighted avg       0.80      0.75      0.77       960
+
+20201030-123748	Info: bas_score on Test split: 0.6824074074074075
+20201030-123748	Info: BAS Score achieved on test set: 0.6824074074074075
+20201030-123748	Info: 
+Feature Adder:
+20201030-123748	Info: [clustering_on], n_clusters: 16
+20201030-123748	Info: [auto_encoder_on], n_encoder_features: 32
+20201030-123748	Info: 
+Auto encoder:
+20201030-123748	Info: add_noise = False
+20201030-123748	Info: encoded size = 32
+20201030-123748	Info: scaling_on = True
+20201030-123748	Info: [lda_on], shrinkage: 0.9
+20201030-123826	Info: X shape after feature addition (3840, 1035)
+20201030-123827	Info: X shape after feature addition (960, 1035)
+20201030-123827	Info: 
+--------------------------------------
+20201030-123827	Info: Iteration 25
+20201030-123827	Info: Data_sampler {'sampling_method': 'None'}
+20201030-123827	Info: Scaler {'name': 'robustscaler'}
+20201030-123827	Info: Feature Adder {'auto_encoder_on': 'True', 'clustering_on': 'True', 'custom_on': 'False', 'lda_on': 'True', 'lda_shrinkage': 0.9, 'n_clusters': 16, 'n_encoder_features': 32}
+20201030-123827	Info: Classifier {'classifier': 'SVC'}
+20201030-123827	Info: 
+----------------------------------------
+20201030-123827	Info: 
+Classifier: SVC
+20201030-123827	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-123827	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-123827	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-123827	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-123827	Info: 
+Starting Parameter Search
+20201030-123827	Info: -> grid search
+20201030-123911	Info: Best estimator from GridSearch: SVC(C=1.1,
+    class_weight={0: 2.6666666666666665, 1: 0.4444444444444444,
+                  2: 2.6666666666666665},
+    decision_function_shape='ovo', random_state=41)
+20201030-123911	Info: Best alpha found: {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}
+20201030-123911	Info: Best training-score with mse loss: 0.7030092592592593
+20201030-123911	Info:                                                                 params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0  {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}         0.703009        0.020931          0.924035          0.00277
+20201030-123913	Info: 
+--------- Test ---------
+
+20201030-123913	Info: Normalized confusion matrix
+20201030-123913	Info: [[0.56666667 0.225      0.20833333]
+ [0.125      0.7875     0.0875    ]
+ [0.15       0.14166667 0.70833333]]
+20201030-123913	Info: Test report
+20201030-123913	Info:               precision    recall  f1-score   support
+
+           0       0.39      0.57      0.46       120
+           1       0.93      0.79      0.85       720
+           2       0.49      0.71      0.58       120
+
+    accuracy                           0.75       960
+   macro avg       0.60      0.69      0.63       960
+weighted avg       0.81      0.75      0.77       960
+
+20201030-123913	Info: bas_score on Test split: 0.6875
+20201030-123913	Info: BAS Score achieved on test set: 0.6875
+20201030-123913	Info: 
+Feature Adder:
+20201030-123913	Info: [clustering_on], n_clusters: 16
+20201030-123913	Info: [auto_encoder_on], n_encoder_features: 16
+20201030-123913	Info: 
+Auto encoder:
+20201030-123913	Info: add_noise = False
+20201030-123913	Info: encoded size = 16
+20201030-123913	Info: scaling_on = True
+20201030-123949	Info: X shape after feature addition (3840, 1017)
+20201030-123949	Info: X shape after feature addition (960, 1017)
+20201030-123949	Info: 
+--------------------------------------
+20201030-123949	Info: Iteration 26
+20201030-123949	Info: Data_sampler {'sampling_method': 'None'}
+20201030-123949	Info: Scaler {'name': 'robustscaler'}
+20201030-123949	Info: Feature Adder {'auto_encoder_on': 'True', 'clustering_on': 'True', 'custom_on': 'False', 'lda_on': 'False', 'lda_shrinkage': 0.9, 'n_clusters': 16, 'n_encoder_features': 16}
+20201030-123949	Info: Classifier {'classifier': 'SVC'}
+20201030-123949	Info: 
+----------------------------------------
+20201030-123949	Info: 
+Classifier: SVC
+20201030-123949	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-123949	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-123949	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-123949	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-123949	Info: 
+Starting Parameter Search
+20201030-123949	Info: -> grid search
+20201030-124033	Info: Best estimator from GridSearch: SVC(C=1.1,
+    class_weight={0: 2.6666666666666665, 1: 0.4444444444444444,
+                  2: 2.6666666666666665},
+    decision_function_shape='ovo', random_state=41)
+20201030-124033	Info: Best alpha found: {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}
+20201030-124033	Info: Best training-score with mse loss: 0.6936342592592594
+20201030-124033	Info:                                                                 params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0  {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}         0.693634        0.023544           0.92311         0.002716
+20201030-124035	Info: 
+--------- Test ---------
+
+20201030-124035	Info: Normalized confusion matrix
+20201030-124035	Info: [[0.53333333 0.23333333 0.23333333]
+ [0.12361111 0.78611111 0.09027778]
+ [0.15833333 0.13333333 0.70833333]]
+20201030-124035	Info: Test report
+20201030-124035	Info:               precision    recall  f1-score   support
+
+           0       0.37      0.53      0.44       120
+           1       0.93      0.79      0.85       720
+           2       0.48      0.71      0.57       120
+
+    accuracy                           0.74       960
+   macro avg       0.59      0.68      0.62       960
+weighted avg       0.80      0.74      0.76       960
+
+20201030-124035	Info: bas_score on Test split: 0.6759259259259259
+20201030-124035	Info: BAS Score achieved on test set: 0.6759259259259259
+20201030-124035	Info: 
+Feature Adder:
+20201030-124035	Info: [clustering_on], n_clusters: 16
+20201030-124035	Info: [auto_encoder_on], n_encoder_features: 32
+20201030-124035	Info: 
+Auto encoder:
+20201030-124035	Info: add_noise = False
+20201030-124035	Info: encoded size = 32
+20201030-124035	Info: scaling_on = True
+20201030-124112	Info: X shape after feature addition (3840, 1033)
+20201030-124112	Info: X shape after feature addition (960, 1033)
+20201030-124112	Info: 
+--------------------------------------
+20201030-124112	Info: Iteration 27
+20201030-124112	Info: Data_sampler {'sampling_method': 'None'}
+20201030-124112	Info: Scaler {'name': 'robustscaler'}
+20201030-124112	Info: Feature Adder {'auto_encoder_on': 'True', 'clustering_on': 'True', 'custom_on': 'False', 'lda_on': 'False', 'lda_shrinkage': 0.9, 'n_clusters': 16, 'n_encoder_features': 32}
+20201030-124112	Info: Classifier {'classifier': 'SVC'}
+20201030-124112	Info: 
+----------------------------------------
+20201030-124112	Info: 
+Classifier: SVC
+20201030-124112	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-124112	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-124112	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-124112	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-124112	Info: 
+Starting Parameter Search
+20201030-124112	Info: -> grid search
+20201030-124157	Info: Best estimator from GridSearch: SVC(C=1.1,
+    class_weight={0: 2.6666666666666665, 1: 0.4444444444444444,
+                  2: 2.6666666666666665},
+    decision_function_shape='ovo', random_state=41)
+20201030-124157	Info: Best alpha found: {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}
+20201030-124157	Info: Best training-score with mse loss: 0.69375
+20201030-124157	Info:                                                                 params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0  {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}          0.69375        0.024301          0.922801         0.002937
+20201030-124159	Info: 
+--------- Test ---------
+
+20201030-124159	Info: Normalized confusion matrix
+20201030-124159	Info: [[0.55       0.21666667 0.23333333]
+ [0.12222222 0.78611111 0.09166667]
+ [0.14166667 0.13333333 0.725     ]]
+20201030-124159	Info: Test report
+20201030-124159	Info:               precision    recall  f1-score   support
+
+           0       0.39      0.55      0.45       120
+           1       0.93      0.79      0.85       720
+           2       0.48      0.72      0.58       120
+
+    accuracy                           0.75       960
+   macro avg       0.60      0.69      0.63       960
+weighted avg       0.81      0.75      0.77       960
+
+20201030-124159	Info: bas_score on Test split: 0.6870370370370371
+20201030-124159	Info: BAS Score achieved on test set: 0.6870370370370371
+20201030-124159	Info: 
+Feature Adder:
+20201030-124159	Info: [clustering_on], n_clusters: 16
+20201030-124159	Info: [custom_on]
+20201030-124159	Info: [auto_encoder_on], n_encoder_features: 16
+20201030-124159	Info: 
+Auto encoder:
+20201030-124159	Info: add_noise = False
+20201030-124159	Info: encoded size = 16
+20201030-124159	Info: scaling_on = True
+20201030-124159	Info: [lda_on], shrinkage: 0.9
+20201030-124237	Info: X shape after feature addition (3840, 1032)
+20201030-124238	Info: X shape after feature addition (960, 1032)
+20201030-124238	Info: 
+--------------------------------------
+20201030-124238	Info: Iteration 28
+20201030-124238	Info: Data_sampler {'sampling_method': 'None'}
+20201030-124238	Info: Scaler {'name': 'robustscaler'}
+20201030-124238	Info: Feature Adder {'auto_encoder_on': 'True', 'clustering_on': 'True', 'custom_on': 'True', 'lda_on': 'True', 'lda_shrinkage': 0.9, 'n_clusters': 16, 'n_encoder_features': 16}
+20201030-124238	Info: Classifier {'classifier': 'SVC'}
+20201030-124238	Info: 
+----------------------------------------
+20201030-124238	Info: 
+Classifier: SVC
+20201030-124238	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-124238	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-124238	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-124238	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-124238	Info: 
+Starting Parameter Search
+20201030-124238	Info: -> grid search
+20201030-124322	Info: Best estimator from GridSearch: SVC(C=1.1,
+    class_weight={0: 2.6666666666666665, 1: 0.4444444444444444,
+                  2: 2.6666666666666665},
+    decision_function_shape='ovo', random_state=41)
+20201030-124322	Info: Best alpha found: {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}
+20201030-124322	Info: Best training-score with mse loss: 0.7
+20201030-124322	Info:                                                                 params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0  {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}              0.7        0.022691          0.924061         0.002795
+20201030-124324	Info: 
+--------- Test ---------
+
+20201030-124324	Info: Normalized confusion matrix
+20201030-124324	Info: [[0.56666667 0.21666667 0.21666667]
+ [0.12222222 0.78888889 0.08888889]
+ [0.15833333 0.11666667 0.725     ]]
+20201030-124324	Info: Test report
+20201030-124324	Info:               precision    recall  f1-score   support
+
+           0       0.39      0.57      0.46       120
+           1       0.93      0.79      0.86       720
+           2       0.49      0.72      0.59       120
+
+    accuracy                           0.75       960
+   macro avg       0.60      0.69      0.63       960
+weighted avg       0.81      0.75      0.77       960
+
+20201030-124324	Info: bas_score on Test split: 0.6935185185185185
+20201030-124324	Info: BAS Score achieved on test set: 0.6935185185185185
+20201030-124324	Info: 
+Feature Adder:
+20201030-124324	Info: [clustering_on], n_clusters: 16
+20201030-124324	Info: [custom_on]
+20201030-124324	Info: [auto_encoder_on], n_encoder_features: 32
+20201030-124324	Info: 
+Auto encoder:
+20201030-124324	Info: add_noise = False
+20201030-124324	Info: encoded size = 32
+20201030-124324	Info: scaling_on = True
+20201030-124324	Info: [lda_on], shrinkage: 0.9
+20201030-124402	Info: X shape after feature addition (3840, 1048)
+20201030-124402	Info: X shape after feature addition (960, 1048)
+20201030-124402	Info: 
+--------------------------------------
+20201030-124402	Info: Iteration 29
+20201030-124402	Info: Data_sampler {'sampling_method': 'None'}
+20201030-124402	Info: Scaler {'name': 'robustscaler'}
+20201030-124402	Info: Feature Adder {'auto_encoder_on': 'True', 'clustering_on': 'True', 'custom_on': 'True', 'lda_on': 'True', 'lda_shrinkage': 0.9, 'n_clusters': 16, 'n_encoder_features': 32}
+20201030-124402	Info: Classifier {'classifier': 'SVC'}
+20201030-124402	Info: 
+----------------------------------------
+20201030-124402	Info: 
+Classifier: SVC
+20201030-124402	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-124402	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-124402	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-124402	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-124402	Info: 
+Starting Parameter Search
+20201030-124402	Info: -> grid search
+20201030-124447	Info: Best estimator from GridSearch: SVC(C=1.1,
+    class_weight={0: 2.6666666666666665, 1: 0.4444444444444444,
+                  2: 2.6666666666666665},
+    decision_function_shape='ovo', random_state=41)
+20201030-124447	Info: Best alpha found: {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}
+20201030-124447	Info: Best training-score with mse loss: 0.697337962962963
+20201030-124447	Info:                                                                 params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0  {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}         0.697338        0.020307          0.923238         0.003039
+20201030-124449	Info: 
+--------- Test ---------
+
+20201030-124449	Info: Normalized confusion matrix
+20201030-124449	Info: [[0.55833333 0.21666667 0.225     ]
+ [0.12222222 0.79166667 0.08611111]
+ [0.15833333 0.11666667 0.725     ]]
+20201030-124449	Info: Test report
+20201030-124449	Info:               precision    recall  f1-score   support
+
+           0       0.39      0.56      0.46       120
+           1       0.93      0.79      0.86       720
+           2       0.49      0.72      0.59       120
+
+    accuracy                           0.75       960
+   macro avg       0.60      0.69      0.63       960
+weighted avg       0.81      0.75      0.77       960
+
+20201030-124449	Info: bas_score on Test split: 0.6916666666666668
+20201030-124449	Info: BAS Score achieved on test set: 0.6916666666666668
+20201030-124449	Info: 
+Feature Adder:
+20201030-124449	Info: [clustering_on], n_clusters: 16
+20201030-124449	Info: [custom_on]
+20201030-124449	Info: [auto_encoder_on], n_encoder_features: 16
+20201030-124449	Info: 
+Auto encoder:
+20201030-124449	Info: add_noise = False
+20201030-124449	Info: encoded size = 16
+20201030-124449	Info: scaling_on = True
+20201030-124526	Info: X shape after feature addition (3840, 1030)
+20201030-124526	Info: X shape after feature addition (960, 1030)
+20201030-124526	Info: 
+--------------------------------------
+20201030-124526	Info: Iteration 30
+20201030-124526	Info: Data_sampler {'sampling_method': 'None'}
+20201030-124526	Info: Scaler {'name': 'robustscaler'}
+20201030-124526	Info: Feature Adder {'auto_encoder_on': 'True', 'clustering_on': 'True', 'custom_on': 'True', 'lda_on': 'False', 'lda_shrinkage': 0.9, 'n_clusters': 16, 'n_encoder_features': 16}
+20201030-124526	Info: Classifier {'classifier': 'SVC'}
+20201030-124526	Info: 
+----------------------------------------
+20201030-124526	Info: 
+Classifier: SVC
+20201030-124526	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-124526	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-124526	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-124526	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-124526	Info: 
+Starting Parameter Search
+20201030-124526	Info: -> grid search
+20201030-124611	Info: Best estimator from GridSearch: SVC(C=1.1,
+    class_weight={0: 2.6666666666666665, 1: 0.4444444444444444,
+                  2: 2.6666666666666665},
+    decision_function_shape='ovo', random_state=41)
+20201030-124611	Info: Best alpha found: {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}
+20201030-124611	Info: Best training-score with mse loss: 0.6920138888888889
+20201030-124611	Info:                                                                 params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0  {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}         0.692014        0.022434          0.921991         0.002727
+20201030-124613	Info: 
+--------- Test ---------
+
+20201030-124613	Info: Normalized confusion matrix
+20201030-124613	Info: [[0.54166667 0.225      0.23333333]
+ [0.12222222 0.78472222 0.09305556]
+ [0.15       0.11666667 0.73333333]]
+20201030-124613	Info: Test report
+20201030-124613	Info:               precision    recall  f1-score   support
+
+           0       0.38      0.54      0.45       120
+           1       0.93      0.78      0.85       720
+           2       0.48      0.73      0.58       120
+
+    accuracy                           0.75       960
+   macro avg       0.60      0.69      0.63       960
+weighted avg       0.81      0.75      0.77       960
+
+20201030-124613	Info: bas_score on Test split: 0.6865740740740741
+20201030-124613	Info: BAS Score achieved on test set: 0.6865740740740741
+20201030-124613	Info: 
+Feature Adder:
+20201030-124613	Info: [clustering_on], n_clusters: 16
+20201030-124613	Info: [custom_on]
+20201030-124613	Info: [auto_encoder_on], n_encoder_features: 32
+20201030-124613	Info: 
+Auto encoder:
+20201030-124613	Info: add_noise = False
+20201030-124613	Info: encoded size = 32
+20201030-124613	Info: scaling_on = True
+20201030-124651	Info: X shape after feature addition (3840, 1046)
+20201030-124651	Info: X shape after feature addition (960, 1046)
+20201030-124651	Info: 
+--------------------------------------
+20201030-124651	Info: Iteration 31
+20201030-124651	Info: Data_sampler {'sampling_method': 'None'}
+20201030-124651	Info: Scaler {'name': 'robustscaler'}
+20201030-124651	Info: Feature Adder {'auto_encoder_on': 'True', 'clustering_on': 'True', 'custom_on': 'True', 'lda_on': 'False', 'lda_shrinkage': 0.9, 'n_clusters': 16, 'n_encoder_features': 32}
+20201030-124651	Info: Classifier {'classifier': 'SVC'}
+20201030-124651	Info: 
+----------------------------------------
+20201030-124651	Info: 
+Classifier: SVC
+20201030-124651	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-124651	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-124651	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201030-124651	Info: 
+Samples per group before classification
+ y
+0     480
+1    2880
+2     480
+Name: y, dtype: int64
+20201030-124651	Info: 
+Starting Parameter Search
+20201030-124651	Info: -> grid search
+20201030-124736	Info: Best estimator from GridSearch: SVC(C=1.1,
+    class_weight={0: 2.6666666666666665, 1: 0.4444444444444444,
+                  2: 2.6666666666666665},
+    decision_function_shape='ovo', random_state=41)
+20201030-124736	Info: Best alpha found: {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}
+20201030-124736	Info: Best training-score with mse loss: 0.6913194444444446
+20201030-124736	Info:                                                                 params  mean_test_score  std_test_score  mean_train_score  std_train_score
+0  {'C': 1.1, 'gamma': 'scale', 'kernel': 'rbf', 'probability': False}         0.691319        0.023951          0.921168         0.002828
+20201030-124738	Info: 
+--------- Test ---------
+
+20201030-124738	Info: Normalized confusion matrix
+20201030-124738	Info: [[0.54166667 0.21666667 0.24166667]
+ [0.12222222 0.78611111 0.09166667]
+ [0.15       0.11666667 0.73333333]]
+20201030-124738	Info: Test report
+20201030-124738	Info:               precision    recall  f1-score   support
+
+           0       0.38      0.54      0.45       120
+           1       0.93      0.79      0.85       720
+           2       0.48      0.73      0.58       120
+
+    accuracy                           0.75       960
+   macro avg       0.60      0.69      0.63       960
+weighted avg       0.81      0.75      0.77       960
+
+20201030-124738	Info: bas_score on Test split: 0.687037037037037
+20201030-124738	Info: BAS Score achieved on test set: 0.687037037037037
+20201030-124738	Info: Search finished
+20201030-124738	Info: Finished processing in 2091 [s].
