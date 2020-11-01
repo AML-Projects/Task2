@@ -14,8 +14,10 @@
         "custom_on" : "False",
         "auto_encoder_on" : "False",
         "n_encoder_features" : 16,
+        "encoder_path" : "", // "./model_save/encoder_train_denoise_128",
         "lda_on" :"False",
-        "lda_shrinkage" : 0.5,
+        "lda_shrinkage" : 0.9,
+        "replace_features" : "False",
     },
 	"scaler" : {
 		"name" : "robustscaler"
@@ -24,7 +26,7 @@
 		"sampling_method": "None",
 	},
 	"classifier": {
-		"classifier": "SVC",
+		"classifier": "xgb",
 		"random_search" : "False"
 	},
 	"search" : {

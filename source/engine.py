@@ -219,8 +219,10 @@ class Engine:
                               custom_on=Configuration.get('feature_adder.custom_on'),
                               auto_encoder_on=Configuration.get('feature_adder.auto_encoder_on'),
                               n_encoder_features=Configuration.get('feature_adder.n_encoder_features'),
+                              encoder_path=Configuration.get('feature_adder.encoder_path'),
                               lda_on=Configuration.get('feature_adder.lda_on'),
-                              lda_shrinkage=Configuration.get('feature_adder.lda_shrinkage'))
+                              lda_shrinkage=Configuration.get('feature_adder.lda_shrinkage'),
+                              replace_features=Configuration.get('feature_adder.replace_features'))
         fadder.fit(x_train_split, y_train_split)
         x_train_split = fadder.transform(x_train_split)
         x_test_split = fadder.transform(x_test_split)

@@ -97,9 +97,21 @@ class CustomFeatureGenerator:
 class FeatureAdder(TransformerMixin):
     def __init__(self, clustering_on=False, n_clusters=16,
                  custom_on=False,
-                 auto_encoder_on=False, n_encoder_features=16,
+                 auto_encoder_on=False, n_encoder_features=16, encoder_path="",
                  lda_on=False,
-                 lda_shrinkage=None):
+                 lda_shrinkage=None,
+                 replace_features=False):
+        """
+        :param clustering_on:
+        :param n_clusters:
+        :param custom_on:
+        :param auto_encoder_on:
+        :param n_encoder_features:
+        :param encoder_path: load a pretrained encoder from the supplied path
+        :param lda_on:
+        :param lda_shrinkage:
+        :param replace_features: True = Only keep extracted features; False = add extracted features to existing features
+        """
         Logcreator.info("\nFeature Adder:")
 
         if isinstance(clustering_on, str):
@@ -121,9 +133,11 @@ class FeatureAdder(TransformerMixin):
             auto_encoder_on = auto_encoder_on == "True"
         self.auto_encoder_on = auto_encoder_on
         self.n_encoder_features = n_encoder_features
+        self.encoder_path = encoder_path
         if self.auto_encoder_on:
             Logcreator.info("[auto_encoder_on], n_encoder_features:", self.n_encoder_features)
-            self.ae = AutoEncoder(encoded_size=self.n_encoder_features, scaling_on=True, add_noise=False)
+            self.ae = AutoEncoder(encoded_size=self.n_encoder_features, scaling_on=True, add_noise=False,
+                                  load_model_path=self.encoder_path)
 
         if isinstance(lda_on, str):
             lda_on = lda_on == "True"
@@ -143,6 +157,10 @@ class FeatureAdder(TransformerMixin):
             https://scikit-learn.org/stable/modules/lda_qda.html#shrinkage
             """
             self.lda = LinearDiscriminantAnalysis(solver='eigen', shrinkage=lda_shrinkage)
+
+        if isinstance(replace_features, str):
+            replace_features = replace_features == "True"
+        self.replace_features = replace_features
 
         pass
 
@@ -189,8 +207,12 @@ class FeatureAdder(TransformerMixin):
             scaler = StandardScaler()
             x_add = scaler.fit_transform(x_add)
 
-            # add features to X
-            X = np.c_[X, x_add]
+            if self.replace_features:
+                # overwrite features
+                X = x_add
+            else:
+                # add features to X
+                X = np.c_[X, x_add]
 
         Logcreator.info("X shape after feature addition", X.shape)
 
