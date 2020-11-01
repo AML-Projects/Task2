@@ -1,0 +1,126 @@
+20201101-220045	Task 02 - MRI Desease classification
+20201101-220045	Info: Environment: describe the run
+20201101-220046	Info: Shape of training_samples: (4800, 1000)
+20201101-220046	Info:            x0        x1        x2  ...      x997      x998      x999
+id                                 ...                              
+0.0 -1.498973  1.448201  2.784979  ... -0.004883  3.173465  2.179183
+1.0 -0.521470 -0.493049  0.891382  ...  0.971394  0.604963  0.355499
+2.0 -0.417724 -0.019106  0.938377  ...  0.842709  2.086818  0.512741
+3.0 -0.471972  0.000398  0.784836  ...  0.426496  0.336746  1.304973
+4.0  0.201026 -0.579901  0.638809  ...  0.825237  1.044778  0.071464
+
+[5 rows x 1000 columns]
+20201101-220046	Info: Shape of training labels: (4800, 1)
+20201101-220046	Info:     y
+id   
+0   1
+1   0
+2   1
+3   1
+4   1
+20201101-220047	Info: Shape of test samples: (4100, 1000)
+20201101-220047	Info:            x0        x1        x2  ...      x997      x998      x999
+id                                 ...                              
+0.0 -1.079476  1.026788  2.025148  ...  0.597379  1.127784  2.924234
+1.0 -1.104064  2.587608  0.870833  ... -0.325131  2.295994  3.219922
+2.0  0.162656 -0.869909  0.502366  ...  0.264860  0.742492 -0.105276
+3.0 -0.224210 -0.226734  0.940147  ...  0.802260  0.397065  0.596587
+4.0 -0.571950  0.946702  1.021095  ...  0.952334  0.986242  2.301550
+
+[5 rows x 1000 columns]
+20201101-220047	Info: Train-Data Shpae: (4800, 1000)
+20201101-220047	Info: Test-Data Shape: (4100, 1000)
+20201101-220047	Info: 
+Validation samples per group
+ [ 600 3600  600]
+20201101-220047	Info: 
+Train samples per group
+ [ 600 3600  600]
+20201101-220047	Info: Training initialized
+20201101-220047	Info: 
+Data Sampling: None
+20201101-220047	Info: 
+ Trainset samples per group
+ [ 600 3600  600]
+20201101-220047	Info: Start normalizer
+20201101-220048	Info: 
+train shape (4800, 1000)
+20201101-220048	Info: 
+Feature Transformer: None
+20201101-220048	Info: 
+Auto encoder:
+20201101-220048	Info: add_noise = False
+20201101-220048	Info: encoded size = 128
+20201101-220048	Info: scaling_on = True
+20201101-220048	Info: Encoder model loaded: ./model_save/encoder_all_denoise_128
+20201101-220048	Info: 
+Feature Adder:
+20201101-220048	Info: [clustering_on]: True , n_clusters: 16
+20201101-220048	Info: [custom_on]: False
+20201101-220048	Info: [auto_encoder_on]: True , n_encoder_features: 128
+20201101-220048	Info: [lda_on]: True , shrinkage: 0.9
+20201101-220048	Info: replace_features: True
+20201101-220059	Info: X shape after feature addition (4800, 131)
+20201101-220111	Info: X shape after feature addition (4100, 131)
+20201101-220111	Info: 
+Classifier: KernelizedSVC
+20201101-220112	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201101-220112	Info: 
+Samples per group before classification
+ y
+0     600
+1    3600
+2     600
+Name: y, dtype: int64
+20201101-220112	Info: 
+Class weights:
+           0
+0  2.666667
+1  0.444444
+2  2.666667
+20201101-220112	Info: 
+Samples per group before classification
+ y
+0     600
+1    3600
+2     600
+Name: y, dtype: int64
+20201101-220112	Info: 
+Starting Parameter Search
+20201101-220112	Info: -> grid search
+20201101-220408	Info: Best estimator from GridSearch: SVC(C=1.2,
+    class_weight={0: 2.6666666666666665, 1: 0.4444444444444444,
+                  2: 2.6666666666666665},
+    decision_function_shape='ovo',
+    kernel=RBF(length_scale=30) + Matern(length_scale=20, nu=1) + RationalQuadratic(alpha=0.5, length_scale=20),
+    random_state=41)
+20201101-220408	Info: Best alpha found: {'C': 1.2, 'gamma': 'scale', 'kernel': RBF(length_scale=30) + Matern(length_scale=20, nu=1) + RationalQuadratic(alpha=0.5, length_scale=20), 'kernel__k1__k1__length_scale': 30, 'kernel__k1__k2__length_scale': 20, 'kernel__k1__k2__nu': 1.0, 'kernel__k2__alpha': 0.5, 'kernel__k2__length_scale': 20, 'probability': False}
+20201101-220408	Info: Best training-score with mse loss: 0.7298148148148147
+20201101-220408	Info:                                                                                                                                                                                                                                                                                                                             params  mean_test_score  std_test_score  mean_train_score  std_train_score
+1  {'C': 1.2, 'gamma': 'scale', 'kernel': RBF(length_scale=30) + Matern(length_scale=20, nu=1) + RationalQuadratic(alpha=0.5, length_scale=20), 'kernel__k1__k1__length_scale': 30, 'kernel__k1__k2__length_scale': 20, 'kernel__k1__k2__nu': 1.0, 'kernel__k2__alpha': 0.5, 'kernel__k2__length_scale': 20, 'probability': False}         0.729815        0.020946          0.881903         0.001018
+0  {'C': 1.1, 'gamma': 'scale', 'kernel': RBF(length_scale=30) + Matern(length_scale=20, nu=1) + RationalQuadratic(alpha=0.5, length_scale=20), 'kernel__k1__k1__length_scale': 30, 'kernel__k1__k2__length_scale': 20, 'kernel__k1__k2__nu': 1.0, 'kernel__k2__alpha': 0.5, 'kernel__k2__length_scale': 20, 'probability': False}         0.729259        0.021273          0.874331         0.002154
+20201101-220423	Info: 
+--------- Train ---------
+
+20201101-220423	Info: Normalized confusion matrix
+20201101-220423	Info: [[0.90333333 0.01833333 0.07833333]
+ [0.11777778 0.80055556 0.08166667]
+ [0.04666667 0.01166667 0.94166667]]
+20201101-220423	Info: Train report
+20201101-220423	Info:               precision    recall  f1-score   support
+
+           0       0.55      0.90      0.68       600
+           1       0.99      0.80      0.89      3600
+           2       0.62      0.94      0.75       600
+
+    accuracy                           0.83      4800
+   macro avg       0.72      0.88      0.77      4800
+weighted avg       0.89      0.83      0.84      4800
+
+20201101-220423	Info: bas_score on Train split: 0.8818518518518518
+20201101-220437	Info: Finished processing in 231 [s].

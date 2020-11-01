@@ -1,0 +1,32 @@
+{
+    "environment": {
+        "name" : "describe the run",
+        "output_path": "trainings",
+        "log_file" : "logs.txt"
+    },
+    "feature_selector": {
+		"method" : "None",
+        "n_components" : 200
+    },
+    "feature_adder" : {
+        "clustering_on" : "True",
+        "n_clusters" : 16,
+        "custom_on" : "False",
+        "auto_encoder_on" : "True",
+        "n_encoder_features" : 128,
+        "encoder_path" : "./model_save/encoder_all_denoise_128",
+        "lda_on" :"True",
+        "lda_shrinkage" : 0.9,
+        "replace_features" : "True",
+    },
+	"scaler" : {
+		"name" : "robustscaler"
+	},
+	"data_sampler": {
+		"sampling_method": "None",
+	},
+	"classifier": {
+		"classifier": "KernelizedSVC",
+		"random_search" : "False"
+	},
+}
