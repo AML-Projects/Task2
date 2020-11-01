@@ -112,21 +112,18 @@ class FeatureAdder(TransformerMixin):
         :param lda_shrinkage:
         :param replace_features: True = Only keep extracted features; False = add extracted features to existing features
         """
-        Logcreator.info("\nFeature Adder:")
 
         if isinstance(clustering_on, str):
             clustering_on = clustering_on == "True"
         self.clustering_on = clustering_on
         self.n_clusters = n_clusters
         if self.clustering_on:
-            Logcreator.info("[clustering_on], n_clusters:", self.n_clusters)
             self.clusterFG = ClusterFeatureGenerator()
 
         if isinstance(custom_on, str):
             custom_on = custom_on == "True"
         self.custom_on = custom_on
         if self.custom_on:
-            Logcreator.info("[custom_on]")
             self.customFG = CustomFeatureGenerator()
 
         if isinstance(auto_encoder_on, str):
@@ -135,7 +132,6 @@ class FeatureAdder(TransformerMixin):
         self.n_encoder_features = n_encoder_features
         self.encoder_path = encoder_path
         if self.auto_encoder_on:
-            Logcreator.info("[auto_encoder_on], n_encoder_features:", self.n_encoder_features)
             self.ae = AutoEncoder(encoded_size=self.n_encoder_features, scaling_on=True, add_noise=False,
                                   load_model_path=self.encoder_path)
 
@@ -148,7 +144,6 @@ class FeatureAdder(TransformerMixin):
             elif lda_shrinkage != "auto":
                 ValueError("lda_shrinkage can't have value", lda_shrinkage)
         if self.lda_on:
-            Logcreator.info("[lda_on], shrinkage:", lda_shrinkage)
             """
             LDA can add  a lot of bias on the data, because it uses y in the fit!
             The shrinking parameter can regularize overfitting!
@@ -161,6 +156,13 @@ class FeatureAdder(TransformerMixin):
         if isinstance(replace_features, str):
             replace_features = replace_features == "True"
         self.replace_features = replace_features
+
+        Logcreator.info("\nFeature Adder:")
+        Logcreator.info("[clustering_on]:", self.clustering_on, ", n_clusters:", self.n_clusters)
+        Logcreator.info("[custom_on]:", self.custom_on)
+        Logcreator.info("[auto_encoder_on]:", self.auto_encoder_on, ", n_encoder_features:", self.n_encoder_features)
+        Logcreator.info("[lda_on]:", self.lda_on, ", shrinkage:", lda_shrinkage)
+        Logcreator.info("replace_features:", self.replace_features)
 
         pass
 

@@ -29,17 +29,19 @@ class AutoEncoder(BaseEstimator, TransformerMixin):
         self.use_sample_weight = use_sample_weight
         self.verbose = verbose
         self.encoder = None
-        try:
-            self.encoder = keras.models.load_model(load_model_path)
-            Logcreator.info("Encoder model loaded:", load_model_path)
-        except:
-            Logcreator.info("No model loaded")
 
         if self.verbose == 1:
             Logcreator.info("\nAuto encoder:")
             Logcreator.info("add_noise =", add_noise)
             Logcreator.info("encoded size =", encoded_size)
             Logcreator.info("scaling_on =", scaling_on)
+
+        try:
+            self.encoder = keras.models.load_model(load_model_path)
+            Logcreator.info("Encoder model loaded:", load_model_path)
+        except:
+            Logcreator.info("No model loaded")
+
         pass
 
     def scale_input(self, x):
