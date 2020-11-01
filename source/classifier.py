@@ -1,4 +1,3 @@
-import math
 from datetime import datetime
 
 import keras
@@ -10,6 +9,7 @@ from imblearn.ensemble import BalancedRandomForestClassifier, EasyEnsembleClassi
     BalancedBaggingClassifier
 from keras.layers import Dense, Dropout
 from keras.models import Sequential
+from sklearn.gaussian_process.kernels import RBF, Matern, RationalQuadratic
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import StratifiedKFold, GridSearchCV, RandomizedSearchCV
 from sklearn.naive_bayes import GaussianNB
@@ -154,6 +154,24 @@ class Classifier:
             c_range = np.logspace(2, 2, 1)
             params = dict(gamma=gamma_range, kernel=kernel, C=c_range)
 
+        elif self.classifier == "KernelizedSVC":
+            model = SVC(class_weight=class_weights_dict, random_state=41, decision_function_shape='ovo')
+
+            kernel1 = RBF() + Matern() + RationalQuadratic()
+            # print(kernel1.get_params(deep=True).keys())
+
+            kernel = [kernel1]
+            gamma_range = ["scale"]
+            c_range = [1.1, 1.2]
+            probability = [False]
+
+            params = dict(gamma=gamma_range, kernel=kernel, C=c_range, probability=probability)
+
+            params["kernel__k1__k1__length_scale"] = [30]
+            params["kernel__k1__k2__length_scale"] = [20]
+            params["kernel__k2__length_scale"] = [20]
+            params["kernel__k1__k2__nu"] = [1.0]
+            params["kernel__k2__alpha"] = [0.5]
 
         else:
             raise ValueError("Model not existing")
