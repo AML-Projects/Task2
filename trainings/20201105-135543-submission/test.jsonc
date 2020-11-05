@@ -6,16 +6,18 @@
     },
     "feature_selector": {
 		"method" : "None",
-        "n_components" : 200
+        "n_components" : 1000
     },
     "feature_adder" : {
-        "clustering_on" : "False",
+        "clustering_on" : "True",
         "n_clusters" : 16,
         "custom_on" : "False",
-        "auto_encoder_on" : "False",
-        "n_encoder_features" : 16,
+        "auto_encoder_on" : "True",
+        "n_encoder_features" : 128,
+        "encoder_path" : "./model_save/encoder_train_denoise_128",
         "lda_on" :"False",
-        "lda_shrinkage" : 0.5,
+        "lda_shrinkage" : 0.9,
+        "replace_features" : "True",
     },
 	"scaler" : {
 		"name" : "robustscaler"
@@ -24,12 +26,12 @@
 		"sampling_method": "None",
 	},
 	"classifier": {
-		"classifier": "SVC",
+		"classifier": "KernelizedSVC",
 		"random_search" : "False"
 	},
 	"search" : {
 		"data_sampler" : {
-			"sampling_method" : ["None"] //, "random", "SMOTE", "ADASYN", "RandomUnderSampler", "ClusterCentroids", "NearMiss", "AllKNN", "SMOTEENN", "SMOTETomek"]
+			"sampling_method" : ["None", "random", "SMOTE", "ADASYN", "RandomUnderSampler", "ClusterCentroids", "NearMiss", "AllKNN", "SMOTEENN", "SMOTETomek"]
 		},
 		"scaler" : {
 			"name" : ["robustscaler"]
@@ -41,10 +43,10 @@
             "auto_encoder_on" : ["False", "True"],
             "clustering_on" : ["False", "True"],
             "custom_on" : ["False", "True"],
-            "lda_on" : ["True", "False"],
-            "lda_shrinkage" : [0.9],
-            "n_clusters" : [16],
-            "n_encoder_features" : [16, 32],
+            "n_clusters" : [8, 16],
+            "n_encoder_features" : [8, 16, 32],
+            "lda_on" : ["False", "True"],
+            "lda_shrinkage" : ["auto", 0.7],
         },
 
 	}
