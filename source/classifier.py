@@ -18,6 +18,9 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.utils import class_weight
 from tensorflow.python.keras.optimizer_v2.nadam import Nadam
 
+from sklearn.gaussian_process import GaussianProcessClassifier
+from sklearn.discriminant_analysis import QuadraticDiscriminantAnalysis
+
 from logcreator.logcreator import Logcreator
 
 
@@ -148,11 +151,16 @@ class Classifier:
                                        random_state=0)
 
         elif self.classifier == "SVC":
-            model = SVC(class_weight=class_weights_dict, random_state=41, decision_function_shape='ovo')
-            kernel = ['rbf']
-            gamma_range = np.logspace(-3, -3, 1)
-            c_range = np.logspace(2, 2, 1)
-            params = dict(gamma=gamma_range, kernel=kernel, C=c_range)
+            model = SVC(C=1.1, class_weight='balanced', gamma='scale', kernel=RBF(length_scale=20), max_iter=-1, probability=True,
+                    random_state=None,
+                    shrinking=True, tol=0.001, verbose=False, decision_function_shape='ovo')
+
+            # model = SVC(class_weight=class_weights_dict, random_state=41, decision_function_shape='ovo')
+            # kernel = ['rbf']
+            # gamma_range = np.logspace(-3, -3, 1)
+            # c_range = np.logspace(2, 2, 1)
+            # params = dict(gamma=gamma_range, kernel=kernel, C=c_range)
+            params = dict(C= np.array([1.1]))
 
         elif self.classifier == "KernelizedSVC":
             model = SVC(class_weight=class_weights_dict, random_state=41, decision_function_shape='ovo')
@@ -173,6 +181,16 @@ class Classifier:
             params["kernel__k1__k2__nu"] = [1.0]
             params["kernel__k2__alpha"] = [0.5]
 
+        elif self.classifier == "GP":
+            model = GaussianProcessClassifier(n_restarts_optimizer=1, random_state = 41, n_jobs = -1)
+            multi_class = ["one_vs_one"] # much better than "one_vs_rest", still overfitting
+            params = dict(multi_class = multi_class)
+
+
+        elif self.classifier =="QDA":
+            model = QuadraticDiscriminantAnalysis(priors=None) # does consider class imbalance per default
+            reg_param_range = [0, 0.5, 1, 10]
+            params = dict(reg_param=reg_param_range)
         else:
             raise ValueError("Model not existing")
 
