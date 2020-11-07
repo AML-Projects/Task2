@@ -264,7 +264,9 @@ class Engine:
 
     def save_output(self, clf, x, x_idx, filename):
         predicted_values = clf.predict(x)
-        output_csv = pd.concat([pd.Series(x_idx), pd.Series(predicted_values.flatten())], axis=1)
+        classes = [0,1,2]
+        y_pred = evaluation.one_hot_to_class(predicted_values, len(classes))
+        output_csv = pd.concat([pd.Series(x_idx), pd.Series(y_pred.flatten())], axis=1)
         output_csv.columns = ["id", "y"]
         pd.DataFrame.to_csv(output_csv, os.path.join(Configuration.output_directory, filename), index=False)
 

@@ -182,7 +182,7 @@ class Classifier:
             params["kernel__k2__alpha"] = [0.5]
 
         elif self.classifier == "GP":
-            model = GaussianProcessClassifier(n_restarts_optimizer=1, random_state = 41, n_jobs = -1)
+            model = GaussianProcessClassifier(n_restarts_optimizer=1, random_state = 41, n_jobs = -1, kernel = RBF(length_scale=20))
             multi_class = ["one_vs_one"] # much better than "one_vs_rest", still overfitting
             params = dict(multi_class = multi_class)
 

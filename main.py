@@ -20,7 +20,7 @@ if __name__ == "__main__":
     # Sample Config: --handin true --configuration D:\GitHub\AML\Task1\configurations\test.jsonc
     parser = argparse.ArgumentParser(
         description="Executes a training session.")
-    parser.add_argument('--configuration', default='./configurations/ensemble.jsonc',
+    parser.add_argument('--configuration', default='./configurations/e1.jsonc',
                         type=str, help="Environment and training configuration.")
     parser.add_argument('--workingdir', default=os.getcwd(), type=str,
                         help="Working directory (default: current directory).")
@@ -29,17 +29,17 @@ if __name__ == "__main__":
     parser.add_argument('--hyperparamsearch', default=False, type=argumenthelper.boolean_string,
                         help="If set to true, will perform hyper parameter search, else it will only fit the given model")
 
-    parser.add_argument('--ensemble_output', default=False, type=argumenthelper.boolean_string,
+    parser.add_argument('--ensemble_output', default=True, type=argumenthelper.boolean_string,
                         help="saves output of intermediate results if set to true")
     parser.add_argument('--ensemble_path',
-                        default="/Users/sarahmorillo/PycharmProjects/AML/Task2/trainings/20201106-174337-e2,/Users/sarahmorillo/PycharmProjects/AML/Task2/trainings/20201029-211300-submission,trainings/20201105-135543-submission",
+                        default="/Users/sarahmorillo/PycharmProjects/AML/Task2/trainings/20201107-112112-e1,trainings/20201107-135221-e3,/Users/sarahmorillo/PycharmProjects/AML/Task2/trainings/20201107-120921-e2",
                         type=str,
                         help="string sep by ',' to indicate all the paths to dirs, where the individual preds. are stored")
-    parser.add_argument('--ensemble_predict', default=True, type=argumenthelper.boolean_string,
+    parser.add_argument('--ensemble_predict', default=False, type=argumenthelper.boolean_string,
                         help="will used prediction in ensemble_path to predict, if false no ensemble prediction is perfomed")
     #"trainings/20201106-164259-e1,trainings/20201106-174123-e3,trainings/20201106-174337-e2"
 
-    parser.add_argument('--ensemble_handin', default=True, type=argumenthelper.boolean_string,
+    parser.add_argument('--ensemble_handin', default=False, type=argumenthelper.boolean_string,
                         help="If set to true, will create submission.csv based on submission.csv of the individual classifiers, specified in ensebmle_path")
 
     args = argumenthelper.parse_args(parser)
