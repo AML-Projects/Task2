@@ -23,7 +23,8 @@ from source.feature_adder import FeatureAdder
 from source.feature_extractor import FeatureExtractor
 from source.feature_transformer import FeatureTransformer
 from source.scaler import Scaler
-
+import re
+import glob
 
 class Engine:
     def __init__(self, fix_random_seeds=True):
@@ -240,7 +241,7 @@ class Engine:
         clf = Classifier(classifier=Configuration.get('classifier.classifier'),
                          random_search=Configuration.get('classifier.random_search'))
         best_model = clf.fit(X=x_train_split, y=y_train_split)
-        results = clf.getFitResults()
+        results = clf.getFitResults() # auskomment... für SVM
 
         return best_model, x_test_split, x_train_split, y_train_split, results
 
@@ -248,15 +249,74 @@ class Engine:
         y_predict_train = clf.predict(x_train_split)
 
         evaluation.evaluation_metrics(y_train_split, y_predict_train, "Train")
-        visualize_prediction(x_train_split, y_train_split, y_predict_train, "Train")
+        # visualize_prediction(x_train_split, y_train_split, y_predict_train, "Train")
 
         if y_test_split is not None:
             y_predict_test = clf.predict(x_test_split)
             evaluation.evaluation_metrics(y_test_split, y_predict_test, "Test")
-            visualize_prediction(x_test_split, y_test_split, y_predict_test, "Test")
+            # visualize_prediction(x_test_split, y_test_split, y_predict_test, "Test")
 
-    def output_submission(self, clf, x_test, x_test_index):
+    def output_submission(self, clf, x_test, x_test_index, filename="submit.csv"):
         predicted_values = clf.predict(x_test)
         output_csv = pd.concat([pd.Series(x_test_index.values), pd.Series(predicted_values.flatten())], axis=1)
         output_csv.columns = ["id", "y"]
-        pd.DataFrame.to_csv(output_csv, os.path.join(Configuration.output_directory, 'submit.csv'), index=False)
+        pd.DataFrame.to_csv(output_csv, os.path.join(Configuration.output_directory, filename), index=False)
+
+    def save_output(self, clf, x, x_idx, filename):
+        predicted_values = clf.predict(x)
+        output_csv = pd.concat([pd.Series(x_idx), pd.Series(predicted_values.flatten())], axis=1)
+        output_csv.columns = ["id", "y"]
+        pd.DataFrame.to_csv(output_csv, os.path.join(Configuration.output_directory, filename), index=False)
+
+    def ensemble_predict(self, paths, y_train_split, y_test_split):
+        Logcreator.info("Ensemble predict")
+        # remove spaces
+        paths = paths.replace(" ", "")
+        paths = paths.split(",")
+        cwd = os.getcwd()
+        predicted_values_train = pd.DataFrame()
+        predicted_values_val = pd.DataFrame()
+        for path in paths:
+            if os.path.exists(path):
+                Logcreator.info("Reading in prediction from {}".format(path))
+                os.chdir(path)
+                train_pred = pd.read_csv("train_pred.csv", index_col=0)
+                predicted_values_train = pd.concat([predicted_values_train,train_pred], axis=1)
+                val_pred = pd.read_csv("val_pred.csv", index_col=0)
+                predicted_values_val = pd.concat([predicted_values_val, val_pred], axis=1)
+                os.chdir(cwd)
+
+        y_predict_train = predicted_values_train.mode(axis=1)[0]
+        y_predict_val = predicted_values_val.mode(axis=1)[0]
+        evaluation.evaluation_metrics(y_train_split, y_predict_train, "Train")
+        if y_test_split is not None:
+            evaluation.evaluation_metrics(y_test_split, y_predict_val, "Test")
+
+
+    def ensebmle_submission(self, paths, x_test_index, filename="submit.csv"):
+        # remove spaces
+        paths = paths.replace(" ", "")
+        paths = paths.split(",")
+        cwd = os.getcwd()
+        predicted_values = pd.DataFrame()
+        for path in paths:
+            if os.path.exists(path):
+                Logcreator.info("Reading in prediction from {}".format(path))
+                os.chdir(path)
+                #dir_name = path.split("/")[-1]
+                #prefix = re.findall("\d{8}-\d{6}-", dir_name)[0]
+                tmp = glob.glob("*submit.csv")
+                if len(tmp) > 0:
+                    submision_file_name = glob.glob("*submit.csv")[0]
+                    if os.path.exists(submision_file_name):
+                        Logcreator.info("Reading in {}".format(submision_file_name))
+                        predictions = pd.read_csv(submision_file_name, index_col=0)
+                        predicted_values = pd.concat([predicted_values, predictions], axis=1)
+                else:
+                    Logcreator.info("No submission file found in {}".format(path))
+                os.chdir(cwd)
+
+        prediction = predicted_values.mode(axis=1)[0]
+        output_csv = pd.concat([pd.Series(x_test_index.values), pd.Series(prediction)], axis=1).astype(int)
+        output_csv.columns = ["id", "y"]
+        pd.DataFrame.to_csv(output_csv, os.path.join(Configuration.output_directory, filename), index=False)
