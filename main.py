@@ -37,10 +37,13 @@ if __name__ == "__main__":
                         help="string sep by ',' to indicate all the paths to dirs, where the individual preds. are stored")
     parser.add_argument('--ensemble_predict', default=False, type=argumenthelper.boolean_string,
                         help="will used prediction in ensemble_path to predict, if false no ensemble prediction is perfomed")
-    #"trainings/20201106-164259-e1,trainings/20201106-174123-e3,trainings/20201106-174337-e2"
+    # "trainings/20201106-164259-e1,trainings/20201106-174123-e3,trainings/20201106-174337-e2"
 
     parser.add_argument('--ensemble_handin', default=False, type=argumenthelper.boolean_string,
                         help="If set to true, will create submission.csv based on submission.csv of the individual classifiers, specified in ensebmle_path")
+
+    parser.add_argument('--split_data', default=0, type=argumenthelper.boolean_string,
+                        help="If set to a certain split number it will only use that data. 0 = use all data")
 
     args = argumenthelper.parse_args(parser)
     start = time.time()
@@ -52,15 +55,31 @@ if __name__ == "__main__":
     Logcreator.info("Environment: %s" % Configuration.get('environment.name'))
 
     # Load training data
-    x_train = pd.read_csv("./data/X_train.csv", index_col=0)
+    if args.split_data == 0:
+        x_train = pd.read_csv("./data/X_train.csv", index_col=0)
+        y_train = pd.read_csv("./data/y_train.csv", index_col=0)
+        x_test = pd.read_csv("./data/X_test.csv", index_col=0)
+    else:
+        x1_train = pd.read_csv("./data/split/x1_train.csv", index_col=0)
+        y1_train = pd.read_csv("./data/split/y1_train.csv", index_col=0)
+        x2_train = pd.read_csv("./data/split/x2_train.csv", index_col=0)
+        y2_train = pd.read_csv("./data/split/y2_train.csv", index_col=0)
+        x1_test = pd.read_csv("./data/split/x1_test.csv", index_col=0)
+        x2_test = pd.read_csv("./data/split/x2_test.csv", index_col=0)
+
+        if args.split_data == 1:
+            x_train = x1_train
+            y_train = y1_train
+            x_test = x1_test
+        elif args.split_data == 2:
+            x_train = x2_train
+            y_train = y2_train
+            x_test = x2_test
+
     Logcreator.info("Shape of training_samples: {}".format(x_train.shape))
     Logcreator.info(x_train.head())
-
-    y_train = pd.read_csv("./data/y_train.csv", index_col=0)
     Logcreator.info("Shape of training labels: {}".format(y_train.shape))
     Logcreator.info(y_train.head())
-
-    x_test = pd.read_csv("./data/X_test.csv", index_col=0)
     Logcreator.info("Shape of test samples: {}".format(x_test.shape))
     Logcreator.info(x_test.head())
 
