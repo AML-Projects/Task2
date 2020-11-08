@@ -160,7 +160,11 @@ class Classifier:
             # gamma_range = np.logspace(-3, -3, 1)
             # c_range = np.logspace(2, 2, 1)
             # params = dict(gamma=gamma_range, kernel=kernel, C=c_range)
-            params = dict(C= np.array([1.1]))
+            extensive = False
+            if extensive:
+                params["C"] = [0.5, 0.8, 1.18]
+                params["kernel__length_scale"] = [20, 64]
+                params["class_weight"] = ['balanced']
 
         elif self.classifier == "KernelizedSVC":
             model = SVC(class_weight=class_weights_dict, random_state=41, decision_function_shape='ovo')
