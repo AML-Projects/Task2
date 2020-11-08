@@ -1,0 +1,120 @@
+20201108-135913	Task 02 - MRI Desease classification
+20201108-135913	Info: Environment: describe the run
+20201108-135914	Info: Shape of training_samples: (2704, 1000)
+20201108-135914	Info:             x0        x1        x2  ...      x997      x998      x999
+id                                  ...                              
+1.0  -0.521470 -0.493049  0.891382  ...  0.971394  0.604963  0.355499
+2.0  -0.417724 -0.019106  0.938377  ...  0.842709  2.086818  0.512741
+4.0   0.201026 -0.579901  0.638809  ...  0.825237  1.044778  0.071464
+6.0  -0.239743  0.263078  0.414362  ...  0.234584  1.736352  0.436803
+10.0 -0.284326  0.542109  0.608552  ...  0.487625  1.512135 -0.524854
+
+[5 rows x 1000 columns]
+20201108-135914	Info: Shape of training labels: (2704, 1)
+20201108-135914	Info:     y
+id   
+1   0
+2   1
+4   1
+6   2
+10  0
+20201108-135914	Info: Shape of test samples: (2331, 1000)
+20201108-135915	Info:            x0        x1        x2  ...      x997      x998      x999
+id                                 ...                              
+2.0  0.162656 -0.869909  0.502366  ...  0.264860  0.742492 -0.105276
+3.0 -0.224210 -0.226734  0.940147  ...  0.802260  0.397065  0.596587
+5.0 -0.192889 -0.664964  0.422705  ...  0.343044  0.970801 -0.255813
+6.0 -0.135309  0.081259  0.234583  ...  0.476248  0.415078  0.013118
+7.0 -0.634958 -0.979104  0.674774  ... -0.258113  0.823639  0.698886
+
+[5 rows x 1000 columns]
+20201108-135915	Info: Train-Data Shape: (2704, 1000)
+20201108-135915	Info: Test-Data Shape: (2331, 1000)
+20201108-135915	Info: 
+Validation samples per group
+ [ 569 1556  579]
+20201108-135915	Info: 
+Train samples per group
+ [ 569 1556  579]
+20201108-135915	Info: Training initialized
+20201108-135915	Info: 
+Data Sampling: None
+20201108-135915	Info: 
+ Trainset samples per group
+ [ 569 1556  579]
+20201108-135915	Info: Start normalizer
+20201108-135915	Info: 
+train shape (2704, 1000)
+20201108-135915	Info: 
+Feature Transformer: None
+20201108-135915	Info: 
+Feature Adder:
+20201108-135915	Info: [clustering_on]: False , n_clusters: 16
+20201108-135915	Info: [custom_on]: False
+20201108-135915	Info: [auto_encoder_on]: False , n_encoder_features: 128
+20201108-135915	Info: [lda_on]: False , shrinkage: 0.9
+20201108-135915	Info: replace_features: False
+20201108-135915	Info: X shape after feature addition (2704, 1000)
+20201108-135915	Info: X shape after feature addition (2331, 1000)
+20201108-135915	Info: 
+Classifier: SVC
+20201108-135915	Info: 
+Class weights:
+           0
+0  1.584066
+1  0.579263
+2  1.556707
+20201108-135915	Info: 
+Samples per group before classification
+ y
+0     569
+1    1556
+2     579
+Name: y, dtype: int64
+20201108-135915	Info: 
+Class weights:
+           0
+0  1.584066
+1  0.579263
+2  1.556707
+20201108-135915	Info: 
+Samples per group before classification
+ y
+0     569
+1    1556
+2     579
+Name: y, dtype: int64
+20201108-135915	Info: 
+Starting Parameter Search
+20201108-135915	Info: -> grid search
+20201108-140138	Info: Best estimator from GridSearch: SVC(C=0.8, class_weight='balanced', decision_function_shape='ovo',
+    kernel=RBF(length_scale=20), probability=True)
+20201108-140138	Info: Best alpha found: {'C': 0.8, 'class_weight': 'balanced', 'kernel__length_scale': 20}
+20201108-140138	Info: Best training-score with mse loss: 0.6447481307015293
+20201108-140138	Info:                                                                 params  mean_test_score  std_test_score  mean_train_score  std_train_score
+2   {'C': 0.8, 'class_weight': 'balanced', 'kernel__length_scale': 20}         0.644748        0.038879          0.870275         0.003260
+4  {'C': 1.18, 'class_weight': 'balanced', 'kernel__length_scale': 20}         0.641444        0.039856          0.920032         0.001631
+0   {'C': 0.5, 'class_weight': 'balanced', 'kernel__length_scale': 20}         0.639640        0.036532          0.807265         0.003893
+5  {'C': 1.18, 'class_weight': 'balanced', 'kernel__length_scale': 64}         0.620258        0.037278          0.686521         0.003889
+3   {'C': 0.8, 'class_weight': 'balanced', 'kernel__length_scale': 64}         0.613042        0.037593          0.666198         0.005010
+1   {'C': 0.5, 'class_weight': 'balanced', 'kernel__length_scale': 64}         0.602367        0.038723          0.643723         0.003138
+20201108-140143	Info: 
+--------- Train ---------
+
+20201108-140143	Info: Normalized confusion matrix
+20201108-140143	Info: [[0.84885764 0.06678383 0.08435852]
+ [0.07712082 0.83804627 0.0848329 ]
+ [0.02936097 0.05008636 0.92055268]]
+20201108-140144	Info: Train report
+20201108-140144	Info:               precision    recall  f1-score   support
+
+           0       0.78      0.85      0.81       569
+           1       0.95      0.84      0.89      1556
+           2       0.75      0.92      0.83       579
+
+    accuracy                           0.86      2704
+   macro avg       0.83      0.87      0.84      2704
+weighted avg       0.87      0.86      0.86      2704
+
+20201108-140144	Info: bas_score on Train split: 0.8691521981713822
+20201108-140149	Info: Finished processing in 155 [s].

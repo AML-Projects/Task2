@@ -9,13 +9,15 @@
         "n_components" : 200
     },
     "feature_adder" : {
-        "clustering_on" : "True",
+        "clustering_on" : "False",
         "n_clusters" : 16,
-        "custom_on" : "True",
+        "custom_on" : "False",
         "auto_encoder_on" : "False",
-        "n_encoder_features" : 16,
-        "lda_on" :"True",
+        "n_encoder_features" : 128,
+        "encoder_path" : "./model_save/encoder_all_denoise_128",
+        "lda_on" :"False",
         "lda_shrinkage" : 0.9,
+        "replace_features" : "False",
     },
 	"scaler" : {
 		"name" : "robustscaler"
