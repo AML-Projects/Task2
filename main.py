@@ -5,15 +5,17 @@ Main class
 __author__ = 'Andreas Kaufmann'
 __email__ = "ankaufmann@student.ethz.ch"
 
+import argparse
 import os
 import time
-import argparse
+
 import pandas as pd
 from sklearn import model_selection
+
+from helpers import argumenthelper
+from logcreator.logcreator import Logcreator
 from source.configuration import Configuration
 from source.engine import Engine
-from logcreator.logcreator import Logcreator
-from helpers import argumenthelper
 
 if __name__ == "__main__":
     global config
@@ -92,11 +94,13 @@ if __name__ == "__main__":
     pd.set_option('display.width', None)
     pd.set_option('display.max_colwidth', None)
 
-    #Split data into training and testdata
+    # Split data into training and testdata
     if args.handin:
         x_train_split = x_train
         y_train_split = y_train
         x_test_split = x_test
+        # save test index
+        x_test_index = x_test.index
         y_test_split = None
     else:
         x_train_split, x_test_split, y_train_split, y_test_split = \
@@ -117,7 +121,7 @@ if __name__ == "__main__":
     if args.hyperparamsearch:
         engine.search(x_train_split, y_train_split, x_test_split, y_test_split)
     elif args.ensemble_handin:
-        engine.ensebmle_submission(args.ensemble_path, x_test_index=x_test.index)
+        engine.ensebmle_submission(args.ensemble_path, x_test_index=x_test_index)
     elif args.ensemble_predict:
         engine.ensemble_predict(args.ensemble_path, y_train_split=y_train_split, y_test_split=y_test_split)
     else:
@@ -140,9 +144,7 @@ if __name__ == "__main__":
                                          filename="val_pred.csv")
 
         if args.handin:
-            engine.output_submission(clf=classifier, x_test=x_test_split, x_test_index=x_test.index)
-
-
+            engine.output_submission(clf=classifier, x_test=x_test_split, x_test_index=x_test_index)
 
     end = time.time()
     Logcreator.info("Finished processing in %d [s]." % (end - start))
